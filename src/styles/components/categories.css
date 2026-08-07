@@ -1,0 +1,69 @@
+/* Категории */
+.categories-wrap {
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.categories-wrap::-webkit-scrollbar {
+  display: none;
+}
+.categories {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  flex-wrap: nowrap;
+}
+.category {
+  background: #e9ecef;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: 20px;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: background var(--transition), color var(--transition);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  position: relative;
+}
+.category.active {
+  background: var(--primary);
+  color: #000;
+}
+.category:active {
+  transform: scale(0.96);
+}
+.category-add {
+  background: var(--primary-light);
+  border: 1px dashed var(--primary);
+  color: var(--text);
+}
+.category-hidden {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+/* Редактирование категорий */
+.category .cat-actions {
+  display: none;
+  gap: var(--spacing-xs);
+}
+.category.edit-mode .cat-actions {
+  display: flex;
+}
+.category .cat-actions button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 var(--spacing-xs);
+}
+.category.drag-over {
+  background: var(--primary-light);
+  border: 2px dashed var(--primary);
+  transform: scale(1.05);
+  box-shadow: var(--shadow);
+}

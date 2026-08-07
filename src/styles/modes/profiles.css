@@ -1,0 +1,8 @@
+.grid-container.full-height {
+  display: flex;
+  flex-direction: column;
+}
+.grid-container.full-height .tiles-grid {
+  flex: 1;
+  align-content: start;
+}

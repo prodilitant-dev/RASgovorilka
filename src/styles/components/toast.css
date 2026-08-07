@@ -1,0 +1,29 @@
+.toast-container {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+.toast {
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 500;
+  pointer-events: auto;
+  animation: slideUp 0.3s ease;
+  max-width: 90%;
+}
+.toast.error { background: var(--danger); }
+.toast.success { background: var(--primary); }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

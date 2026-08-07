@@ -1,0 +1,33 @@
+.mode-bar {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-sm);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-wrap: nowrap;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex: 1;
+}
+.mode-bar::-webkit-scrollbar {
+  display: none;
+}
+.mode-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 20px;
+  background: #e9ecef;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  color: var(--text-secondary);
+}
+.mode-btn.active {
+  background: var(--primary);
+  color: #000;
+}
+.mode-btn:active {
+  transform: scale(0.96);
+}

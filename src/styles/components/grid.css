@@ -1,0 +1,45 @@
+/* Основной контейнер для контента внутри main-area */
+.grid-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--grid-padding, var(--spacing-sm));
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  margin: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) var(--spacing-md);
+  min-height: 0; /* предотвращает переполнение */
+}
+
+/* Когда есть нижняя панель – добавляем отступ снизу */
+.main-area.has-panel .grid-container {
+  margin-bottom: calc(130px + var(--keyboard-offset, 0px));
+}
+
+/* Режимы без панели – отступа нет */
+.main-area.no-panel .grid-container {
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Специальный режим "Написать" – текстовая область */
+.grid-container.write-mode {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: none;
+  background: transparent;
+  margin: var(--spacing-sm) var(--spacing-md) calc(130px + var(--keyboard-offset, 0px)) var(--spacing-md);
+}
+.grid-container.write-mode textarea {
+  flex: 1;
+  width: 100%;
+  padding: var(--spacing-lg);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 20px;
+  resize: none;
+  outline: none;
+  font-family: var(--font);
+  box-sizing: border-box;
+  min-height: 0;
+}

@@ -1,0 +1,64 @@
+/* Редактор карточек и категорий */
+.editor-modal {
+  padding: 0;
+  width: 100%;
+}
+.editor-modal .tile-bg {
+  width: 100%;
+  height: 150px;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-md);
+  background-color: #f1f3f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  cursor: pointer;
+  border: 2px dashed var(--border);
+  transition: border-color var(--transition);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.editor-modal .tile-bg:hover {
+  border-color: var(--primary);
+}
+.editor-modal input,
+.editor-modal select {
+  width: 100%;
+  margin: var(--spacing-xs) 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 16px;
+  box-sizing: border-box;
+}
+.editor-modal .btn-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  justify-content: flex-end;
+  width: 100%;
+  flex-wrap: wrap;
+}
+.editor-modal .form-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  width: 100%;
+  margin: var(--spacing-xs) 0;
+}
+.editor-modal .form-row label {
+  min-width: 60px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.editor-modal .form-row input {
+  flex: 1;
+}
+.forms-block {
+  width: 100%;
+  margin-top: var(--spacing-sm);
+  border-top: 1px solid var(--border);
+  padding-top: var(--spacing-sm);
+}

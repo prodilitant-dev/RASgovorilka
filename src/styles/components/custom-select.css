@@ -1,0 +1,78 @@
+/* src/styles/components/custom-select.css */
+
+.custom-select {
+  position: relative;
+  width: 100%;
+  min-height: 36px;
+}
+
+.custom-select-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  padding-left: 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-height: 36px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23495057' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 32px;
+}
+
+.custom-select-button:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.custom-select-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
+}
+
+.custom-select.open .custom-select-dropdown {
+  display: block;
+}
+
+.custom-select-item {
+  padding: 8px 12px;
+  padding-left: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s;
+  color: var(--text);
+  border-left: 3px solid transparent;
+}
+
+.custom-select-item:hover {
+  background: var(--primary-light);
+}
+
+.custom-select-item.selected {
+  border-left: 3px solid var(--primary);
+  background: var(--surface);
+  font-weight: 500;
+}

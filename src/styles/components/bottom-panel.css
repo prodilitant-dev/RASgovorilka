@@ -1,0 +1,48 @@
+/* Нижняя панель – теперь в потоке, не абсолютная */
+.bottom-panel {
+  flex-shrink: 0;
+  background: var(--bg);
+  padding: var(--spacing-sm) var(--spacing-md);
+  padding-bottom: calc(var(--spacing-sm) + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  border-top: 1px solid var(--border);
+  transition: transform 0.2s ease;
+}
+
+/* При открытии клавиатуры панель поднимается вместе с ней */
+.keyboard-open .bottom-panel {
+  transform: translateY(calc(-1 * var(--keyboard-offset, 0px)));
+}
+
+/* Если панель скрыта – убираем её */
+.bottom-panel.hidden {
+  display: none !important;
+}
+
+.quick-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.quick-buttons::-webkit-scrollbar { display: none; }
+
+.quick-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: var(--spacing-xs) var(--spacing-md);
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+  transition: background var(--transition);
+}
+.quick-btn:active { background: #e9ecef; }
+.quick-btn img { width: 24px; height: 24px; object-fit: contain; }

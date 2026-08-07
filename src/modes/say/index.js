@@ -1,0 +1,1 @@
+export { renderSay } from './Say.controller';

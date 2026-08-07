@@ -1,0 +1,75 @@
+/* ============================================================
+   УНИВЕРСАЛЬНЫЕ КНОПКИ (стиль как у mode-btn)
+   ============================================================ */
+
+.btn,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.1s;
+  user-select: none;
+  text-align: center;
+  min-height: 36px;
+  min-width: 60px;
+  background: #e9ecef;
+  color: var(--text-secondary);
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.btn:active,
+.btn-secondary:active {
+  transform: scale(0.96);
+}
+
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #000;
+}
+.btn-primary:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: #fff;
+}
+.btn-primary:active {
+  background: var(--primary-dark);
+}
+
+.btn-secondary {
+  background: #e9ecef;
+  border-color: #ced4da;
+  color: var(--text-secondary);
+}
+.btn-secondary:hover {
+  background: #dee2e6;
+}
+
+.btn-danger {
+  background: #fff;
+  border-color: var(--danger);
+  color: var(--danger);
+  border-radius: 20px; /* как у всех кнопок */
+}
+.btn-danger:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+.btn-danger:active {
+  background: #b71c1c;
+}
+
+.btn-sm {
+  padding: 4px 12px;
+  font-size: 12px;
+  min-height: 28px;
+  min-width: 28px;
+}

@@ -1,0 +1,51 @@
+.app-header {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 4px 12px;
+  gap: var(--spacing-sm);
+  z-index: 10;
+}
+.back-btn { display: none; } /* пока скрыта */
+.profile-fab {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.mode-bar {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+  background: var(--surface);
+}
+.mode-bar::-webkit-scrollbar { display: none; }
+.mode-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 20px;
+  background: #e9ecef;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  color: var(--text-secondary);
+}
+.mode-btn.active {
+  background: var(--primary);
+  color: #000;
+}
+.mode-btn:active { transform: scale(0.96); }

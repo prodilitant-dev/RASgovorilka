@@ -1,0 +1,85 @@
+/* Строка предложения */
+.sentence-bar {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 2px solid var(--primary);
+  border-radius: 24px;
+  overflow: hidden;
+  min-height: 44px;
+  width: 100%;
+  box-shadow: var(--shadow);
+}
+
+.sentence-btn {
+  flex-shrink: 0;
+  min-width: 22px;
+  min-height: 44px;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.1s;
+  background: transparent;
+  color: #fff;
+}
+.sentence-btn:active {
+  transform: scale(0.92);
+}
+.sentence-btn-clear {
+  background: var(--danger);
+  border-radius: 4px;
+}
+.sentence-btn-speak {
+  background: var(--primary);
+  color: #000;
+  border-radius: 4px;
+}
+
+.sentence-words-wrapper {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+  background: var(--surface);
+}
+.sentence-words-wrapper::-webkit-scrollbar {
+  height: 4px;
+}
+.sentence-words-wrapper::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: 2px;
+}
+
+.sentence-word {
+  background: var(--primary-light);
+  color: #000;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  transition: background 0.3s, transform 0.2s;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.sentence-word:active {
+  background: var(--primary);
+}
+.sentence-word.highlight {
+  background: var(--primary) !important;
+  color: #fff !important;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+}

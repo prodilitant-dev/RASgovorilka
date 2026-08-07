@@ -1,0 +1,24 @@
+/* Режим редактирования – зелёный фон для всей страницы */
+body.editing-mode {
+  background-color: var(--primary-light);
+}
+
+body.editing-mode #app {
+  background-color: var(--primary-light);
+}
+
+body.editing-mode .app-header {
+  background-color: var(--primary-light);
+  border-bottom-color: var(--primary);
+}
+
+body.editing-mode .mode-bar {
+  background-color: var(--primary-light);
+  border-bottom-color: var(--primary);
+}
+
+body.editing-mode .main-area {
+  background-color: var(--primary-light);
+}
+
+/* Можно также добавить для других элементов, но пока достаточно */
