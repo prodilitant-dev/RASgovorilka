@@ -1,11 +1,12 @@
-// src/app/render.js
 import { createHeader } from '@components/Header/Header';
 import { renderModeBar } from '@components/ModeBar/ModeBar';
 import { createMainArea } from '@components/MainArea/MainArea';
 import { renderPlaceholder } from '@components/MainArea/renderPlaceholder';
 import { renderProfiles } from '@modes/profiles';
 import { renderGeneral } from '@modes/general';
+import { renderSay } from '@modes/say'; // ✅ импортируем режим "Сказать"
 import { getState, setState } from '@state/store';
+import { getActiveProfile } from '@state/actions'; // ✅ импортируем функцию
 import { logger } from '@utils/logger';
 import { createProfileClickHandler, createProfileLongPressHandler } from './handlers';
 
@@ -58,6 +59,15 @@ export function renderContent(container, modeId) {
     case 'general':
       renderGeneral(container);
       break;
+    case 'say': {
+      const profile = getActiveProfile(); // ✅ теперь функция доступна
+      if (profile) {
+        renderSay(container, profile);
+      } else {
+        renderPlaceholder(container, 'say (нет профиля)');
+      }
+      break;
+    }
     default:
       renderPlaceholder(container, modeId);
       break;

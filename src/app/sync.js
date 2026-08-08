@@ -14,7 +14,31 @@ export function setContainers(mbs, ma) {
 
 export function subscribeToStore() {
   subscribe((changed, newState) => {
-    // Обновляем класс editing-mode на body
+    // ✅ Если modeBarSlot стал невалидным – ищем новый
+    if (modeBarSlot && !document.contains(modeBarSlot)) {
+      const newModeBar = document.querySelector('.mode-bar');
+      if (newModeBar) {
+        modeBarSlot = newModeBar;
+        logger.debug('modeBarSlot обновлён');
+      } else {
+        logger.warn('modeBarSlot не найден в DOM');
+        return;
+      }
+    }
+
+    // ✅ Аналогично для mainArea
+    if (mainArea && !document.contains(mainArea)) {
+      const newMainArea = document.querySelector('.main-area');
+      if (newMainArea) {
+        mainArea = newMainArea;
+        logger.debug('mainArea обновлён');
+      } else {
+        logger.warn('mainArea не найден в DOM');
+        return;
+      }
+    }
+
+    // --- Основная логика обновления ---
     if (changed.editingMode !== undefined) {
       document.body.classList.toggle('editing-mode', newState.editingMode);
       const profileBtn = document.querySelector('.profile-fab');
@@ -23,21 +47,18 @@ export function subscribeToStore() {
       }
     }
 
-    // Если изменился режим, editingMode, modeOrder или hiddenModes – обновляем панель и контент
     if (
       changed.currentMode !== undefined ||
       changed.editingMode !== undefined ||
       changed.modeOrder !== undefined ||
       changed.hiddenModes !== undefined
     ) {
-      // Обновляем панель
       if (modeBarSlot && document.contains(modeBarSlot)) {
         renderModeBar(
           modeBarSlot,
           newState.currentMode,
           (modeId) => {
             setState({ currentMode: modeId });
-            renderContent(mainArea, modeId);
           },
           newState.editingMode,
           newState.hiddenModes || [],
@@ -45,7 +66,6 @@ export function subscribeToStore() {
         );
       }
 
-      // Если изменился режим – обновляем контент
       if (changed.currentMode !== undefined) {
         if (mainArea && document.contains(mainArea)) {
           renderContent(mainArea, newState.currentMode);

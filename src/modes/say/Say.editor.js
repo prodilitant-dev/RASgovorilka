@@ -56,7 +56,6 @@ export function openCardEditor(cardData, onSave, onDelete) {
         toast('Введите текст', 'error');
         return;
       }
-      // Объединяем с существующими данными
       const updated = { ...cardData, ...data };
       onSave(updated);
     },

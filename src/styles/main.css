@@ -17,6 +17,8 @@
 @import './components/buttons.css';
 @import './components/forms.css';
 @import './components/custom-select.css';
+@import './components/layout.css';
+
 
 /* Режимы */
 @import './modes/profiles.css';

@@ -1,4 +1,3 @@
-// src/state/actions.js
 import { loadAppData, saveAppData } from '@storage/appStorage';
 import { getState, setState } from './store';
 import { createDefaultProfile } from '@config/defaultData';
@@ -6,7 +5,8 @@ import { logger } from '@utils/logger';
 
 export async function loadInitialState() {
   logger.debug('Loading initial state');
-  const data = await loadAppData();
+  let data = await loadAppData();
+  
   if (data) {
     setState({
       currentProfileId: data.activeProfileId || null,
@@ -28,7 +28,7 @@ export async function loadInitialState() {
     }
   } else {
     logger.info('No data found, creating default profile');
-    const defaultProfile = createDefaultProfile();
+    const defaultProfile = createDefaultProfile('Мой профиль', '🧑');
     const newData = {
       profiles: [defaultProfile],
       activeProfileId: defaultProfile.id,

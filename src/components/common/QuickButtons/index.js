@@ -1,0 +1,1 @@
+export { renderQuickButtons } from './QuickButtons.view';

@@ -1,3 +1,4 @@
+// src/modes/say/Say.controller.js
 import { renderMainLayout } from '@components/common/Layout/MainLayout';
 import { createElement } from '@utils/dom';
 import { getState, setState } from '@state/store';
@@ -65,14 +66,11 @@ export function renderSay(container, profile) {
 
 function onCategorySelect(categoryId) {
   setState({ currentCategoryId: categoryId });
-  // Перерендериваем категории и карточки
   renderCategories(categoriesContainer, currentProfile, categoryId, onCategorySelect, handleCategoryEdit, handleCategoryReorder);
   renderCards(cardsContainer, currentProfile, categoryId, onCardClick, handleCardReorder);
 }
 
 function handleCategoryEdit(category) {
-  // Открываем модалку редактирования категории (можно использовать UniversalForm)
-  // Пока заглушка
   const newName = prompt('Новое название категории:', category.name);
   if (newName !== null && newName.trim()) {
     category.name = newName.trim();
@@ -97,21 +95,8 @@ function onCardClick(cardId, categoryId) {
   const editing = state.editingMode || false;
 
   if (editing) {
-    // Редактирование карточки
-    const card = currentProfile.cards[categoryId]?.find(c => c.id === cardId);
-    if (card) {
-      openCardEditor(card, (updatedCard) => {
-        Object.assign(card, updatedCard);
-        saveProfile(currentProfile);
-        renderCards(cardsContainer, currentProfile, categoryId, onCardClick, handleCardReorder);
-        toast('Карточка обновлена');
-      }, (cardIdToDelete) => {
-        currentProfile.cards[categoryId] = currentProfile.cards[categoryId].filter(c => c.id !== cardIdToDelete);
-        saveProfile(currentProfile);
-        renderCards(cardsContainer, currentProfile, categoryId, onCardClick, handleCardReorder);
-        toast('Карточка удалена');
-      });
-    }
+    // Редактирование карточки (обрабатывается внутри renderCards через onLongPress)
+    // Здесь ничего не делаем, т.к. редактирование уже обработано в renderCards
     return;
   }
 
@@ -134,20 +119,17 @@ function handleCardReorder(newOrder, categoryId) {
 function onQuickButtonClick(btn) {
   const state = getState();
   if (state.editingMode) {
-    // Редактирование быстрой кнопки (можно позже)
-    toast('Редактирование быстрых кнопок пока не реализовано', 'info');
+    // Редактирование обрабатывается внутри renderQuickButtons
+    // Здесь ничего не делаем
     return;
   }
   addWordToSentence(btn.text, btn);
 }
 
 function handleQuickReorder(newOrder) {
-  // newOrder — массив id кнопок
-  const btns = currentProfile.quickButtons || [];
-  const sorted = newOrder.map(id => btns.find(b => b.id === id)).filter(Boolean);
-  currentProfile.quickButtons = sorted;
-  saveProfile(currentProfile);
-  renderQuickButtons(quickContainer, currentProfile, onQuickButtonClick, handleQuickReorder);
+  // newOrder — массив id кнопок (передаётся из renderQuickButtons)
+  // Сохранять порядок будем там, здесь только обновляем UI при необходимости
+  // Но renderQuickButtons сам перерисовывается, так что ничего не делаем
 }
 
 // --- Работа с предложением ---
@@ -189,8 +171,6 @@ async function onSpeak() {
   }
   const text = words.map(w => w.text).join(' ');
   const voiceSettings = state.voiceSettings || { rate: 1, pitch: 1, voiceURI: '' };
-  // Импортируем speak из утилит
   const { speak } = await import('@utils/speech');
   speak(text, voiceSettings.rate, voiceSettings.pitch, voiceSettings.voiceURI);
-  // Здесь можно добавить подсветку слов (пока пропустим)
 }

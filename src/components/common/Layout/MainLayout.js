@@ -8,6 +8,7 @@ export function renderMainLayout(container, {
   clear(container);
   container.classList.add('main-area');
 
+  // Основной контент – занимает всё доступное место
   const contentWrap = createElement('div', { className: 'main-content' });
   contentWrap.appendChild(content);
   container.appendChild(contentWrap);
@@ -16,9 +17,9 @@ export function renderMainLayout(container, {
     const panelWrap = createElement('div', { className: 'bottom-panel' });
     panelWrap.appendChild(bottomPanel);
     container.appendChild(panelWrap);
-    container.classList.add('has-bottom-panel');
+    container.classList.add('has-panel'); // единый класс
   } else {
-    container.classList.remove('has-bottom-panel');
+    container.classList.remove('has-panel');
   }
 
   return container;
