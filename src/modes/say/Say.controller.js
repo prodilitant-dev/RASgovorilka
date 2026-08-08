@@ -4,12 +4,11 @@ import { createElement } from '@utils/dom';
 import { getState, setState } from '@state/store';
 import { renderCategories } from './Say.categories';
 import { renderCards } from './Say.cards';
-import { renderQuickButtons } from './Say.quick';
-import { renderSentence } from './Say.sentence';
+import { renderQuickButtons } from '@modes/common/quickButtons';
+import { renderSentence, addWord, removeWord, clearSentence, speakSentence } from '@modes/common/sentence';
 import { logger } from '@utils/logger';
 import { saveProfile } from '@storage/appStorage';
-import { uid, toast } from '@utils';
-import { openCardEditor } from './Say.editor';
+import { toast } from '@utils';
 
 let containerRef = null;
 let currentProfile = null;
@@ -23,7 +22,6 @@ export function renderSay(container, profile) {
   containerRef = container;
   currentProfile = profile;
 
-  // Создаём основной контент (без нижней панели — её добавим через renderMainLayout)
   const content = createElement('div', { className: 'say-content' });
 
   // Категории
@@ -36,27 +34,42 @@ export function renderSay(container, profile) {
   cardsContainer = createElement('div', { className: 'grid-container' });
   content.appendChild(cardsContainer);
 
-  // Создаём нижнюю панель
+  // Нижняя панель
   const bottomPanel = createElement('div', {});
   quickContainer = createElement('div', { className: 'quick-buttons' });
   sentenceContainer = createElement('div', {});
   bottomPanel.appendChild(quickContainer);
   bottomPanel.appendChild(sentenceContainer);
 
-  // Оборачиваем всё в main-layout
   renderMainLayout(container, { content, bottomPanel });
 
-  // Получаем текущее состояние
   const state = getState();
   const activeCategoryId = state.currentCategoryId || currentProfile.categories[0]?.id || null;
 
-  // Рендерим содержимое
+  // Рендерим категории и карточки
   renderCategories(categoriesContainer, currentProfile, activeCategoryId, onCategorySelect, handleCategoryEdit, handleCategoryReorder);
   renderCards(cardsContainer, currentProfile, activeCategoryId, onCardClick, handleCardReorder);
-  renderQuickButtons(quickContainer, currentProfile, onQuickButtonClick, handleQuickReorder);
-  renderSentence(sentenceContainer, state.sentenceWords || [], onSentenceRemove, onSpeak, onClear);
 
-  // Устанавливаем состояние, если активная категория ещё не задана
+  // Рендерим быстрые кнопки
+  renderQuickButtons(quickContainer, currentProfile, {
+    onQuickClick: onQuickButtonClick,
+    onReorder: handleQuickReorder,
+  });
+
+  // Рендерим строку предложения с кастомными колбэками
+  renderSentence(sentenceContainer, {
+    onRemove: (index) => {
+      removeWord(index);
+      // Перерисовываем строку с теми же колбэками (они запомнены в renderSentence)
+      renderSentence(sentenceContainer);
+    },
+    onClear: () => {
+      clearSentence();
+      renderSentence(sentenceContainer);
+    },
+    onSpeak: speakSentence,
+  });
+
   if (!state.currentCategoryId && activeCategoryId) {
     setState({ currentCategoryId: activeCategoryId });
   }
@@ -92,20 +105,13 @@ function handleCategoryReorder(newOrder) {
 
 function onCardClick(cardId, categoryId) {
   const state = getState();
-  const editing = state.editingMode || false;
-
-  if (editing) {
-    // Редактирование карточки (обрабатывается внутри renderCards через onLongPress)
-    // Здесь ничего не делаем, т.к. редактирование уже обработано в renderCards
-    return;
-  }
-
-  // Обычный режим – добавляем слово в предложение
-  if (!cardId) return;
+  if (state.editingMode) return;
   const card = currentProfile.cards[categoryId]?.find(c => c.id === cardId);
-  if (!card) return;
-
-  addWordToSentence(card.text, card);
+  if (card) {
+    addWord(card.text, card);
+    // Перерисовываем строку (колбэки запомнены)
+    renderSentence(sentenceContainer);
+  }
 }
 
 function handleCardReorder(newOrder, categoryId) {
@@ -118,59 +124,11 @@ function handleCardReorder(newOrder, categoryId) {
 
 function onQuickButtonClick(btn) {
   const state = getState();
-  if (state.editingMode) {
-    // Редактирование обрабатывается внутри renderQuickButtons
-    // Здесь ничего не делаем
-    return;
-  }
-  addWordToSentence(btn.text, btn);
+  if (state.editingMode) return;
+  addWord(btn.text, btn);
+  renderSentence(sentenceContainer);
 }
 
-function handleQuickReorder(newOrder) {
-  // newOrder — массив id кнопок (передаётся из renderQuickButtons)
-  // Сохранять порядок будем там, здесь только обновляем UI при необходимости
-  // Но renderQuickButtons сам перерисовывается, так что ничего не делаем
-}
-
-// --- Работа с предложением ---
-
-function addWordToSentence(text, sourceItem) {
-  const state = getState();
-  const words = state.sentenceWords || [];
-  const newWord = {
-    text: text,
-    display: text,
-    original: text,
-    type: sourceItem.wordType || 'noun',
-    forms: sourceItem.forms || {},
-  };
-  const newWords = [...words, newWord];
-  setState({ sentenceWords: newWords });
-  renderSentence(sentenceContainer, newWords, onSentenceRemove, onSpeak, onClear);
-}
-
-function onSentenceRemove(index) {
-  const state = getState();
-  const words = state.sentenceWords || [];
-  words.splice(index, 1);
-  setState({ sentenceWords: words });
-  renderSentence(sentenceContainer, words, onSentenceRemove, onSpeak, onClear);
-}
-
-function onClear() {
-  setState({ sentenceWords: [] });
-  renderSentence(sentenceContainer, [], onSentenceRemove, onSpeak, onClear);
-}
-
-async function onSpeak() {
-  const state = getState();
-  const words = state.sentenceWords || [];
-  if (words.length === 0) {
-    toast('Нет слов для озвучивания', 'info');
-    return;
-  }
-  const text = words.map(w => w.text).join(' ');
-  const voiceSettings = state.voiceSettings || { rate: 1, pitch: 1, voiceURI: '' };
-  const { speak } = await import('@utils/speech');
-  speak(text, voiceSettings.rate, voiceSettings.pitch, voiceSettings.voiceURI);
+function handleQuickReorder() {
+  // Порядок уже сохранён внутри renderQuickButtons
 }

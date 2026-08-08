@@ -1,14 +1,14 @@
 // src/utils/speech.js
 import { logger } from './logger';
 
+let currentUtterance = null;
+
 export function getVoices() {
   return window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
 }
 
 /**
  * Гарантирует, что список голосов загружен.
- * Если голоса ещё не доступны, ждём события voiceschanged.
- * @returns {Promise<SpeechSynthesisVoice[]>}
  */
 export function ensureVoicesLoaded() {
   return new Promise((resolve) => {
@@ -17,7 +17,6 @@ export function ensureVoicesLoaded() {
       resolve(voices);
       return;
     }
-    // Если голосов нет, подписываемся на событие
     const onVoicesChanged = () => {
       const newVoices = getVoices();
       if (newVoices.length > 0) {
@@ -26,7 +25,6 @@ export function ensureVoicesLoaded() {
       }
     };
     window.speechSynthesis.addEventListener('voiceschanged', onVoicesChanged);
-    // Таймаут на случай, если событие не произойдёт (например, в некоторых браузерах)
     setTimeout(() => {
       window.speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged);
       resolve(getVoices());
@@ -34,11 +32,34 @@ export function ensureVoicesLoaded() {
   });
 }
 
+/**
+ * Останавливает текущий синтез речи
+ */
+export function stopSpeech() {
+  if (currentUtterance) {
+    logger.debug('Stopping speech');
+    window.speechSynthesis.cancel();
+    currentUtterance = null;
+  }
+}
+
+/**
+ * Синтезирует речь. Если уже идёт речь – останавливает её и начинает новую.
+ */
 export function speak(text, rate = 1, pitch = 1, voiceURI = '') {
   if (!window.speechSynthesis) {
     logger.warn('Speech synthesis not supported');
     return;
   }
+
+  // Останавливаем текущую речь, если она есть
+  stopSpeech();
+
+  if (!text || !text.trim()) {
+    logger.debug('Empty text, skipping speech');
+    return;
+  }
+
   logger.debug(`Speak: "${text}"`, { rate, pitch, voiceURI });
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ru-RU';
@@ -49,5 +70,17 @@ export function speak(text, rate = 1, pitch = 1, voiceURI = '') {
     const found = voices.find(v => v.voiceURI === voiceURI);
     if (found) utterance.voice = found;
   }
+
+  utterance.onend = () => {
+    currentUtterance = null;
+    logger.debug('Speech ended');
+  };
+
+  utterance.onerror = (e) => {
+    currentUtterance = null;
+    logger.warn('Speech error:', e);
+  };
+
+  currentUtterance = utterance;
   window.speechSynthesis.speak(utterance);
 }

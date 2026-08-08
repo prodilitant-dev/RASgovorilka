@@ -1,5 +1,6 @@
 // src/utils/index.js
 export * from './array';
+export * from './debounce';
 export * from './dialog';
 export * from './dom';
 export * from './dragdrop';

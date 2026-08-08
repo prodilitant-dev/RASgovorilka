@@ -11,6 +11,12 @@ import { logger } from '@utils/logger';
 import { createElement } from '@utils/dom';
 
 export async function renderProfiles(container) {
+  // ✅ Очистка старых обработчиков перед рендером
+  if (container._cleanup) {
+    container._cleanup();
+    container._cleanup = null;
+  }
+
   logger.debug('🔄 Rendering Profiles');
   const state = getState();
   const data = await loadAppData();
@@ -116,7 +122,7 @@ export async function renderProfiles(container) {
     }
   );
 
-  // Сохраняем cleanup для возможного удаления обработчиков при перерендере
+  // ✅ Сохраняем новый cleanup
   container._cleanup = cleanup;
 
   // Оборачиваем контент в единую структуру main-area (без нижней панели)

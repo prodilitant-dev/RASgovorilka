@@ -1,13 +1,23 @@
-// src/modes/say/Say.quick.js
+// src/modes/common/quickButtons.js
 import { createElement, clear } from '@utils/dom';
 import { makeSortable } from '@utils/dragdrop';
 import { getState } from '@state/store';
-import { uid } from '@utils/id';
-import { toast } from '@utils/toast';
+import { uid, toast } from '@utils';
 import { saveProfile } from '@storage/appStorage';
-import { openCardEditor } from './Say.editor';
+import { openCardEditor } from '@modes/say/Say.editor';
 
-export function renderQuickButtons(container, profile, onQuickClick, onReorder) {
+/**
+ * Рендерит быстрые кнопки с поддержкой редактирования, добавления и перетаскивания
+ * @param {HTMLElement} container – контейнер для кнопок
+ * @param {Object} profile – профиль, содержащий quickButtons
+ * @param {Object} options
+ * @param {Function} options.onQuickClick – (btn) => void (обычный клик)
+ * @param {Function} options.onReorder – (newOrderIds) => void (опционально)
+ */
+export function renderQuickButtons(container, profile, {
+  onQuickClick,
+  onReorder,
+}) {
   const state = getState();
   const editing = state.editingMode || false;
   const buttons = profile.quickButtons || [];
@@ -15,7 +25,7 @@ export function renderQuickButtons(container, profile, onQuickClick, onReorder) 
   clear(container);
   const wrap = createElement('div', { className: 'quick-buttons' });
 
-  // Рендерим существующие кнопки
+  // --- Рендерим существующие кнопки ---
   buttons.forEach(btn => {
     const el = createElement('div', {
       className: 'quick-btn',
@@ -23,7 +33,6 @@ export function renderQuickButtons(container, profile, onQuickClick, onReorder) 
       draggable: editing ? 'true' : undefined,
     }, `${btn.emoji || ''} ${btn.text}`);
 
-    // Клик – либо редактирование, либо добавление в предложение
     el.addEventListener('click', (e) => {
       e.stopPropagation();
       if (editing) {
@@ -31,12 +40,12 @@ export function renderQuickButtons(container, profile, onQuickClick, onReorder) 
         openCardEditor(btn, (updated) => {
           Object.assign(btn, updated);
           saveProfile(profile);
-          renderQuickButtons(container, profile, onQuickClick, onReorder);
+          renderQuickButtons(container, profile, { onQuickClick, onReorder });
           toast('Кнопка обновлена');
         }, (id) => {
           profile.quickButtons = profile.quickButtons.filter(b => b.id !== id);
           saveProfile(profile);
-          renderQuickButtons(container, profile, onQuickClick, onReorder);
+          renderQuickButtons(container, profile, { onQuickClick, onReorder });
           toast('Кнопка удалена');
         });
         return;
@@ -48,7 +57,7 @@ export function renderQuickButtons(container, profile, onQuickClick, onReorder) 
     wrap.appendChild(el);
   });
 
-  // Кнопка добавления (только в режиме редактирования)
+  // --- Кнопка добавления (только в режиме редактирования) ---
   if (editing) {
     const addBtn = createElement('div', { className: 'quick-btn' }, '➕');
     addBtn.addEventListener('click', (e) => {
@@ -61,27 +70,26 @@ export function renderQuickButtons(container, profile, onQuickClick, onReorder) 
         }
         profile.quickButtons.push(data);
         saveProfile(profile);
-        renderQuickButtons(container, profile, onQuickClick, onReorder);
+        renderQuickButtons(container, profile, { onQuickClick, onReorder });
         toast('Кнопка добавлена');
       }, null);
     });
     wrap.appendChild(addBtn);
 
-    // Перетаскивание (drag & drop) – только в режиме редактирования
+    // --- Перетаскивание (drag & drop) ---
     const sortableCleanup = makeSortable(wrap, {
       itemSelector: '.quick-btn:not(:last-child)', // исключаем кнопку "+"
       onReorder: (ids) => {
-        // ids – массив id кнопок в новом порядке
         const newOrder = ids.map(id => buttons.find(b => b.id === id)).filter(Boolean);
         profile.quickButtons = newOrder;
         saveProfile(profile);
         if (onReorder) onReorder(newOrder.map(b => b.id));
         // Перерисовываем, чтобы обновить порядок
-        renderQuickButtons(container, profile, onQuickClick, onReorder);
+        renderQuickButtons(container, profile, { onQuickClick, onReorder });
       }
     });
 
-    // Сохраняем cleanup в контейнере для удаления при перерендере
+    // Сохраняем cleanup для удаления при следующем рендере
     container._quickSortableCleanup = sortableCleanup;
   } else {
     // Удаляем старый cleanup, если был
