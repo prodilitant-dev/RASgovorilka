@@ -15,13 +15,12 @@ export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel 
     title: isNew ? 'Новый профиль' : 'Редактировать профиль',
     entity: workingEntity,
     onSave: async (updated, close) => {
-      // Валидация
       if (!updated.name || !updated.name.trim()) {
         toast('Введите имя профиля', 'error');
         return;
       }
       await onSave(updated);
-      close(); // закрываем после сохранения
+      close();
     },
     onDelete: null, // удаление обрабатываем через кнопку
     onClose: (entity, close) => {

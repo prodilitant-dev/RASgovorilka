@@ -3,29 +3,35 @@ import { shuffle } from '@utils/array';
 
 export function generateMathQuestions(settings) {
   const { operations, maxNumber, numQuestions, numOptions } = settings;
-  if (operations.length === 0) return [];
+  // operations - объект { add: true, subtract: true, multiply: false, divide: false }
+  const ops = [];
+  if (operations.add) ops.push('+');
+  if (operations.subtract) ops.push('-');
+  if (operations.multiply) ops.push('*');
+  if (operations.divide) ops.push('/');
+  if (ops.length === 0) return [];
 
   const questions = [];
   for (let i = 0; i < numQuestions; i++) {
-    const op = operations[Math.floor(Math.random() * operations.length)];
+    const op = ops[Math.floor(Math.random() * ops.length)];
     let a, b, answer;
     switch (op) {
-      case 'add':
+      case '+':
         a = randInt(1, maxNumber);
         b = randInt(1, maxNumber - a);
         answer = a + b;
         break;
-      case 'sub':
+      case '-':
         a = randInt(1, maxNumber);
         b = randInt(1, a);
         answer = a - b;
         break;
-      case 'mul':
+      case '*':
         a = randInt(1, Math.floor(maxNumber / 2));
         b = randInt(1, Math.floor(maxNumber / a));
         answer = a * b;
         break;
-      case 'div':
+      case '/':
         b = randInt(1, Math.floor(maxNumber / 2));
         answer = randInt(1, Math.floor(maxNumber / b));
         a = b * answer;
@@ -49,7 +55,7 @@ export function generateMathQuestions(settings) {
     }
     options = shuffle(options);
 
-    const opSymbol = op === 'add' ? '+' : op === 'sub' ? '-' : op === 'mul' ? '×' : '÷';
+    const opSymbol = op === '+' ? '+' : op === '-' ? '-' : op === '*' ? '×' : '÷';
     questions.push({ a, b, operator: opSymbol, answer, options });
   }
   return questions;

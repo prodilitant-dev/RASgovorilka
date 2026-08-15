@@ -62,6 +62,7 @@ export async function renderProfiles(container) {
           await saveAppData(data);
           setState({ 
             currentProfileId: id,
+            profiles: data.profiles,
             modeOrder: profile.modeOrder || [],
             hiddenModes: profile.hiddenModes || [],
           });
@@ -105,18 +106,19 @@ export async function renderProfiles(container) {
           logger.info(`Profile deleted: ${idToDelete}`);
           renderProfiles(container);
         },
-        onCopy: async (sourceProfile) => {
-          const newProfile = {
-            ...sourceProfile,
-            id: uid(),
-            name: sourceProfile.name + ' (копия)',
-          };
-          data.profiles.push(newProfile);
-          await saveAppData(data);
-          toast('Профиль скопирован');
-          logger.info(`Profile copied: ${sourceProfile.id} -> ${newProfile.id}`);
-          renderProfiles(container);
-        },
+
+onCopy: async (sourceProfile) => {
+  // Глубокое копирование через JSON
+  const newProfile = JSON.parse(JSON.stringify(sourceProfile));
+  newProfile.id = uid();
+  newProfile.name = sourceProfile.name + ' (копия)';
+  // Дополнительно можно перегенерировать id для вложенных объектов, если нужно
+  // но для простоты оставим как есть
+  data.profiles.push(newProfile);
+  await saveAppData(data);
+  toast('Профиль скопирован');
+  renderProfiles(container);
+},
         onCancel: () => {}
       });
     }

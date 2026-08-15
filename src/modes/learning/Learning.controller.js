@@ -1,3 +1,4 @@
+// src/modes/learning/Learning.controller.js
 import { renderLearning } from './Learning.view';
 import { startQuiz } from './quiz';
 import { startGuess } from './guess';
@@ -26,30 +27,42 @@ export function handleLearning(container, profile) {
       openActivitySettings(activityId, profile, container);
     } else {
       switch (activityId) {
-        case 'quiz':
-          startQuiz(container, profile, profile.learningSettings?.quiz || getDefaultQuizSettings(profile), () => {
+        case 'quiz': {
+          const defaultSettings = getDefaultQuizSettings(profile);
+          const settings = { ...defaultSettings, ...(profile.learningSettings?.quiz || {}) };
+          startQuiz(container, profile, settings, () => {
             setState({ activityState: null });
             renderLearning(container, onSelectActivity);
           }, state.activityState?.type === 'quiz' ? state.activityState : null);
           break;
-        case 'guess':
-          startGuess(container, profile, profile.learningSettings?.guess || getDefaultGuessSettings(profile), () => {
+        }
+        case 'guess': {
+          const defaultSettings = getDefaultGuessSettings(profile);
+          const settings = { ...defaultSettings, ...(profile.learningSettings?.guess || {}) };
+          startGuess(container, profile, settings, () => {
             setState({ activityState: null });
             renderLearning(container, onSelectActivity);
           }, state.activityState?.type === 'guess' ? state.activityState : null);
           break;
-        case 'sorting':
-          startSorting(container, profile, profile.learningSettings?.sorting || getDefaultSortingSettings(profile), () => {
+        }
+        case 'sorting': {
+          const defaultSettings = getDefaultSortingSettings(profile);
+          const settings = { ...defaultSettings, ...(profile.learningSettings?.sorting || {}) };
+          startSorting(container, profile, settings, () => {
             setState({ activityState: null });
             renderLearning(container, onSelectActivity);
           }, state.activityState?.type === 'sorting' ? state.activityState : null);
           break;
-        case 'math':
-          startMath(container, profile, profile.learningSettings?.math || getDefaultMathSettings(profile), () => {
+        }
+        case 'math': {
+          const defaultSettings = getDefaultMathSettings(profile);
+          const settings = { ...defaultSettings, ...(profile.learningSettings?.math || {}) };
+          startMath(container, profile, settings, () => {
             setState({ activityState: null });
             renderLearning(container, onSelectActivity);
           }, state.activityState?.type === 'math' ? state.activityState : null);
           break;
+        }
         default:
           container.innerHTML = `<div style="padding:20px;text-align:center;">Активность "${activityId}" в разработке</div>`;
       }

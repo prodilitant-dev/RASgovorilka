@@ -41,7 +41,10 @@ export function openProfileSwitchModal(onProfileSwitched) {
             if (!profile) return;
             data.activeProfileId = id;
             saveAppData(data).then(() => {
-              setState({ currentProfileId: id });
+              setState({ 
+                currentProfileId: id,
+                profiles: data.profiles, // ✅ добавить
+              });
               toast('Профиль переключён');
               modal.close();
               if (onProfileSwitched) onProfileSwitched(id);

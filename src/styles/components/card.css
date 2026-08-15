@@ -44,3 +44,12 @@
   border-top: 1px solid var(--border);
   background: rgba(255,255,255,0.9);
 }
+
+.card.done {
+  opacity: 0.6;
+  background: #f1f3f5;
+}
+.card.done .card__label {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}

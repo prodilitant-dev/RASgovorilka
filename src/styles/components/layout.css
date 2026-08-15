@@ -55,3 +55,7 @@
 .bottom-panel.hidden {
   display: none !important;
 }
+
+.main-area {
+  position: relative; /* ← добавить */
+}

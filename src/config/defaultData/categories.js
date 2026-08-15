@@ -1,0 +1,15 @@
+export const CATEGORIES = [
+  { id: 'needs', name: 'Потребности', wordType: 'verb' },
+  { id: 'feelings', name: 'Чувства', wordType: 'noun' },
+  { id: 'actions', name: 'Действия', wordType: 'verb' },
+  { id: 'food', name: 'Еда', wordType: 'noun' },
+  { id: 'play', name: 'Игрушки', wordType: 'noun' },
+  { id: 'clothes', name: 'Одежда', wordType: 'noun' },
+  { id: 'transport', name: 'Транспорт', wordType: 'noun' },
+  { id: 'animals', name: 'Животные', wordType: 'noun' },
+  { id: 'colors', name: 'Цвета', wordType: 'adjective' },
+  { id: 'shapes', name: 'Формы', wordType: 'noun' },
+  { id: 'numbers', name: 'Числа', wordType: 'other' },
+  { id: 'family', name: 'Семья', wordType: 'noun' },
+  { id: 'places', name: 'Места', wordType: 'noun' },
+];

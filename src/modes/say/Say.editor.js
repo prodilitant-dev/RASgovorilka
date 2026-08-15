@@ -1,21 +1,27 @@
 // src/modes/say/Say.editor.js
 import { openVerticalEditor } from '@components/common/VerticalEditor';
 import { toast } from '@utils/toast';
+import { autoDetectCard } from '@utils/inflect';
+import { openDeclensionModal } from '@components/common/DeclensionModal/DeclensionModal';
 
-/**
- * Открывает редактор карточки (использует вертикальный редактор)
- */
 export function openCardEditor(cardData, onSave, onDelete) {
   const isNew = !cardData.id;
+  if (isNew) {
+    autoDetectCard(cardData);
+  }
+
+  const entity = cardData;
 
   openVerticalEditor({
     title: isNew ? 'Новая карточка' : 'Редактировать карточку',
-    entity: cardData,
+    entity,
     onSave: (updated) => {
-      // Проверяем, что текст не пустой
       if (!updated.text || !updated.text.trim()) {
         toast('Введите текст', 'error');
         return;
+      }
+      if (!updated.formsEdited && updated.text !== cardData.text) {
+        autoDetectCard(updated);
       }
       onSave(updated);
     },
@@ -46,7 +52,6 @@ export function openCardEditor(cardData, onSave, onDelete) {
         label: 'Эмодзи',
         type: 'text',
         placeholder: '😊',
-        // 🟢 Главное: Скрываем поле, если есть фото!
         visible: (entity) => !entity.imageId,
       },
     ],
@@ -54,14 +59,17 @@ export function openCardEditor(cardData, onSave, onDelete) {
       {
         id: 'declensions',
         label: '📖 Падежи (исключения)',
-        // Показываем только для существительных и местоимений
         visible: (entity) => {
           const type = entity.wordType || 'noun';
-          return type === 'noun' || type === 'pronoun';
+          return type === 'noun' || type === 'pronoun' || type === 'adjective';
         },
-        onClick: (entity) => {
-          // TODO: Открыть модалку падежей (пока заглушка)
-          toast('Редактор падежей будет позже', 'info');
+        onClick: (entity, closeModal) => {
+          openDeclensionModal(entity, (updatedEntity) => {
+            updatedEntity.formsEdited = true;
+            Object.assign(entity, updatedEntity);
+            toast('Падежи обновлены');
+            // closeModal закрывает модалку падежей
+          });
         },
       },
     ],
@@ -70,7 +78,7 @@ export function openCardEditor(cardData, onSave, onDelete) {
         id: 'delete',
         label: '🗑 Удалить',
         variant: 'danger',
-        visible: () => !isNew, // только для существующих
+        visible: () => !isNew,
       },
       {
         id: 'save',

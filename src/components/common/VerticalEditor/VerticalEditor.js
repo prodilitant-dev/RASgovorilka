@@ -11,7 +11,7 @@ export function openVerticalEditor(config) {
     entity,
     onSave = null,
     onDelete = null,
-    onClose = null,               // ✅ новый параметр
+    onClose = null,
     fields = [],
     extraActions = [],
     buttons = [],
@@ -21,6 +21,7 @@ export function openVerticalEditor(config) {
   const workingEntity = JSON.parse(JSON.stringify(entity));
   let modalInstance = null;
   let contentContainer = null;
+  let isSaving = false; // ✅ поднимаем на уровень замыкания
 
   function renderContent() {
     if (!contentContainer) return;
@@ -35,7 +36,6 @@ export function openVerticalEditor(config) {
       callbacks: {
         onFieldChange: (key, value) => {
           workingEntity[key] = value;
-          // ✅ Если поле имеет onChange, вызываем его
           const field = fields.find(f => f.id === key);
           if (field && field.onChange) {
             field.onChange(value, workingEntity);
@@ -64,8 +64,15 @@ export function openVerticalEditor(config) {
           }
         },
         onSave: () => {
+          if (isSaving) return;
+          isSaving = true;
           if (onSave) {
-            onSave(workingEntity, () => modalInstance.close());
+            onSave(workingEntity, () => {
+              isSaving = false;
+              modalInstance.close();
+            });
+          } else {
+            isSaving = false;
           }
         },
         onDelete: () => {
@@ -107,7 +114,6 @@ export function openVerticalEditor(config) {
         contentContainer._cleanup();
         contentContainer._cleanup = null;
       }
-      // ✅ Вызываем внешний onClose при закрытии модалки
       if (onClose) {
         onClose(workingEntity, () => {});
       }

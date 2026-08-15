@@ -1,3 +1,4 @@
+// src/modes/games/Games.controller.js
 import { renderGames } from './Games.view';
 import { startMemory } from './memory';
 import { startFifteen } from './fifteen';
@@ -17,18 +18,24 @@ export function handleGames(container, profile) {
       openGameSettings(gameId, profile, container);
     } else {
       switch (gameId) {
-        case 'memory':
-          startMemory(container, profile, profile.gamesSettings?.memory || getDefaultMemorySettings(profile), () => {
+        case 'memory': {
+          const defaultSettings = getDefaultMemorySettings(profile);
+          const settings = { ...defaultSettings, ...(profile.gamesSettings?.memory || {}) };
+          startMemory(container, profile, settings, () => {
             setState({ activityState: null });
             renderGames(container, onSelectGame);
           }, state.activityState?.type === 'memory' ? state.activityState : null);
           break;
-        case 'fifteen':
-          startFifteen(container, profile, profile.gamesSettings?.fifteen || getDefaultFifteenSettings(profile), () => {
+        }
+        case 'fifteen': {
+          const defaultSettings = getDefaultFifteenSettings(profile);
+          const settings = { ...defaultSettings, ...(profile.gamesSettings?.fifteen || {}) };
+          startFifteen(container, profile, settings, () => {
             setState({ activityState: null });
             renderGames(container, onSelectGame);
           }, state.activityState?.type === 'fifteen' ? state.activityState : null);
           break;
+        }
         default:
           container.innerHTML = `<div style="padding:20px;text-align:center;">Игра "${gameId}" в разработке</div>`;
       }
