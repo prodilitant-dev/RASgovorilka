@@ -1,0 +1,1 @@
+export { openFifteenSettings } from './FifteenSettings.controller';

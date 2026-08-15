@@ -26,3 +26,22 @@ export function alert(message, title = '') {
     modal.open();
   });
 }
+
+export function prompt(message, defaultValue = '') {
+  return new Promise((resolve) => {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = defaultValue;
+    input.className = 'modal-input'; // можно добавить стиль
+    const modal = new Modal({
+      title: message,
+      body: input,
+      buttons: [
+        { label: 'Отмена', action: () => { modal.close(); resolve(null); } },
+        { label: 'OK', primary: true, action: () => { modal.close(); resolve(input.value); } }
+      ]
+    });
+    modal.open();
+    setTimeout(() => input.focus(), 100);
+  });
+}

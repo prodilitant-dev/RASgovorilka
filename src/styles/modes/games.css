@@ -1,0 +1,145 @@
+/* src/styles/modes/games.css */
+
+/* ============================================================
+   ИГРЫ — универсальные стили для Мемори и Пятнашек
+   ============================================================ */
+
+/* Обёртка для игры (центрирует поле) */
+.game-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: var(--spacing-sm);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  margin: var(--spacing-sm) var(--spacing-md) var(--spacing-md) var(--spacing-md);
+  overflow: hidden;
+  min-height: 300px;
+}
+
+/* Информация о ходе/времени */
+.game-info {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-sm);
+  text-align: center;
+  width: 100%;
+}
+
+/* Игровое поле — квадратная сетка */
+.game-board {
+  display: grid;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 1 / 1;          /* квадрат */
+  margin: 0 auto;
+  gap: var(--game-gap, 8px);    /* отступы между ячейками, задаются через data-size */
+}
+
+/* Ячейка сетки — тоже квадратная */
+.game-cell {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  background: var(--surface);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s, border-color 0.15s;
+  color: var(--text);
+  position: relative;
+  min-width: 0;   /* предотвращает переполнение */
+  min-height: 0;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-cell:active {
+  transform: scale(0.95);
+}
+
+/* Пустая ячейка (в пятнашках) */
+.game-cell.empty {
+  background: #e9ecef;
+  border-color: transparent;
+  cursor: default;
+}
+
+/* Сопоставленная пара (в мемори) */
+.game-cell.matched {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  cursor: default;
+}
+
+/* Скрытая карточка (рубашка) */
+.game-cell.hidden {
+  background: var(--primary);
+  border-color: var(--primary-dark);
+  color: transparent;
+  cursor: pointer;
+}
+.game-cell.hidden:active {
+  transform: scale(0.95);
+}
+
+/* Открытая карточка */
+.game-cell.revealed {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+/* === Адаптивные отступы для разных размеров === */
+.game-board[data-size="4"] { --game-gap: 8px; }
+.game-board[data-size="5"] { --game-gap: 6px; }
+.game-board[data-size="6"] { --game-gap: 6px; }
+.game-board[data-size="7"] { --game-gap: 4px; }
+.game-board[data-size="8"] { --game-gap: 4px; }
+
+/* === Мобильная адаптация === */
+@media (max-width: 480px) {
+  .game-board {
+    max-width: 320px;
+  }
+  .game-cell {
+    font-size: 20px;
+    border-width: 1.5px;
+  }
+  .game-board[data-size="4"] { --game-gap: 6px; }
+  .game-board[data-size="6"] { --game-gap: 4px; }
+  .game-board[data-size="8"] { --game-gap: 3px; }
+  .game-wrapper {
+    margin: var(--spacing-xs) var(--spacing-sm) var(--spacing-sm) var(--spacing-sm);
+    padding: var(--spacing-xs);
+  }
+}
+
+@media (min-width: 768px) {
+  .game-board {
+    max-width: 600px;
+  }
+  .game-cell {
+    font-size: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .game-board {
+    max-width: 700px;
+  }
+  .game-cell {
+    font-size: 48px;
+  }
+}

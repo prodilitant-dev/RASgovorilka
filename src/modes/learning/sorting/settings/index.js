@@ -1,0 +1,1 @@
+export { openSortingSettings } from './SortingSettings.controller';

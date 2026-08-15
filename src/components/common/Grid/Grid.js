@@ -1,4 +1,3 @@
-// src/components/common/Grid/Grid.js
 import { createElement, clear } from '@utils/dom';
 import { createCard } from '../Card/Card';
 import { logger } from '@utils/logger';
@@ -14,6 +13,7 @@ export function renderGrid(container, items, options = {}) {
       id: item.id,
       text: item.text,
       emoji: item.emoji,
+      imageId: item.imageId,      // ← добавили
       isActive: item.active || false,
       isAdd: item.isAdd || false,
       draggable: options.draggable || false,

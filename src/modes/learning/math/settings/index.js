@@ -1,0 +1,1 @@
+export { openMathSettings } from './MathSettings.controller';

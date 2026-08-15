@@ -1,0 +1,516 @@
+/* src/styles/modes/learning.css */
+
+/* ============================================================
+   ОБУЧЕНИЕ
+   ============================================================ */
+
+.grid-container.flex-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--spacing-md);
+  overflow-y: auto;
+}
+
+.grid-container.flex-mode > * {
+  width: 100%;
+  max-width: 500px;
+  flex-shrink: 0;
+}
+
+.grid-container.flex-mode .learning-card,
+.grid-container.flex-mode .game-board,
+.grid-container.flex-mode .sorting-area,
+.grid-container.flex-mode .results-container {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.grid-container.flex-mode .game-controls {
+  flex: 0 0 auto;
+}
+
+/* Карточка обучения */
+.learning-card {
+  background: var(--surface);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  padding: var(--spacing-lg);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  box-shadow: var(--shadow);
+}
+
+.learning-card .card-image {
+  width: 100px;
+  height: 100px;
+  border-radius: var(--radius-sm);
+  background: #f1f3f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.learning-card .card-image .spinner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 3px solid #eee;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.learning-card .card-text {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+
+.learning-card .options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  width: 100%;
+  max-width: 300px;
+}
+
+.learning-card .options-grid .btn {
+  padding: var(--spacing-md);
+  font-size: 18px;
+  min-height: 50px;
+}
+
+.learning-card .input-group {
+  display: flex;
+  gap: var(--spacing-sm);
+  width: 100%;
+  max-width: 300px;
+}
+
+.learning-card .input-group input {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 18px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  outline: none;
+  font-family: var(--font);
+}
+
+.learning-card .input-group input:focus {
+  border-color: var(--primary);
+}
+
+/* Сортировка */
+.sorting-area {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  width: 100%;
+  max-width: 500px;
+}
+
+.sorting-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  padding: var(--spacing-sm);
+  min-height: 80px;
+  background: #f8f9fa;
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--border);
+}
+
+.sort-card {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--surface);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-sm);
+  cursor: grab;
+  font-size: 18px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s;
+  touch-action: none;
+}
+
+.sort-card:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+.sort-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.9);
+}
+
+.sort-card.placed {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.sorting-zones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.sorting-zone {
+  background: #f8f9fa;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm);
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.sorting-zone.drag-over {
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+
+.sorting-zone .zone-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.sorting-zone .zone-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  justify-content: center;
+}
+
+.sorting-zone .zone-items .placed-item {
+  background: var(--primary-light);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.placed-item.correct {
+  background: var(--primary-light) !important;
+  border: 2px solid var(--primary);
+  color: var(--primary-dark);
+}
+
+.placed-item.wrong {
+  background: #ffcdd2 !important;
+  border: 2px solid var(--danger);
+  color: var(--danger);
+}
+
+/* ===================== МАТЕМАТИКА ===================== */
+.math-equation {
+  font-size: 36px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.math-equation .math-part {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  background: transparent;
+}
+
+.math-equation .math-drop-zone {
+  width: 60px;
+  height: 60px;
+  border: 3px dashed var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  background: #f8f9fa;
+  color: var(--text);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  cursor: grab;
+  pointer-events: auto;
+}
+
+.math-equation .math-drop-zone.drag-over {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  cursor: copy;
+  transform: scale(1.05);
+  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.3);
+}
+
+.math-equation .math-drop-zone.filled {
+  border-style: solid;
+  border-color: var(--primary);
+  background: var(--surface);
+  cursor: default;
+}
+
+.math-equation .math-drop-zone.correct {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.math-equation .math-drop-zone.wrong {
+  border-color: var(--danger);
+  background: #ffebee;
+}
+
+.math-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  margin-top: var(--spacing-md);
+}
+
+.math-options .math-option {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: grab;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, opacity 0.2s;
+  touch-action: none;
+  min-width: 60px;
+  text-align: center;
+}
+
+.math-options .math-option:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+.math-options .math-option.dragging {
+  opacity: 0.5;
+  transform: scale(0.9);
+}
+
+.math-options .math-option.used {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Результаты */
+.results-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--spacing-md) 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.results-title {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  flex-shrink: 0;
+  margin-bottom: var(--spacing-sm);
+}
+
+.results-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  flex-shrink: 0;
+  margin-bottom: var(--spacing-sm);
+}
+
+.results-stat-item {
+  text-align: center;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  background: #f8f9fa;
+}
+
+.results-stat-item .stat-number {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.results-stat-item .stat-label {
+  font-size: 16px;
+  color: var(--text-muted);
+}
+
+.results-stat-item.correct .stat-number {
+  color: var(--primary);
+}
+
+.results-stat-item.wrong .stat-number {
+  color: var(--danger);
+}
+
+.results-summary {
+  text-align: center;
+  font-size: 18px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  margin-bottom: var(--spacing-sm);
+}
+
+.results-details {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  margin: var(--spacing-sm) 0;
+  border-top: 1px solid var(--border);
+  padding-top: var(--spacing-md);
+  min-height: 0;
+}
+
+.results-detail-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 16px;
+}
+
+.results-detail-item .detail-index {
+  font-weight: 700;
+  min-width: 30px;
+}
+
+.results-detail-item .detail-question {
+  flex: 1;
+  word-break: break-word;
+}
+
+.results-detail-item .detail-answer {
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.results-detail-item .detail-answer.correct {
+  color: var(--primary);
+}
+
+.results-detail-item .detail-answer.wrong {
+  color: var(--danger);
+}
+
+.results-detail-item .detail-correct-answer {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.results-controls {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--border);
+}
+
+/* Обратная связь */
+.feedback {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
+}
+
+.feedback.correct {
+  color: var(--primary-dark);
+  background: var(--primary-light);
+}
+
+.feedback.wrong {
+  color: var(--danger);
+  background: #ffcdd2;
+}
+
+
+/* Горизонтальный контейнер для карточек в сортировке */
+.sorting-cards-horizontal {
+  display: flex;
+  overflow-x: auto;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  min-height: 150px;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--border);
+  scrollbar-width: thin;
+  flex-shrink: 0;
+}
+
+.sorting-cards-horizontal .card {
+  flex: 0 0 auto;
+  width: 100px;
+  height: 130px;
+  cursor: grab;
+}
+
+.sorting-cards-horizontal .card.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+/* Адаптив для маленьких экранов */
+@media (max-width: 480px) {
+  .sorting-cards-horizontal .card {
+    width: 80px;
+    height: 110px;
+  }
+}
+
+/* Зоны сортировки (уже есть, но можно добавить стили для drag-over) */
+.sorting-zone.drag-over {
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+
+/* Стили для размещённых элементов (уже есть) */

@@ -1,10 +1,10 @@
 // src/modes/common/quickButtons.js
-import { createElement, clear } from '@utils/dom';
+import { createElement, clear, on } from '@utils/dom';
 import { makeSortable } from '@utils/dragdrop';
 import { getState } from '@state/store';
 import { uid, toast } from '@utils';
 import { saveProfile } from '@storage/appStorage';
-import { openCardEditor } from '@modes/say/Say.editor';
+import { openSimpleEditor } from '@modes/common/editorHelpers';
 
 /**
  * Рендерит быстрые кнопки с поддержкой редактирования, добавления и перетаскивания
@@ -36,17 +36,23 @@ export function renderQuickButtons(container, profile, {
     el.addEventListener('click', (e) => {
       e.stopPropagation();
       if (editing) {
-        // Редактирование кнопки
-        openCardEditor(btn, (updated) => {
-          Object.assign(btn, updated);
-          saveProfile(profile);
-          renderQuickButtons(container, profile, { onQuickClick, onReorder });
-          toast('Кнопка обновлена');
-        }, (id) => {
-          profile.quickButtons = profile.quickButtons.filter(b => b.id !== id);
-          saveProfile(profile);
-          renderQuickButtons(container, profile, { onQuickClick, onReorder });
-          toast('Кнопка удалена');
+        // Редактирование кнопки через новый вертикальный редактор
+        openSimpleEditor({
+          entity: btn,
+          title: 'Редактировать кнопку',
+          onSave: (updated) => {
+            Object.assign(btn, updated);
+            saveProfile(profile);
+            // Перерисовываем кнопки
+            renderQuickButtons(container, profile, { onQuickClick, onReorder });
+            toast('Кнопка обновлена');
+          },
+          onDelete: (id) => {
+            profile.quickButtons = profile.quickButtons.filter(b => b.id !== id);
+            saveProfile(profile);
+            renderQuickButtons(container, profile, { onQuickClick, onReorder });
+            toast('Кнопка удалена');
+          },
         });
         return;
       }
@@ -63,16 +69,21 @@ export function renderQuickButtons(container, profile, {
     addBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       const newBtn = { id: uid(), text: '', emoji: '' };
-      openCardEditor(newBtn, (data) => {
-        if (!data.text.trim()) {
-          toast('Введите текст', 'error');
-          return;
-        }
-        profile.quickButtons.push(data);
-        saveProfile(profile);
-        renderQuickButtons(container, profile, { onQuickClick, onReorder });
-        toast('Кнопка добавлена');
-      }, null);
+      openSimpleEditor({
+        entity: newBtn,
+        title: 'Новая быстрая кнопка',
+        onSave: (updated) => {
+          if (!updated.text.trim()) {
+            toast('Введите текст', 'error');
+            return;
+          }
+          profile.quickButtons.push(updated);
+          saveProfile(profile);
+          renderQuickButtons(container, profile, { onQuickClick, onReorder });
+          toast('Кнопка добавлена');
+        },
+        onDelete: null, // для новой кнопки удаление не нужно
+      });
     });
     wrap.appendChild(addBtn);
 

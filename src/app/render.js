@@ -6,7 +6,12 @@ import { renderPlaceholder } from '@components/MainArea/renderPlaceholder';
 import { renderProfiles } from '@modes/profiles';
 import { renderGeneral } from '@modes/general';
 import { renderSay } from '@modes/say';
-import { renderWrite } from '@modes/write'; // ✅ импорт
+import { renderWrite } from '@modes/write';
+import { handleLearning } from '@modes/learning';
+import { handleGames } from '@modes/games';
+// ✅ Импортируем новые режимы
+import { renderYesNo } from '@modes/yesno';
+import { renderSchedule } from '@modes/schedule';
 import { getState, setState } from '@state/store';
 import { getActiveProfile } from '@state/actions';
 import { openProfileSwitchModal } from '@components/Profile/ProfileSwitchModal';
@@ -43,8 +48,14 @@ export function renderApp() {
   app.innerHTML = '';
   const state = getState();
 
+  // ✅ Получаем активный профиль и его иконку
+  const activeProfile = getActiveProfile();
+  const profileIcon = state.editingMode
+    ? '✕'
+    : (activeProfile?.icon || '👤');
+
   const { header, modeBarSlot } = createHeader({
-    profileIcon: state.editingMode ? '✕' : '👤',
+    profileIcon,
     onProfileClick: handleProfileClick,
     onProfileLongPress: handleProfileLongPress,
   });
@@ -91,12 +102,49 @@ export function renderContent(container, modeId) {
       }
       break;
     }
-    case 'write': { // ✅ Новый режим
+    case 'write': {
       const profile = getActiveProfile();
       if (profile) {
         renderWrite(container, profile);
       } else {
         renderPlaceholder(container, 'write (нет профиля)');
+      }
+      break;
+    }
+    case 'learning': {
+      const profile = getActiveProfile();
+      if (profile) {
+        handleLearning(container, profile);
+      } else {
+        renderPlaceholder(container, 'learning (нет профиля)');
+      }
+      break;
+    }
+    case 'games': {
+      const profile = getActiveProfile();
+      if (profile) {
+        handleGames(container, profile);
+      } else {
+        renderPlaceholder(container, 'games (нет профиля)');
+      }
+      break;
+    }
+    // ✅ НОВЫЕ РЕЖИМЫ
+    case 'yesno': {
+      const profile = getActiveProfile();
+      if (profile) {
+        renderYesNo(container, profile);
+      } else {
+        renderPlaceholder(container, 'yesno (нет профиля)');
+      }
+      break;
+    }
+    case 'schedule': {
+      const profile = getActiveProfile();
+      if (profile) {
+        renderSchedule(container, profile);
+      } else {
+        renderPlaceholder(container, 'schedule (нет профиля)');
       }
       break;
     }

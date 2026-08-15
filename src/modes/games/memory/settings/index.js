@@ -1,0 +1,1 @@
+export { openMemorySettings } from './MemorySettings.controller';

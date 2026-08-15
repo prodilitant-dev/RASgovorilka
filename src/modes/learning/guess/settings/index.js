@@ -1,0 +1,1 @@
+export { openGuessSettings } from './GuessSettings.controller';

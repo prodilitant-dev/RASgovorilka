@@ -18,11 +18,14 @@
 @import './components/forms.css';
 @import './components/custom-select.css';
 @import './components/layout.css';
-
+@import './components/progress-bar.css';
+@import './components/vertical-editor.css';
 
 /* Режимы */
 @import './modes/profiles.css';
 @import './modes/settings.css';
+@import './modes/learning.css';            /* ✅ Добавить */
+@import './modes/games.css';               /* ✅ Добавить */
 
 .main-area {
   flex: 1;
@@ -34,7 +37,3 @@
   transition: transform 0.2s ease;
 }
 
-/* При открытии клавиатуры – сдвигаем всю область вверх (опционально) */
-.keyboard-open .main-area {
-  transform: translateY(calc(-1 * var(--keyboard-offset, 0px)));
-}

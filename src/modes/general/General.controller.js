@@ -1,9 +1,13 @@
+// src/modes/general/General.controller.js
 import { getState, setState } from '@state/store';
 import { savePersistentState } from '@state/actions';
 import { toast } from '@utils/toast';
 import { confirm } from '@utils/dialog';
 import { saveProfile } from '@storage/appStorage';
 import { renderModeBar } from '@components/ModeBar/ModeBar';
+import { openExportDialog } from './components/ExportDialog';
+import { exportToZip } from '@services/backup/export';
+import { importFromZip } from '@services/backup/import';
 
 function updateModeBar() {
   const container = document.querySelector('.mode-bar');
@@ -105,11 +109,23 @@ export async function resetAllData() {
   request.onerror = () => toast('Ошибка при сбросе данных', 'error');
 }
 
-// Заглушки для экспорта/импорта
+// ✅ Обновлённые функции экспорта/импорта
 export function exportData() {
-  toast('Экспорт данных (заглушка)', 'info');
+  openExportDialog((selectedKeys, selectedCategoryIds) => {
+    exportToZip(selectedKeys, selectedCategoryIds);
+  });
 }
 
 export function importData() {
-  toast('Импорт данных (заглушка)', 'info');
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.rasbackup';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      await importFromZip(file);
+    }
+    input.remove();
+  };
+  input.click();
 }

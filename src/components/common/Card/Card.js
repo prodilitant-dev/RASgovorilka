@@ -1,10 +1,12 @@
 // src/components/common/Card/Card.js
 import { createElement } from '@utils/dom';
+import { getImageUrl } from '@services/imageService'; // импортируем
 
 export function createCard({
   id,
   text = '',
   emoji = '',
+  imageId = null,          // новый параметр
   isActive = false,
   isAdd = false,
   draggable = false,
@@ -22,7 +24,30 @@ export function createCard({
     'data-log': `card:${id || 'unknown'}`,
   });
 
-  const bg = createElement('div', { className: 'card__bg' }, isAdd ? '➕' : (emoji || '📄'));
+  const bg = createElement('div', { className: 'card__bg' });
+
+  if (isAdd) {
+    bg.textContent = '➕';
+  } else if (imageId) {
+    // Есть фото – загружаем и показываем
+    bg.textContent = ''; // очищаем
+    bg.style.backgroundSize = 'contain';
+    bg.style.backgroundPosition = 'center';
+    bg.style.backgroundRepeat = 'no-repeat';
+    getImageUrl(imageId).then(url => {
+      if (url) {
+        bg.style.backgroundImage = `url(${url})`;
+      } else {
+        // Не удалось загрузить – показываем эмодзи или заглушку
+        bg.textContent = emoji || '📄';
+        bg.style.backgroundImage = 'none';
+      }
+    });
+  } else {
+    // Нет фото – показываем эмодзи или заглушку
+    bg.textContent = emoji || '📄';
+  }
+
   card.appendChild(bg);
 
   if (!isAdd && text) {

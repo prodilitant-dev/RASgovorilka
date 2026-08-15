@@ -10,3 +10,4 @@ export * from './keyboardHandler';
 export * from './logger';
 export * from './speech';
 export * from './toast';
+export { openSettings } from './settings/settingsOpener';

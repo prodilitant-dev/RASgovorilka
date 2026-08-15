@@ -12,11 +12,22 @@
   --radius: 16px;
   --radius-sm: 10px;
   --shadow: 0 2px 8px rgba(0,0,0,0.08);
-  --font: 'Segoe UI', Roboto, system-ui, sans-serif;
-  --spacing-xs: 4px;
+  --font: 'Segoe UI', Roboto, system-ui, sans-serif, 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji';  --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 12px;
   --spacing-lg: 16px;
   --spacing-xl: 24px;
   --transition: 0.2s ease;
+
+.tile-bg,
+.card__bg,
+.sentence-word,
+.quick-btn,
+.category,
+.game-cell,
+.learning-card .card-image {
+  text-shadow: none !important;
+  -webkit-text-stroke: 0 !important;
+}
+
 }
