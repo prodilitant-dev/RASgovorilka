@@ -9,6 +9,7 @@ import { renderSentence, addWord, removeWord, clearSentence, speakSentence } fro
 import { logger } from '@utils/logger';
 import { saveProfile } from '@storage/appStorage';
 import { toast } from '@utils';
+import { openCategoryEditor } from './Say.categoryEditor';
 
 let containerRef = null;
 let currentProfile = null;
@@ -24,17 +25,14 @@ export function renderSay(container, profile) {
 
   const content = createElement('div', { className: 'say-content' });
 
-  // Категории
   const catWrap = createElement('div', { className: 'categories-wrap' });
   categoriesContainer = createElement('div', { className: 'categories' });
   catWrap.appendChild(categoriesContainer);
   content.appendChild(catWrap);
 
-  // Сетка карточек
   cardsContainer = createElement('div', { className: 'grid-container' });
   content.appendChild(cardsContainer);
 
-  // Нижняя панель
   const bottomPanel = createElement('div', {});
   quickContainer = createElement('div', { className: 'quick-buttons' });
   sentenceContainer = createElement('div', {});
@@ -46,21 +44,17 @@ export function renderSay(container, profile) {
   const state = getState();
   const activeCategoryId = state.currentCategoryId || currentProfile.categories[0]?.id || null;
 
-  // Рендерим категории и карточки
   renderCategories(categoriesContainer, currentProfile, activeCategoryId, onCategorySelect, handleCategoryEdit, handleCategoryReorder);
   renderCards(cardsContainer, currentProfile, activeCategoryId, onCardClick, handleCardReorder);
 
-  // Рендерим быстрые кнопки
   renderQuickButtons(quickContainer, currentProfile, {
     onQuickClick: onQuickButtonClick,
     onReorder: handleQuickReorder,
   });
 
-  // Рендерим строку предложения с кастомными колбэками
   renderSentence(sentenceContainer, {
     onRemove: (index) => {
       removeWord(index);
-      // Перерисовываем строку с теми же колбэками (они запомнены в renderSentence)
       renderSentence(sentenceContainer);
     },
     onClear: () => {
@@ -75,8 +69,6 @@ export function renderSay(container, profile) {
   }
 }
 
-// --- Обработчики ---
-
 function onCategorySelect(categoryId) {
   setState({ currentCategoryId: categoryId });
   renderCategories(categoriesContainer, currentProfile, categoryId, onCategorySelect, handleCategoryEdit, handleCategoryReorder);
@@ -84,15 +76,14 @@ function onCategorySelect(categoryId) {
 }
 
 function handleCategoryEdit(category) {
-  const newName = prompt('Новое название категории:', category.name);
-  if (newName !== null && newName.trim()) {
-    category.name = newName.trim();
+  openCategoryEditor(category, (updatedCategory, done) => {
     saveProfile(currentProfile);
     const state = getState();
     renderCategories(categoriesContainer, currentProfile, state.currentCategoryId, onCategorySelect, handleCategoryEdit, handleCategoryReorder);
     renderCards(cardsContainer, currentProfile, state.currentCategoryId, onCardClick, handleCardReorder);
     toast('Категория обновлена');
-  }
+    done();
+  });
 }
 
 function handleCategoryReorder(newOrder) {
@@ -109,7 +100,6 @@ function onCardClick(cardId, categoryId) {
   const card = currentProfile.cards[categoryId]?.find(c => c.id === cardId);
   if (card) {
     addWord(card.text, card);
-    // Перерисовываем строку (колбэки запомнены)
     renderSentence(sentenceContainer);
   }
 }

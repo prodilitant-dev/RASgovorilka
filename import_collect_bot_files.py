@@ -258,8 +258,11 @@ def interactive_menu():
             else:  # ZIP
                 ext = '.zip'
 
-            # Имя файла
+            # Имя файла – теперь с точкой в начале по умолчанию
             base_name = os.path.basename(project_root)
+            # Добавляем точку, если её нет
+            if not base_name.startswith('.'):
+                base_name = '.' + base_name
             default_name = f"{base_name}{ext}"
             print(f"\nПредлагаемое имя выходного файла: {default_name}")
             custom_name = input("Введите своё имя файла (или оставьте пустым): ").strip()

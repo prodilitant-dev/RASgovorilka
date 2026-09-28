@@ -77,12 +77,12 @@ export function showResultsModal({
 
       // Кнопки управления
       const controls = createElement('div', { className: 'results-controls' });
-      const retryBtn = createElement('button', { className: 'btn-primary' }, 'Сыграть ещё');
+      const retryBtn = createElement('div', { className: 'category active' }, 'Сыграть ещё');
       retryBtn.addEventListener('click', () => {
         modal.close();
         if (onRetry) onRetry();
       });
-      const backBtn = createElement('button', { className: 'btn-secondary' }, 'Назад');
+      const backBtn = createElement('div', { className: 'category' }, 'Назад');
       backBtn.addEventListener('click', () => {
         modal.close();
         if (onBack) onBack();

@@ -85,8 +85,8 @@ export function openExportDialog(onConfirm) {
       const btnRow = createElement('div', {
         style: 'display:flex; gap:8px; justify-content:flex-end; margin-top:16px; padding-top:12px; border-top:1px solid #e0e0e0;'
       });
-      const cancelBtn = createElement('button', { className: 'btn-outline' }, 'Отмена');
-      const confirmBtn = createElement('button', { className: 'btn-primary' }, '📦 Экспортировать');
+      const cancelBtn = createElement('div', { className: 'category' }, 'Отмена');
+      const confirmBtn = createElement('div', { className: 'category active' }, '📦 Экспортировать');
 
       btnRow.appendChild(cancelBtn);
       btnRow.appendChild(confirmBtn);

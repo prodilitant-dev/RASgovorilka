@@ -52,7 +52,6 @@ export function renderUniversalList(container, config) {
     listContainer.appendChild(el);
   });
 
-  // Кнопка добавления — только если allowAdd и onAdd
   if (allowAdd && onAdd) {
     const addCard = createCard({
       id: 'add',
@@ -60,21 +59,17 @@ export function renderUniversalList(container, config) {
       emoji: '➕',
       isAdd: true,
     });
-    // НЕ ДОБАВЛЯЕМ ПРЯМОЙ ОБРАБОТЧИК, ПОЛАГАЕМСЯ НА attachGridEvents
     listContainer.appendChild(addCard);
   }
 
   container.appendChild(listContainer);
 
-  // Подключаем события через делегирование (обрабатывает все карточки, включая add)
   const eventsCleanup = attachGridEvents(listContainer, {
     onClick: (id) => {
-      // Если клик по add — вызываем onAdd, если передан
       if (id === 'add' && onAdd) {
         onAdd();
         return;
       }
-      // Иначе вызываем общий onClick
       if (onClick) onClick(id);
     },
     onLongPress: (id) => {

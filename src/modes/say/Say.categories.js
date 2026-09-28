@@ -10,6 +10,12 @@ import { logger } from '@utils/logger';
 
 export function renderCategories(container, profile, activeId, onSelect, onEdit, onReorder) {
   logger.debug('🔄 Rendering Categories');
+  
+  if (container._dragCleanup) {
+    container._dragCleanup();
+    container._dragCleanup = null;
+  }
+
   clear(container);
   const state = getState();
   const editing = state.editingMode || false;
@@ -27,14 +33,12 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
       el.draggable = true;
     }
 
-    // Короткий клик — переключение категории
     el.addEventListener('click', (e) => {
       e.stopPropagation();
       logger.debug(`Category clicked: ${cat.id}`);
       onSelect(cat.id);
     });
 
-    // Долгий тап — редактирование (только в режиме редактирования)
     if (editing && onEdit) {
       onLongPress(el, () => {
         logger.debug(`Category long-pressed: ${cat.id}`);
@@ -42,7 +46,6 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
       });
     }
 
-    // Обработчики для перетаскивания карточек в категорию (копирование)
     if (editing) {
       el.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -63,7 +66,10 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
           const data = JSON.parse(rawData);
           if (data.type === 'card') {
             const { cardId, sourceCategoryId } = data;
-            if (sourceCategoryId === cat.id) return;
+            if (sourceCategoryId === cat.id) {
+              toast('Карточка уже в этой категории', 'info');
+              return;
+            }
             const sourceCards = profile.cards[sourceCategoryId] || [];
             const card = sourceCards.find(c => c.id === cardId);
             if (!card) {
@@ -80,6 +86,7 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
           }
         } catch (err) {
           logger.error('Drop error:', err);
+          toast('Ошибка при копировании карточки', 'error');
         }
       });
     }
@@ -104,7 +111,7 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
   }
 
   if (editing && onReorder) {
-    setupDragDrop(container, onReorder);
+    container._dragCleanup = setupDragDrop(container, onReorder);
   }
 }
 
@@ -153,7 +160,7 @@ function setupDragDrop(container, onReorder) {
   container.addEventListener('dragover', onDragOver);
   container.addEventListener('drop', onDrop);
 
-  container._dragCleanup = () => {
+  return () => {
     container.removeEventListener('dragstart', onDragStart);
     container.removeEventListener('dragend', onDragEnd);
     container.removeEventListener('dragover', onDragOver);

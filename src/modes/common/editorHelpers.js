@@ -2,9 +2,6 @@
 import { openVerticalEditor } from '@components/common/VerticalEditor';
 import { toast } from '@utils/toast';
 
-/**
- * Универсальный редактор для простых сущностей (кнопки, да/нет)
- */
 export function openSimpleEditor({
   entity,
   title,
@@ -16,14 +13,19 @@ export function openSimpleEditor({
   openVerticalEditor({
     title,
     entity,
-    onSave: (updated) => {
+    onSave: (updated, done) => {
       if (!updated.text || !updated.text.trim()) {
         toast('Введите текст', 'error');
+        done();
         return;
       }
-      onSave(updated);
+      onSave(updated, done);
     },
-    onDelete: onDelete || null,
+    onDelete: (entity, close) => {
+      if (onDelete) {
+        onDelete(entity.id, close);
+      }
+    },
     fields: [
       {
         id: 'text',
@@ -40,7 +42,7 @@ export function openSimpleEditor({
         visible: (entity) => !entity.imageId,
       },
     ],
-    extraActions: [], // Нет падежей
+    extraActions: [],
     buttons: [
       {
         id: 'delete',

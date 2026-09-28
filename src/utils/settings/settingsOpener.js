@@ -1,6 +1,8 @@
+// src/utils/settings/settingsOpener.js
 import { toast } from '../toast';
 import { saveProfile } from '@storage/appStorage';
 import { logger } from '../logger';
+import { setState } from '@state/store';
 
 export function openSettings({
   profile,
@@ -27,10 +29,8 @@ export function openSettings({
       if (result) {
         toast(successMessage || 'Настройки сохранены');
         logger.debug('Settings saved successfully');
-        // Обновляем состояние, если нужно
-        import('@state/store').then(({ setState }) => {
-          setState({ profiles: [profile] }); // или более корректно обновить профиль в store
-        });
+        // Обновляем состояние, чтобы другие части приложения узнали об изменениях
+        setState({ profiles: [profile] }); // или более точно обновить в массиве
         renderMenuFn(container, onComplete);
       } else {
         toast('Ошибка сохранения настроек', 'error');

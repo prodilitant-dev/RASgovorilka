@@ -7,24 +7,25 @@ import { uid } from '@utils/id';
 export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel }) {
   const isNew = !profile?.id;
   const entity = profile || { id: uid(), name: '', icon: '🧑' };
-
-  // Рабочая копия
   const workingEntity = { ...entity };
 
   const config = {
     title: isNew ? 'Новый профиль' : 'Редактировать профиль',
     entity: workingEntity,
-    onSave: async (updated, close) => {
+    onSave: (updated, done) => {
       if (!updated.name || !updated.name.trim()) {
         toast('Введите имя профиля', 'error');
+        done();
         return;
       }
-      await onSave(updated);
-      close();
+      onSave(updated, done);
     },
-    onDelete: null, // удаление обрабатываем через кнопку
+    onDelete: (entity, close) => {
+      if (!isNew && onDelete) {
+        onDelete(entity.id, close);
+      }
+    },
     onClose: (entity, close) => {
-      // При закрытии по крестику ничего не сохраняем
       if (onCancel) onCancel();
       close();
     },
@@ -35,7 +36,6 @@ export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel 
         type: 'text',
         required: true,
         placeholder: 'Введите имя профиля...',
-        // onChange не нужен, так как сохранение по кнопке
       },
       {
         id: 'icon',
@@ -53,8 +53,8 @@ export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel 
           id: 'copy',
           label: '📋 Копировать',
           variant: 'secondary',
-          action: async (entity, close) => {
-            await onCopy(entity);
+          action: (entity, close) => {
+            onCopy(entity);
             close();
           },
         });
@@ -64,16 +64,8 @@ export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel 
           id: 'delete',
           label: '🗑 Удалить',
           variant: 'danger',
-          action: async (entity, close) => {
-            const ok = await confirm('Удалить профиль?', 'Подтверждение');
-            if (ok) {
-              await onDelete(entity.id);
-              close();
-            }
-          },
         });
       }
-      // Кнопка «Сохранить» всегда есть
       btns.push({
         id: 'save',
         label: '💾 Сохранить',

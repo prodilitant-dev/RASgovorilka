@@ -30,17 +30,17 @@ export function openTemplateManager(profile, onUpdate) {
 
         const actions = createElement('div', { style: 'display:flex; gap:6px;' });
         // ✏️ Теперь кнопка "Редактировать" тоже открывает редактор событий
-        const editBtn = createElement('button', { className: 'btn-secondary btn-sm' }, '✏️');
+        const editBtn = createElement('div', { className: 'category' }, '✏️');
         on(editBtn, 'click', (e) => {
           e.stopPropagation();
           modal.close();
           openTemplateEventsEditor(profile, tmpl.id, onUpdate);
         });
-        const delBtn = createElement('button', { className: 'btn-danger btn-sm' }, '🗑️');
+        const delBtn = createElement('div', { className: 'category category-danger' }, '🗑️');
         on(delBtn, 'click', (e) => {
           e.stopPropagation();
           deleteTemplate(profile, tmpl.id, onUpdate, modal);
-        });
+        }); 
         actions.appendChild(editBtn);
         actions.appendChild(delBtn);
         row.appendChild(nameSpan);
@@ -112,7 +112,7 @@ function openTemplateEventsEditor(profile, templateId, onUpdate) {
           });
           const info = createElement('span', {}, `${event.time || ''} ${event.icon || '📌'} ${event.text || ''}`);
           const actions = createElement('div', { style: 'display:flex; gap:6px;' });
-          const editBtn = createElement('button', { className: 'btn-secondary btn-sm' }, '✏️');
+          const editBtn = createElement('div', { className: 'category' }, '✏️');
           on(editBtn, 'click', () => {
             modal.close();
             openEventEditor(event, (updatedData) => {
@@ -145,7 +145,7 @@ function openTemplateEventsEditor(profile, templateId, onUpdate) {
       }
       wrap.appendChild(list);
 
-      const addBtn = createElement('button', { className: 'btn-primary mt-3' }, '+ Добавить событие');
+      const addBtn = createElement('div', { className: 'category active' }, '➕ Добавить событие');
       on(addBtn, 'click', () => {
         modal.close();
         openEventEditor(null, (newData) => {

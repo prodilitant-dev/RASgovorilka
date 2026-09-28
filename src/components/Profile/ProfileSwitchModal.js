@@ -17,7 +17,6 @@ export function openProfileSwitchModal(onProfileSwitched) {
       const listContainer = document.createElement('div');
       wrap.appendChild(listContainer);
 
-      // Загружаем данные
       loadAppData().then(appData => {
         data = appData;
         if (!data || !data.profiles) {
@@ -36,14 +35,16 @@ export function openProfileSwitchModal(onProfileSwitched) {
         const { element, cleanup: listCleanup } = renderUniversalList(listContainer, {
           items,
           onClick: (id) => {
-            // Переключение профиля
             const profile = data.profiles.find(p => p.id === id);
             if (!profile) return;
             data.activeProfileId = id;
             saveAppData(data).then(() => {
-              setState({ 
+              // ✅ Обновляем состояние: профиль, modeOrder, hiddenModes
+              setState({
                 currentProfileId: id,
-                profiles: data.profiles, // ✅ добавить
+                profiles: data.profiles,
+                modeOrder: profile.modeOrder || [],
+                hiddenModes: profile.hiddenModes || [],
               });
               toast('Профиль переключён');
               modal.close();
@@ -51,7 +52,6 @@ export function openProfileSwitchModal(onProfileSwitched) {
             });
           },
           allowAdd: true,
-
           emptyText: 'Нет профилей',
           layout: 'grid',
         });

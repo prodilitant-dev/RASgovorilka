@@ -53,7 +53,7 @@ export function renderGuessQuestion(container, {
     placeholder: 'Введите ответ...',
     autofocus: true,
   });
-  const submitBtn = createElement('button', { className: 'btn btn-primary' }, 'Проверить');
+  const submitBtn = createElement('div', { className: 'category active' }, 'Проверить');
 
   if (feedback) {
     input.disabled = true;

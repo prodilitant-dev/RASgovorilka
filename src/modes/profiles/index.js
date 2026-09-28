@@ -11,7 +11,6 @@ import { logger } from '@utils/logger';
 import { createElement } from '@utils/dom';
 
 export async function renderProfiles(container) {
-  // ✅ Очистка старых обработчиков перед рендером
   if (container._cleanup) {
     container._cleanup();
     container._cleanup = null;
@@ -29,28 +28,30 @@ export async function renderProfiles(container) {
   const activeId = state.currentProfileId;
   logger.debug(`Profiles count: ${profiles.length}, activeId: ${activeId}`);
 
-  // Создаём контент: контейнер для списка профилей
   const content = createElement('div', { className: 'grid-container full-height' });
 
-  // Рендерим список профилей в content
   const { cleanup } = renderProfileList(
     content,
     profiles,
     activeId,
-    // onProfileClick – создание/переключение
     async (id) => {
       if (id === null) {
         logger.info('Creating new profile');
         openProfileEditor(null, {
-          onSave: async ({ name, icon }) => {
+          onSave: async ({ name, icon }, done) => {
             const newProfile = createDefaultProfile(name, icon);
             data.profiles.push(newProfile);
             data.activeProfileId = newProfile.id;
             await saveAppData(data);
-            setState({ currentProfileId: newProfile.id, profiles: data.profiles });
+            setState({
+              currentProfileId: newProfile.id,
+              profiles: data.profiles,
+              modeOrder: newProfile.modeOrder || [],
+              hiddenModes: newProfile.hiddenModes || [],
+            });
             toast('Профиль создан');
-            logger.info(`Profile created: ${newProfile.id} (${name})`);
             renderProfiles(container);
+            done();
           },
           onCancel: () => {}
         });
@@ -60,7 +61,7 @@ export async function renderProfiles(container) {
           logger.info(`Switching to profile: ${id} (${profile.name})`);
           data.activeProfileId = id;
           await saveAppData(data);
-          setState({ 
+          setState({
             currentProfileId: id,
             profiles: data.profiles,
             modeOrder: profile.modeOrder || [],
@@ -71,24 +72,29 @@ export async function renderProfiles(container) {
         }
       }
     },
-    // onProfileLongPress
     (id) => {
       const profile = profiles.find(p => p.id === id);
       if (!profile) return;
       logger.info(`Editing profile: ${id}`);
       openProfileEditor(profile, {
-        onSave: async ({ name, icon }) => {
+        onSave: async ({ name, icon }, done) => {
           profile.name = name;
           profile.icon = icon;
           await saveProfile(profile);
+          if (profile.id === getState().currentProfileId) {
+            setState({
+              modeOrder: profile.modeOrder || [],
+              hiddenModes: profile.hiddenModes || [],
+            });
+          }
           toast('Профиль обновлён');
-          logger.info(`Profile updated: ${id} -> ${name}`);
           renderProfiles(container);
+          done();
         },
-        onDelete: async (idToDelete) => {
+        onDelete: async (idToDelete, done) => {
           if (profiles.length <= 1) {
             toast('Нельзя удалить единственный профиль', 'error');
-            logger.warn('Attempted to delete last profile');
+            done();
             return;
           }
           await deleteProfile(idToDelete);
@@ -97,37 +103,36 @@ export async function renderProfiles(container) {
             const newActive = updatedData.profiles.find(p => p.id !== idToDelete);
             if (newActive) {
               updatedData.activeProfileId = newActive.id;
-              setState({ currentProfileId: newActive.id });
+              setState({
+                currentProfileId: newActive.id,
+                profiles: updatedData.profiles,
+                modeOrder: newActive.modeOrder || [],
+                hiddenModes: newActive.hiddenModes || [],
+              });
               logger.info(`Active profile changed to ${newActive.id}`);
             }
           }
           await saveAppData(updatedData);
           toast('Профиль удалён');
-          logger.info(`Profile deleted: ${idToDelete}`);
           renderProfiles(container);
+          done();
         },
-
-onCopy: async (sourceProfile) => {
-  // Глубокое копирование через JSON
-  const newProfile = JSON.parse(JSON.stringify(sourceProfile));
-  newProfile.id = uid();
-  newProfile.name = sourceProfile.name + ' (копия)';
-  // Дополнительно можно перегенерировать id для вложенных объектов, если нужно
-  // но для простоты оставим как есть
-  data.profiles.push(newProfile);
-  await saveAppData(data);
-  toast('Профиль скопирован');
-  renderProfiles(container);
-},
+        onCopy: async (sourceProfile, done) => {
+          const newProfile = JSON.parse(JSON.stringify(sourceProfile));
+          newProfile.id = uid();
+          newProfile.name = sourceProfile.name + ' (копия)';
+          data.profiles.push(newProfile);
+          await saveAppData(data);
+          toast('Профиль скопирован');
+          renderProfiles(container);
+          done();
+        },
         onCancel: () => {}
       });
     }
   );
 
-  // ✅ Сохраняем новый cleanup
   container._cleanup = cleanup;
-
-  // Оборачиваем контент в единую структуру main-area (без нижней панели)
   renderMainLayout(container, { content, bottomPanel: null });
   logger.debug('✅ Profiles rendered');
 }

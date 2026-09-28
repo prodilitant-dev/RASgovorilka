@@ -2,7 +2,7 @@
 import { renderScheduleView } from './Schedule.view';
 import { openEventEditor } from './Schedule.editor';
 import { openTemplateManager } from './Schedule.templates';
-import { openSaveTemplateModal } from './Schedule.saveTemplate'; // ✅ новый импорт
+import { openSaveTemplateModal } from './Schedule.saveTemplate';
 import { getDateByOffset, getEventsForDate, getTemplateForDay, formatDateKey } from './Schedule.utils';
 import { getState } from '@state/store';
 import { toast } from '@utils/toast';
@@ -17,7 +17,7 @@ let selectedOffset = 0;
 export function renderSchedule(containerEl, profile) {
   container = containerEl;
   currentProfile = profile;
-  selectedOffset = 0;
+  selectedOffset = 0; // сегодня по умолчанию
   render();
 }
 
@@ -36,7 +36,7 @@ function render() {
     onManageTemplates: handleManageTemplates,
     onAddEvent: handleAddEvent,
     onReorderEvents: handleReorderEvents,
-    onSaveTemplate: handleSaveTemplate, // ✅ передаём
+    onSaveTemplate: handleSaveTemplate,
   });
 }
 
@@ -52,7 +52,7 @@ function handleEventClick(eventId) {
     return;
   }
 
-  const selectedDate = getDateByOffset(selectedOffset);
+  const selectedDate = getDateByOffset(0);
   const dateKey = formatDateKey(selectedDate);
   const events = getEventsForDate(currentProfile, selectedDate);
   const event = events.find(e => e.id === eventId);
@@ -84,7 +84,7 @@ function handleAddEvent() {
     toast('Включите режим редактирования (долгий тап по профилю)', 'info');
     return;
   }
-  const selectedDate = getDateByOffset(selectedOffset);
+  const selectedDate = getDateByOffset(0);
   const dayOfWeek = selectedDate.getDay();
   const template = getTemplateForDay(currentProfile, dayOfWeek);
   if (!template) {
@@ -101,7 +101,7 @@ function handleAddEvent() {
 }
 
 function openEventEditorForId(eventId) {
-  const selectedDate = getDateByOffset(selectedOffset);
+  const selectedDate = getDateByOffset(0);
   const dayOfWeek = selectedDate.getDay();
   const template = getTemplateForDay(currentProfile, dayOfWeek);
   if (!template) {
@@ -128,7 +128,7 @@ function handleManageTemplates() {
 }
 
 function handleReorderEvents(newOrder) {
-  const selectedDate = getDateByOffset(selectedOffset);
+  const selectedDate = getDateByOffset(0);
   const dayOfWeek = selectedDate.getDay();
   const template = getTemplateForDay(currentProfile, dayOfWeek);
   if (!template) return;
@@ -139,16 +139,13 @@ function handleReorderEvents(newOrder) {
   render();
 }
 
-// ✅ НОВАЯ ФУНКЦИЯ: сохранение текущих событий как шаблон
 function handleSaveTemplate() {
-  const selectedDate = getDateByOffset(selectedOffset);
-  // Получаем сырые события (без done)
+  const selectedDate = getDateByOffset(0);
   const events = getEventsForDate(currentProfile, selectedDate);
   if (events.length === 0) {
     toast('Нет событий для сохранения', 'error');
     return;
   }
-  // Удаляем поле done, чтобы сохранить чистые данные
   const rawEvents = events.map(({ done, ...rest }) => rest);
   openSaveTemplateModal(currentProfile, rawEvents, () => render());
 }

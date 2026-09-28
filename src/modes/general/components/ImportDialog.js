@@ -96,9 +96,9 @@ export function openImportDialog(importedData, manifest, onConfirm) {
       const strategyRow = createElement('div', {
         style: 'display:flex; gap:8px; margin:8px 0 12px 0;'
       });
-      const addBtn = createElement('button', { className: 'btn-primary' }, '➕ Добавить');
-      const updateBtn = createElement('button', { className: 'btn-primary' }, '🔄 Обновить');
-      const overwriteBtn = createElement('button', { className: 'btn-danger' }, '⚠️ Перезаписать');
+      const addBtn = createElement('div', { className: 'category active' }, '➕ Добавить');
+      const updateBtn = createElement('div', { className: 'category active' }, '🔄 Обновить');
+      const overwriteBtn = createElement('div', { className: 'category category-danger' }, '⚠️ Перезаписать');
       strategyRow.appendChild(addBtn);
       strategyRow.appendChild(updateBtn);
       strategyRow.appendChild(overwriteBtn);
@@ -121,8 +121,8 @@ export function openImportDialog(importedData, manifest, onConfirm) {
       const btnRow = createElement('div', {
         style: 'display:flex; gap:8px; justify-content:flex-end; margin-top:16px; padding-top:12px; border-top:1px solid #e0e0e0;'
       });
-      const cancelBtn = createElement('button', { className: 'btn-outline' }, 'Отмена');
-      const importBtn = createElement('button', { className: 'btn-primary' }, '📥 Импортировать');
+      const cancelBtn = createElement('div', { className: 'category' }, 'Отмена');
+      const importBtn = createElement('div', { className: 'category active' }, '📥 Импортировать');
       btnRow.appendChild(cancelBtn);
       btnRow.appendChild(importBtn);
       wrap.appendChild(btnRow);

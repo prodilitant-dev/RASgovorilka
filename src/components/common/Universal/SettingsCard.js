@@ -1,9 +1,7 @@
+// src/components/common/Universal/SettingsCard.js
 import { createElement } from '@utils/dom';
 import { createCard } from '../Card/Card';
 
-/**
- * Создаёт карточку настройки с иконкой, текстом и либо toggle, либо кликабельной областью.
- */
 export function createSettingsCard({
   id,
   emoji,

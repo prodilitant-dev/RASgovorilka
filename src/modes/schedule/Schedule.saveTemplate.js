@@ -50,9 +50,9 @@ export function openSaveTemplateModal(profile, events, onUpdate) {
         className: 'btn-row',
         style: 'display:flex; gap:8px; margin-top:16px; justify-content:flex-end; flex-wrap:wrap;',
       });
-      const cancelBtn = createElement('button', { className: 'btn-secondary' }, 'Отмена');
-      const createBtn = createElement('button', { className: 'btn-primary' }, 'Создать новый');
-      const replaceBtn = createElement('button', { className: 'btn-primary' }, 'Заменить');
+      const cancelBtn = createElement('div', { className: 'category' }, 'Отмена');
+      const createBtn = createElement('div', { className: 'category active' }, 'Создать новый');
+      const replaceBtn = createElement('div', { className: 'category active' }, 'Заменить');
       btnRow.appendChild(cancelBtn);
       btnRow.appendChild(createBtn);
       btnRow.appendChild(replaceBtn);

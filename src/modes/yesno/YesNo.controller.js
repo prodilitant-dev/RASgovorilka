@@ -58,14 +58,16 @@ function handleButtonClick(id) {
     openSimpleEditor({
       entity: newBtn,
       title: 'Новая кнопка',
-      onSave: (updated) => {
+      onSave: (updated, done) => {
         if (!updated.text.trim()) {
           toast('Введите текст', 'error');
+          done();
           return;
         }
         currentProfile.yesnoButtons.push(updated);
         saveProfile(currentProfile);
         renderTiles();
+        done();
       },
     });
     return;
@@ -79,15 +81,17 @@ function handleButtonClick(id) {
     openSimpleEditor({
       entity: btn,
       title: 'Редактировать кнопку',
-      onSave: (updated) => {
+      onSave: (updated, done) => {
         Object.assign(btn, updated);
         saveProfile(currentProfile);
         renderTiles();
+        done();
       },
-      onDelete: (btnId) => {
+      onDelete: (btnId, close) => {
         currentProfile.yesnoButtons = currentProfile.yesnoButtons.filter(b => b.id !== btnId);
         saveProfile(currentProfile);
         renderTiles();
+        close();
       },
     });
     return;

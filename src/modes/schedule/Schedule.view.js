@@ -25,17 +25,13 @@ export function renderScheduleView(container, {
   const gridContainer = createElement('div', { className: 'grid-container' });
   container.appendChild(gridContainer);
 
-  // Если нет событий и не режим редактирования — показываем сообщение
   if (events.length === 0 && !editingMode) {
     const empty = createElement('div', { className: 'text-muted text-center p-4' }, 'Нет событий на этот день');
     gridContainer.appendChild(empty);
     return;
   }
 
-  // Создаём карточки
   const cards = [];
-
-  // События
   events.forEach(event => {
     const card = createCard({
       id: event.id,
@@ -50,9 +46,7 @@ export function renderScheduleView(container, {
     cards.push(card);
   });
 
-  // Управляющие карточки в режиме редактирования
   if (editingMode) {
-    // Добавить событие
     const addCard = createCard({
       id: 'add',
       text: 'Добавить событие',
@@ -63,7 +57,6 @@ export function renderScheduleView(container, {
     });
     cards.push(addCard);
 
-    // Сохранить шаблон (если есть события)
     if (events.length > 0) {
       const saveCard = createCard({
         id: 'save-template',
@@ -77,10 +70,8 @@ export function renderScheduleView(container, {
     }
   }
 
-  // Рендерим сетку
   renderElementGrid(gridContainer, cards);
 
-  // Обработка кликов через делегирование
   const clickHandler = (e) => {
     const cardEl = e.target.closest('.card');
     if (!cardEl) return;
@@ -92,10 +83,8 @@ export function renderScheduleView(container, {
   };
   gridContainer.addEventListener('click', clickHandler);
 
-  // Drag & Drop для сортировки (только в режиме редактирования)
   let sortCleanup = null;
   if (editingMode && onReorderEvents) {
-    // Исключаем управляющие карточки (.card--add)
     sortCleanup = makeSortable(gridContainer, {
       itemSelector: '.card:not(.card--add)',
       onReorder: (ids) => {
@@ -104,7 +93,6 @@ export function renderScheduleView(container, {
     });
   }
 
-  // Сохраняем cleanup для удаления при следующем рендере
   if (container._scheduleCleanup) {
     container._scheduleCleanup();
   }

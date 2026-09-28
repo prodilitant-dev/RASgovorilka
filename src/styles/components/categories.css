@@ -67,3 +67,11 @@
   transform: scale(1.05);
   box-shadow: var(--shadow);
 }
+
+.category-danger {
+  background: var(--danger);
+  color: #fff;
+}
+.category-danger:active {
+  background: #b71c1c;
+}

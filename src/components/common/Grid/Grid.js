@@ -1,3 +1,4 @@
+// src/components/common/Grid/Grid.js
 import { createElement, clear } from '@utils/dom';
 import { createCard } from '../Card/Card';
 import { logger } from '@utils/logger';
@@ -13,7 +14,7 @@ export function renderGrid(container, items, options = {}) {
       id: item.id,
       text: item.text,
       emoji: item.emoji,
-      imageId: item.imageId,      // ← добавили
+      imageId: item.imageId,
       isActive: item.active || false,
       isAdd: item.isAdd || false,
       draggable: options.draggable || false,
@@ -24,7 +25,6 @@ export function renderGrid(container, items, options = {}) {
 
   container.appendChild(grid);
 
-  // Drag & Drop для перетаскивания внутри сетки (сортировка)
   if (options.draggable && options.onReorder) {
     let draggedId = null;
 
@@ -36,8 +36,12 @@ export function renderGrid(container, items, options = {}) {
         return;
       }
       draggedId = cardEl.dataset.id;
-      e.dataTransfer.setData('text/plain', draggedId);
-      e.dataTransfer.effectAllowed = 'move';
+      let data = draggedId;
+      if (options.getDragData) {
+        data = options.getDragData(draggedId);
+      }
+      e.dataTransfer.setData('text/plain', data);
+      e.dataTransfer.effectAllowed = options.dragEffect || 'move';
       cardEl.classList.add('dragging');
     };
 
@@ -59,7 +63,6 @@ export function renderGrid(container, items, options = {}) {
       const targetId = targetCard.dataset.id;
       if (!draggedId || draggedId === targetId || targetId === 'add') return;
 
-      // ✅ Исправляем: передаём селектор '.card'
       const ids = getElementIds(grid, '.card');
       const fromIdx = ids.indexOf(draggedId);
       const toIdx = ids.indexOf(targetId);

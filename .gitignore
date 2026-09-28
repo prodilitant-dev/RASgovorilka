@@ -1,0 +1,22 @@
+# Служебные дампы и бэкапы
+*.RAS.json
+.RAS.json
+.1RAS.json
+*.RAS.zip
+RAS.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Логи
+debug.log
+*.log

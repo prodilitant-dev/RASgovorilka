@@ -46,9 +46,9 @@ export function renderQuizQuestion(container, {
   const optionsGrid = createElement('div', { className: 'options-grid' });
   if (question.options && question.options.length > 0) {
     question.options.forEach(opt => {
-      const btn = createElement('button', {
-        className: `btn ${feedback && opt.id === userAnswer ? (isCorrect ? 'btn-primary' : 'btn-danger') : ''}`,
-      }, opt.text); // только текст
+      const btn = createElement('div', {
+        className: `category ${feedback && opt.id === userAnswer ? (isCorrect ? 'active' : 'category-danger') : ''}`,
+      }, opt.text);
       if (onAnswer) {
         btn.addEventListener('click', () => onAnswer(opt.id));
       } else {

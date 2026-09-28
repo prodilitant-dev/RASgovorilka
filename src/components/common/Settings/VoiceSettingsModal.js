@@ -16,13 +16,15 @@ export function openVoiceSettings(voiceSettings, onSave) {
 
       // --- Скорость ---
       const rateRow = createElement('div', { className: 'form-row' });
-      const rateLabel = createElement('label', {}, 'Скорость');
+      const rateLabel = createElement('label', { for: 'voice-rate' }, 'Скорость');
       rateInput = createElement('input', {
         type: 'range',
         min: '0.5',
         max: '2.0',
         step: '0.1',
         value: voiceSettings.rate || 1,
+        id: 'voice-rate',
+        name: 'voice-rate',
       });
       const rateValue = createElement('span', {}, voiceSettings.rate || 1);
       rateInput.addEventListener('input', () => {
@@ -35,13 +37,15 @@ export function openVoiceSettings(voiceSettings, onSave) {
 
       // --- Тональность ---
       const pitchRow = createElement('div', { className: 'form-row' });
-      const pitchLabel = createElement('label', {}, 'Тональность');
+      const pitchLabel = createElement('label', { for: 'voice-pitch' }, 'Тональность');
       pitchInput = createElement('input', {
         type: 'range',
         min: '0.5',
         max: '2.0',
         step: '0.1',
         value: voiceSettings.pitch || 1,
+        id: 'voice-pitch',
+        name: 'voice-pitch',
       });
       const pitchValue = createElement('span', {}, voiceSettings.pitch || 1);
       pitchInput.addEventListener('input', () => {
@@ -54,7 +58,7 @@ export function openVoiceSettings(voiceSettings, onSave) {
 
       // --- Выбор голоса (кастомный) ---
       const voiceRow = createElement('div', { className: 'form-row' });
-      const voiceLabel = createElement('label', {}, 'Голос');
+      const voiceLabel = createElement('label', { for: 'voice-select' }, 'Голос');
       const voiceContainer = createElement('div', { style: 'flex:1;' });
       voiceRow.appendChild(voiceLabel);
       voiceRow.appendChild(voiceContainer);
@@ -72,12 +76,14 @@ export function openVoiceSettings(voiceSettings, onSave) {
           value: currentVoice,
           placeholder: 'Выберите голос...',
         });
+        voiceSelectInstance.element.id = 'voice-select';
+        voiceSelectInstance.element.name = 'voice-select';
         voiceContainer.appendChild(voiceSelectInstance.element);
       });
 
       // --- Кнопка проверки ---
       const testRow = createElement('div', { className: 'form-row', style: 'justify-content:center; margin-top: 8px;' });
-      const testBtn = createElement('button', { className: 'btn-secondary' }, '🔊 Проверить');
+      const testBtn = createElement('div', { className: 'category' }, '🔊 Проверить');
       testBtn.addEventListener('click', () => {
         const currentRate = parseFloat(rateInput.value);
         const currentPitch = parseFloat(pitchInput.value);

@@ -128,7 +128,7 @@ export function renderMathGame(container, {
     // Ручной ввод
     const inputGroup = createElement('div', { className: 'input-group' });
     const input = createElement('input', { type: 'number', placeholder: 'Введите ответ', autofocus: true });
-    const submitBtn = createElement('button', { className: 'btn btn-primary' }, 'Проверить');
+    const submitBtn = createElement('div', { className: 'category active' }, 'Проверить');
     on(submitBtn, 'click', () => {
       const val = parseInt(input.value, 10);
       if (!isNaN(val) && onAnswer) onAnswer(val);

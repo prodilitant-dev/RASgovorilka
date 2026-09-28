@@ -11,6 +11,7 @@ import {
   toggleFullscreen,
   saveVoiceSettings,
   resetAllData,
+  saveSetting,
 } from './General.controller';
 import { logger } from '@utils/logger';
 import { createElement } from '@utils/dom';
@@ -20,9 +21,9 @@ export function renderGeneral(container) {
   const state = getState();
   const globalSettings = state.globalSettings || {};
 
-  // Создаём контент: сетка с карточками настроек
   const content = createElement('div', { className: 'grid-container' });
 
+  // Настройки, которые открывают модалку с тоглом
   const configs = [
     {
       id: 'fullscreen',
@@ -32,7 +33,6 @@ export function renderGeneral(container) {
       isActive: globalSettings.fullscreen || false,
       onClick: () => {
         const newVal = !globalSettings.fullscreen;
-        logger.info(`Toggle fullscreen: ${newVal}`);
         toggleFullscreen(newVal);
         renderGeneral(container);
       },
@@ -43,11 +43,9 @@ export function renderGeneral(container) {
       text: 'Голос',
       type: 'click',
       onClick: () => {
-        logger.info('Opening voice settings');
         openVoiceSettings(
           globalSettings.voiceSettings || { rate: 1, pitch: 1, voiceURI: '' },
           (newVoiceSettings) => {
-            logger.info('Voice settings saved', newVoiceSettings);
             saveVoiceSettings(newVoiceSettings);
             renderGeneral(container);
           }
@@ -60,7 +58,6 @@ export function renderGeneral(container) {
       text: 'Режимы',
       type: 'click',
       onClick: () => {
-        logger.info('Opening mode manager');
         openModeManager(() => renderGeneral(container));
       },
     },
@@ -70,18 +67,7 @@ export function renderGeneral(container) {
       text: 'Данные',
       type: 'click',
       onClick: () => {
-        logger.info('Opening data manager');
         openDataManager(() => renderGeneral(container));
-      },
-    },
-    {
-      id: 'reset',
-      emoji: '🗑️',
-      text: 'Сброс данных',
-      type: 'click',
-      onClick: () => {
-        logger.info('Reset data triggered');
-        resetAllData();
       },
     },
     {
@@ -90,8 +76,20 @@ export function renderGeneral(container) {
       text: 'Об авторе',
       type: 'click',
       onClick: () => {
-        logger.info('Opening about modal');
         openAboutModal();
+      },
+    },
+    // Новая карточка: Склонения
+    {
+      id: 'inflection',
+      emoji: '📖',
+      text: 'Автосклонение',
+      type: 'click',
+      isActive: globalSettings.autoInflect !== false,
+      onClick: () => {
+        const newVal = !globalSettings.autoInflect;
+        saveSetting('autoInflect', newVal);
+        renderGeneral(container);
       },
     },
   ];
@@ -99,7 +97,6 @@ export function renderGeneral(container) {
   const cards = configs.map(cfg => createSettingsCard(cfg));
   renderElementGrid(content, cards);
 
-  // Оборачиваем контент в единую структуру main-area (без нижней панели)
   renderMainLayout(container, { content, bottomPanel: null });
   logger.debug('✅ General rendered');
 }

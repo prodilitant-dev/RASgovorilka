@@ -41,8 +41,8 @@ export class Modal {
     if (this.buttons.length) {
       const footer = createElement('div', { className: 'modal-footer' });
       this.buttons.forEach(btn => {
-        const b = createElement('button', {
-          className: `btn ${btn.primary ? 'btn-primary' : 'btn-secondary'}`,
+        const b = createElement('div', {
+          className: `category ${btn.primary ? 'active' : ''} ${btn.danger ? 'category-danger' : ''}`,
           'data-log': `modal-button:${btn.label}`,
         }, btn.label);
         b.addEventListener('click', () => {
@@ -52,7 +52,7 @@ export class Modal {
       });
       content.appendChild(footer);
     }
-
+    
     this.element.appendChild(content);
 
     this.element.addEventListener('click', (e) => {

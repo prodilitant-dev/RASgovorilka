@@ -4,6 +4,7 @@ import { renderVerticalEditorContent } from './VerticalEditor.view';
 import { uploadImage } from '@services/image';
 import { toast } from '@utils/toast';
 import { logger } from '@utils/logger';
+import { confirm } from '@utils/dialog';
 
 export function openVerticalEditor(config) {
   const {
@@ -21,7 +22,7 @@ export function openVerticalEditor(config) {
   const workingEntity = JSON.parse(JSON.stringify(entity));
   let modalInstance = null;
   let contentContainer = null;
-  let isSaving = false; // ✅ поднимаем на уровень замыкания
+  let isSaving = false;
 
   function renderContent() {
     if (!contentContainer) return;
@@ -63,22 +64,33 @@ export function openVerticalEditor(config) {
             action.onClick(workingEntity, () => modalInstance.close());
           }
         },
-        onSave: () => {
+        onSave: async () => {
           if (isSaving) return;
           isSaving = true;
-          if (onSave) {
-            onSave(workingEntity, () => {
-              isSaving = false;
-              modalInstance.close();
-            });
-          } else {
+          try {
+            if (onSave) {
+              await new Promise((resolve, reject) => {
+                onSave(workingEntity, (err) => {
+                  if (err) reject(err);
+                  else resolve();
+                });
+              });
+            }
+            modalInstance.close();
+          } catch (err) {
+            logger.error('Save error:', err);
+            toast('Ошибка сохранения', 'error');
+          } finally {
             isSaving = false;
           }
         },
         onDelete: () => {
-          if (onDelete) {
-            onDelete(workingEntity, () => modalInstance.close());
-          }
+          if (!onDelete) return;
+          confirm('Удалить этот элемент?', 'Подтверждение').then((ok) => {
+            if (ok) {
+              onDelete(workingEntity, () => modalInstance.close());
+            }
+          });
         },
         onClose: () => {
           if (onClose) {

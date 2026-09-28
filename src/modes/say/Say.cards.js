@@ -21,37 +21,42 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
   const grid = renderGrid(container, items, {
     draggable: editing,
     onReorder: editing ? (newOrder) => onReorder(newOrder, categoryId) : null,
+    getDragData: editing ? (id) => JSON.stringify({ type: 'card', cardId: id, sourceCategoryId: categoryId }) : null,
+    dragEffect: editing ? 'copy' : 'move',
   });
 
-  // Общая функция для открытия редактора карточки
   function editCard(card) {
-    openCardEditor(card, (updatedCard) => {
+    openCardEditor(card, (updatedCard, done) => {
       Object.assign(card, updatedCard);
       saveProfile(profile);
       renderCards(container, profile, categoryId, onCardClick, onReorder);
-    }, (cardId) => {
+      toast('Карточка обновлена');
+      done();
+    }, (cardId, close) => {
       profile.cards[categoryId] = profile.cards[categoryId].filter(c => c.id !== cardId);
       saveProfile(profile);
       renderCards(container, profile, categoryId, onCardClick, onReorder);
+      toast('Карточка удалена');
+      close();
     });
   }
 
   const cleanup = attachGridEvents(grid, {
     onClick: (id) => {
       if (id === 'add') {
-        // Создание новой карточки
         const newCard = { id: uid(), text: '', emoji: '', wordType: 'noun', forms: {} };
-        openCardEditor(newCard, (savedCard) => {
-          if (!savedCard.text.trim()) { toast('Введите текст', 'error'); return; }
+        openCardEditor(newCard, (savedCard, done) => {
+          if (!savedCard.text.trim()) { toast('Введите текст', 'error'); done(); return; }
           profile.cards[categoryId].push(savedCard);
           saveProfile(profile);
           renderCards(container, profile, categoryId, onCardClick, onReorder);
+          toast('Карточка добавлена');
+          done();
         }, null);
         return;
       }
 
       if (editing) {
-        // В режиме редактирования — открываем редактор по клику
         const card = cards.find(c => c.id === id);
         if (card) {
           editCard(card);
@@ -59,13 +64,10 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
         return;
       }
 
-      // Обычный режим — добавляем слово
       if (onCardClick) onCardClick(id, categoryId);
     },
-    // 🟢 Убираем onLongPress (или оставляем, но он уже не нужен)
-    onLongPress: null, // можно удалить совсем
+    onLongPress: null,
   });
 
-  // Сохраняем cleanup
   container._cardCleanup = cleanup;
 }
