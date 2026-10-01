@@ -1,5 +1,4 @@
 // src/modes/games/fifteen/Fifteen.controller.js
-import { clear } from '@utils/dom';
 import { renderFifteenBoard } from './Fifteen.view';
 import { generateFifteenBoard } from './Fifteen.logic';
 import { showResultsModal } from '@modes/common/activities/ResultsModal';
@@ -8,10 +7,10 @@ import { speak, stopSpeech } from '@utils/speech';
 import { toast } from '@utils/toast';
 
 /**
- * Запускает игру "Пятнашки"
+ * Запускает игру "Пятнашки" (только числовой режим)
  * @param {HTMLElement} container - контейнер
  * @param {Object} profile - профиль пользователя
- * @param {Object} settings - настройки { size, mode, categoryIds }
+ * @param {Object} settings - настройки { size }
  * @param {Function} onBack - колбэк возврата в меню
  * @param {Object} savedState - сохранённое состояние (из activityState)
  */
@@ -21,12 +20,7 @@ export function startFifteen(container, profile, settings, onBack, savedState) {
   if (savedState && savedState.type === 'fifteen') {
     state = savedState;
   } else {
-    const result = generateFifteenBoard(
-      settings.size,
-      settings.mode,
-      profile,
-      settings.categoryIds || []
-    );
+    const result = generateFifteenBoard(settings.size);
     if (!result) {
       container.innerHTML = '<div style="padding:20px;text-align:center;">Не удалось создать доску. Проверьте настройки.</div>';
       toast('Ошибка генерации доски', 'error');
@@ -37,8 +31,6 @@ export function startFifteen(container, profile, settings, onBack, savedState) {
       emptyIdx: result.emptyIndex,
       moves: 0,
       size: settings.size,
-      mode: settings.mode,
-      categoryIds: settings.categoryIds || [],
     };
     saveState();
   }
@@ -96,32 +88,10 @@ export function startFifteen(container, profile, settings, onBack, savedState) {
   }
 
   function checkWin() {
-    if (state.mode === 'numbers') {
-      // Для чисел: все ячейки должны быть упорядочены от 1 до size*size-1, последняя пустая
-      for (let i = 0; i < state.board.length - 1; i++) {
-        if (state.board[i] !== i + 1) return false;
-      }
-      return state.board[state.board.length - 1] === null;
-    } else {
-      // Для изображений: просто проверяем, что все ячейки не null (кроме пустой)
-      // и порядок не важен, главное собрать картинку? Нет, в пятнашках обычно нужно собрать конкретный порядок.
-      // Но для упрощения мы проверяем, что все ячейки, кроме пустой, заняты (это не полная проверка, но достаточно для демонстрации).
-      // В реальных пятнашках с картинками нужно сравнивать с исходным порядком.
-      // Поскольку мы не храним целевой порядок, упростим: считаем, что если все ячейки, кроме пустой, не null, то игра завершена.
-      // Но это не совсем правильно, потому что может быть перемешано.
-      // Лучше вернуть проверку по порядку, как в числах, но для картинок мы не можем сравнивать по числам.
-      // Можно было бы хранить целевой порядок, но для простоты мы будем считать, что победа – когда доска совпадает с начальной (которая была сгенерирована).
-      // Это сложно, поэтому для картинок мы сделаем упрощённую проверку: все карточки на своих местах?
-      // Пока оставим так: если все не null, считаем победой. Но это неверно.
-      // Лучше: при генерации запоминать целевой порядок, но тогда нужно хранить его в состоянии.
-      // Временно сделаем так: если все ячейки не null, то победа.
-      // Или можно просто проверять, что доска совпадает с изначальной (но мы её не храним).
-      // Поэтому для пятнашек с картинками сделаем проверку, что пустая ячейка последняя, а остальные заняты.
-      // Это не идеально, но для демонстрации сойдёт.
-      // Если хотим полноценную проверку, нужно хранить цель в состоянии.
-      // Пока оставим как есть.
-      return state.board.every((val, idx) => idx === state.emptyIdx || val !== null);
+    for (let i = 0; i < state.board.length - 1; i++) {
+      if (state.board[i] !== i + 1) return false;
     }
+    return state.board[state.board.length - 1] === null;
   }
 
   async function showResults() {
@@ -147,4 +117,12 @@ export function startFifteen(container, profile, settings, onBack, savedState) {
   }
 
   render();
+
+  // На всякий случай возвращаем управление — вдруг где-то используется.
+  return {
+    stop: () => {
+      stopSpeech();
+      clearState();
+    },
+  };
 }

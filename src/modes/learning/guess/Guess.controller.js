@@ -25,7 +25,7 @@ export function startGuess(container, profile, settings, onBack, savedState) {
       const correct = answer.toLowerCase() === question.correctAnswer;
       return {
         correct,
-        feedback: correct ? 'Верно!' : `Не верно, ответ: ${question.card.text}`,
+        feedback: correct ? 'Верно!' : `Не верно, это: ${question.card.text}`,
         details: {
           question: question.card.text,
           userAnswer: answer || '—',

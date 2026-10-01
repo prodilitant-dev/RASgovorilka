@@ -37,7 +37,5 @@ export const DEFAULT_GAMES_SETTINGS = {
   fifteen: {
     visible: true,
     gridSize: 4,
-    categoryIds: [],
-    mode: 'numbers',
   },
 };

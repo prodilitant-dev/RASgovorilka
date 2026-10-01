@@ -10,7 +10,5 @@ export function getDefaultMemorySettings(profile) {
 export function getDefaultFifteenSettings(profile) {
   return {
     size: 4,
-    mode: 'numbers', // 'numbers' или 'images'
-    categoryIds: [],
   };
 }

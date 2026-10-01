@@ -26,7 +26,7 @@ export function startMath(container, profile, settings, onBack, savedState) {
       const correct = answer === question.answer;
       return {
         correct,
-        feedback: correct ? 'Верно!' : `Не верно, ответ: ${question.answer}`,
+        feedback: correct ? 'Верно!' : `Не верно, правильно: ${question.answer}`,
         details: {
           question: `${question.a} ${question.operator} ${question.b} = ?`,
           userAnswer: String(answer),

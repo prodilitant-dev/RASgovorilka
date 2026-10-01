@@ -96,7 +96,6 @@ export function createDefaultProfile(name = 'Мой профиль', icon = '�
 
   const gamesSettings = JSON.parse(JSON.stringify(DEFAULT_GAMES_SETTINGS));
   gamesSettings.memory.categoryIds = [...categoryIds];
-  gamesSettings.fifteen.categoryIds = [...categoryIds];
 
   // 8. Собираем профиль
   return {

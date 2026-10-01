@@ -1,12 +1,11 @@
 // src/modes/games/fifteen/Fifteen.view.js
 import { createElement, clear, on } from '@utils/dom';
-import { getImageUrl } from '@services/imageService';
 import { logger } from '@utils/logger';
 
 /**
  * Рендерит игровое поле "Пятнашки"
- * @param {HTMLElement} container - контейнер
- * @param {Object} state - состояние игры { board, emptyIdx, moves, size, mode }
+ * @param {HTMLElement} container
+ * @param {Object} state - { board, emptyIdx, moves, size }
  * @param {Function} onCellClick - (index) => void
  */
 export function renderFifteenBoard(container, state, onCellClick) {
@@ -15,12 +14,10 @@ export function renderFifteenBoard(container, state, onCellClick) {
 
   const wrap = createElement('div', { className: 'game-wrapper' });
 
-  // Информация о ходе
   const info = createElement('div', { className: 'game-info' });
   info.textContent = `Ходы: ${state.moves || 0}`;
   wrap.appendChild(info);
 
-  // Игровое поле
   const board = createElement('div', {
     className: 'game-board',
     style: `grid-template-columns: repeat(${state.size}, 1fr);`,
@@ -37,26 +34,7 @@ export function renderFifteenBoard(container, state, onCellClick) {
     if (isEmpty) {
       cell.textContent = '';
     } else {
-      if (state.mode === 'numbers') {
-        cell.textContent = value;
-      } else {
-        // Режим изображений
-        if (value.imageId) {
-          cell.textContent = '🔄';
-          getImageUrl(value.imageId).then(url => {
-            if (url) {
-              cell.style.backgroundImage = `url(${url})`;
-              cell.style.backgroundSize = 'cover';
-              cell.style.backgroundPosition = 'center';
-              cell.textContent = '';
-            } else {
-              cell.textContent = value.emoji || '❓';
-            }
-          });
-        } else {
-          cell.textContent = value.emoji || '❓';
-        }
-      }
+      cell.textContent = value;
     }
 
     if (!isEmpty) {

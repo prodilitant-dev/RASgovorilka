@@ -1,17 +1,19 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { readFileSync } from 'fs';
 
 const root = process.cwd();
+const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf-8'));
 
 export default defineConfig({
-  // Базовый путь для GitHub Pages:
-  // сайт будет доступен по адресу https://prodilitant-dev.github.io/RASgovorilka/
   base: '/RASgovorilka/',
-
   root: resolve(root, 'src'),
   server: {
     port: 3000,
     open: true,
+  },
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
   },
   build: {
     outDir: resolve(root, 'dist'),

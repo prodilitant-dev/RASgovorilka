@@ -3,8 +3,6 @@ import { renderSettingsModal } from '@components/common/SettingsModal/SettingsMo
 export function openFifteenSettings(profile, onSave) {
   const currentSettings = profile.gamesSettings?.fifteen || {
     size: 4,
-    mode: 'numbers',
-    categoryIds: [],
   };
 
   renderSettingsModal({
@@ -19,21 +17,6 @@ export function openFifteenSettings(profile, onSave) {
         max: 8,
         step: 1,
         default: 4,
-      },
-      {
-        key: 'mode',
-        type: 'select',
-        label: 'Режим:',
-        options: [
-          { value: 'numbers', label: 'Числа' },
-          { value: 'images', label: 'Изображения' },
-        ],
-      },
-      {
-        key: 'categoryIds',
-        type: 'checkbox',
-        label: 'Категории (для режима изображений):',
-        options: (profile) => profile.categories.map(c => ({ value: c.id, label: c.name })),
       },
     ],
     onSave,

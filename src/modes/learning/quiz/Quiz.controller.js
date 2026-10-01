@@ -26,7 +26,7 @@ export function startQuiz(container, profile, settings, onBack, savedState) {
       const userAnswerText = question.options.find(o => o.id === answer)?.text || '—';
       return {
         correct,
-        feedback: correct ? 'Верно!' : `Не верно, ответ: ${question.correctAnswerText}`,
+        feedback: correct ? 'Верно!' : `Не верно, это: ${question.correctAnswerText}`,
         details: {
           question: question.card.text,
           userAnswer: userAnswerText,
