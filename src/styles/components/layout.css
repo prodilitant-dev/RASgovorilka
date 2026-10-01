@@ -1,4 +1,3 @@
-/* src/styles/components/layout.css */
 .main-area {
   display: flex;
   flex-direction: column;
@@ -13,49 +12,5 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  min-height: 0; /* важно для корректного сжатия */
-}
-
-/* Стили для контейнера сетки внутри .main-content */
-.main-content .grid-container {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--grid-padding, var(--spacing-sm));
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  margin: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) var(--spacing-md);
   min-height: 0;
-}
-
-/* Когда есть нижняя панель – добавляем отступ снизу для grid-container */
-.main-area.has-panel .grid-container {
-  margin-bottom: calc(130px + var(--keyboard-offset, 0px));
-}
-
-/* Нижняя панель – фиксируется внизу */
-.bottom-panel {
-  flex-shrink: 0;
-  background: var(--bg);
-  padding: var(--spacing-sm) var(--spacing-md);
-  padding-bottom: calc(var(--spacing-sm) + env(safe-area-inset-bottom, 0px));
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  border-top: 1px solid var(--border);
-  transition: transform 0.2s ease;
-}
-
-/* При открытии клавиатуры панель поднимается вместе с ней */
-.keyboard-open .bottom-panel {
-  transform: translateY(calc(-1 * var(--keyboard-offset, 0px)));
-}
-
-/* Если панель скрыта – убираем её */
-.bottom-panel.hidden {
-  display: none !important;
-}
-
-.main-area {
-  position: relative; /* ← добавить */
 }
