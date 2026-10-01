@@ -3,12 +3,14 @@ import { shuffle } from '@utils/array';
 
 export function generateMathQuestions(settings) {
   const { operations, maxNumber, numQuestions, numOptions } = settings;
-  // operations - объект { add: true, subtract: true, multiply: false, divide: false }
+  // operations — массив: ['add', 'sub', 'mul', 'div']
   const ops = [];
-  if (operations.add) ops.push('+');
-  if (operations.subtract) ops.push('-');
-  if (operations.multiply) ops.push('*');
-  if (operations.divide) ops.push('/');
+  if (Array.isArray(operations)) {
+    if (operations.includes('add')) ops.push('+');
+    if (operations.includes('sub')) ops.push('-');
+    if (operations.includes('mul')) ops.push('*');
+    if (operations.includes('div')) ops.push('/');
+  }
   if (ops.length === 0) return [];
 
   const questions = [];
@@ -18,7 +20,7 @@ export function generateMathQuestions(settings) {
     switch (op) {
       case '+':
         a = randInt(1, maxNumber);
-        b = randInt(1, maxNumber - a);
+        b = randInt(1, Math.max(1, maxNumber - a));
         answer = a + b;
         break;
       case '-':
@@ -27,13 +29,13 @@ export function generateMathQuestions(settings) {
         answer = a - b;
         break;
       case '*':
-        a = randInt(1, Math.floor(maxNumber / 2));
-        b = randInt(1, Math.floor(maxNumber / a));
+        a = randInt(1, Math.max(1, Math.floor(maxNumber / 2)));
+        b = randInt(1, Math.max(1, Math.floor(maxNumber / a)));
         answer = a * b;
         break;
       case '/':
-        b = randInt(1, Math.floor(maxNumber / 2));
-        answer = randInt(1, Math.floor(maxNumber / b));
+        b = randInt(1, Math.max(1, Math.floor(maxNumber / 2)));
+        answer = randInt(1, Math.max(1, Math.floor(maxNumber / b)));
         a = b * answer;
         break;
       default: continue;

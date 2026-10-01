@@ -1,10 +1,25 @@
 // src/utils/dom.js
+
+// Boolean-атрибуты, для которых setAttribute работает неправильно:
+// setAttribute('checked', false) всё равно создаёт атрибут,
+// и браузер считает, что checkbox отмечен.
+const BOOLEAN_ATTRS = new Set([
+  'checked', 'disabled', 'selected', 'readonly', 'required',
+  'multiple', 'autofocus', 'hidden', 'draggable', 'spellcheck',
+]);
+
 export function createElement(tag, attrs = {}, children = null) {
   const el = document.createElement(tag);
   for (const [key, value] of Object.entries(attrs)) {
-    if (key === 'className') el.className = value;
-    else if (key === 'style' && typeof value === 'object') Object.assign(el.style, value);
-    else el.setAttribute(key, value);
+    if (key === 'className') {
+      el.className = value;
+    } else if (key === 'style' && typeof value === 'object') {
+      Object.assign(el.style, value);
+    } else if (BOOLEAN_ATTRS.has(key.toLowerCase())) {
+      el[key.toLowerCase()] = !!value;
+    } else {
+      el.setAttribute(key, value);
+    }
   }
   if (children !== null && children !== undefined) {
     if (typeof children === 'string' || typeof children === 'number') {
@@ -27,7 +42,6 @@ export function clear(el) {
   while (el.firstChild) el.removeChild(el.firstChild);
 }
 
-// ✅ Добавляем вспомогательные функции
 export function on(el, event, handler, options = {}) {
   el.addEventListener(event, handler, options);
   return () => el.removeEventListener(event, handler, options);

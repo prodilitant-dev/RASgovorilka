@@ -3,27 +3,27 @@
 export const DEFAULT_LEARNING_SETTINGS = {
   quiz: {
     visible: true,
-    categories: [], // будут заполнены позже
-    questions: 10,
-    choices: 4,
+    categoryIds: [],
+    numQuestions: 10,
+    numOptions: 4,
     mode: 'image_to_word',
   },
   guess: {
     visible: true,
-    categories: [],
-    questions: 10,
+    categoryIds: [],
+    numQuestions: 10,
   },
   sorting: {
     visible: true,
-    categories: [],
-    cardCount: 8,
+    categoryIds: [],
+    numCards: 8,
   },
   math: {
     visible: true,
-    operations: { add: true, subtract: true, multiply: false, divide: false },
-    maxNumber: 10,
-    questions: 10,
-    choices: 4,
+    operations: ['add', 'sub'],
+    maxNumber: 20,
+    numQuestions: 5,
+    numOptions: 4,
     inputMethod: 'drag',
   },
 };
@@ -32,12 +32,12 @@ export const DEFAULT_GAMES_SETTINGS = {
   memory: {
     visible: true,
     gridSize: 4,
-    categories: [],
+    categoryIds: [],
   },
   fifteen: {
     visible: true,
     gridSize: 4,
-    categories: [],
+    categoryIds: [],
     mode: 'numbers',
   },
 };

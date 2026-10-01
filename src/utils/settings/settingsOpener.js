@@ -2,7 +2,7 @@
 import { toast } from '../toast';
 import { saveProfile } from '@storage/appStorage';
 import { logger } from '../logger';
-import { setState } from '@state/store';
+import { getState, setState } from '@state/store';
 
 export function openSettings({
   profile,
@@ -29,8 +29,12 @@ export function openSettings({
       if (result) {
         toast(successMessage || 'Настройки сохранены');
         logger.debug('Settings saved successfully');
-        // Обновляем состояние, чтобы другие части приложения узнали об изменениях
-        setState({ profiles: [profile] }); // или более точно обновить в массиве
+        // Обновляем только нужный профиль в массиве
+        const state = getState();
+        const updatedProfiles = state.profiles.map(p =>
+          p.id === profile.id ? profile : p
+        );
+        setState({ profiles: updatedProfiles });
         renderMenuFn(container, onComplete);
       } else {
         toast('Ошибка сохранения настроек', 'error');

@@ -101,7 +101,7 @@ function openActivitySettings(activityId, profile, container) {
   openSettings({
     profile,
     settingsKey: activityId,
-    settingsType: 'learning',
+    settingsType: 'learningSettings',
     openSettingsFn: config.openSettingsFn,
     renderMenuFn: renderLearning,
     container,

@@ -90,13 +90,13 @@ export function createDefaultProfile(name = 'Мой профиль', icon = '�
   const learningSettings = JSON.parse(JSON.stringify(DEFAULT_LEARNING_SETTINGS));
   // Заполняем категории в настройках (все id категорий)
   const categoryIds = categories.map(c => c.id);
-  learningSettings.quiz.categories = [...categoryIds];
-  learningSettings.guess.categories = [...categoryIds];
-  learningSettings.sorting.categories = [...categoryIds];
+  learningSettings.quiz.categoryIds = [...categoryIds];
+  learningSettings.guess.categoryIds = [...categoryIds];
+  learningSettings.sorting.categoryIds = [...categoryIds];
 
   const gamesSettings = JSON.parse(JSON.stringify(DEFAULT_GAMES_SETTINGS));
-  gamesSettings.memory.categories = [...categoryIds];
-  gamesSettings.fifteen.categories = [...categoryIds];
+  gamesSettings.memory.categoryIds = [...categoryIds];
+  gamesSettings.fifteen.categoryIds = [...categoryIds];
 
   // 8. Собираем профиль
   return {

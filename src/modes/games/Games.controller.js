@@ -66,7 +66,7 @@ function openGameSettings(gameId, profile, container) {
   openSettings({
     profile,
     settingsKey: gameId,
-    settingsType: 'games',
+    settingsType: 'gamesSettings',
     openSettingsFn: config.openSettingsFn,
     renderMenuFn: renderGames,
     container,
