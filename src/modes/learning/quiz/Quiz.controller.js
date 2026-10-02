@@ -19,6 +19,7 @@ export function startQuiz(container, profile, settings, onBack, savedState) {
         feedback,
         isCorrect,
         userAnswer,
+        mode: settings.mode || 'image_to_word',
       });
     },
     handleAnswer: (answer, question) => {

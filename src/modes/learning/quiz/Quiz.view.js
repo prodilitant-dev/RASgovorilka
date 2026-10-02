@@ -12,43 +12,77 @@ export function renderQuizQuestion(container, {
   feedback = null,
   isCorrect = false,
   userAnswer = null,
+  mode = 'image_to_word',
 }) {
-  logger.debug(`🔄 Rendering Quiz Question ${current}/${total}`);
+  logger.debug(`🔄 Rendering Quiz Question ${current}/${total} (mode: ${mode})`);
   clear(container);
 
   const wrap = createElement('div', { className: 'grid-container flex-mode' });
   const card = createElement('div', { className: 'learning-card' });
 
-  // Прогресс
   const progressWrap = createElement('div', { className: 'w-full' });
   renderProgressBar(progressWrap, current, total);
   card.appendChild(progressWrap);
 
-  // Изображение (эмодзи или фото)
   const cardData = question.card || question;
-  const image = createElement('div', { className: 'card-image' });
-  if (cardData.imageId) {
-    image.textContent = '🔄';
-    getImageUrl(cardData.imageId).then(url => {
-      if (url) {
-        image.style.backgroundImage = `url(${url})`;
-        image.textContent = '';
-      } else {
-        image.textContent = cardData.emoji || '❓';
-      }
-    });
-  } else {
-    image.textContent = cardData.emoji || '❓';
-  }
-  card.appendChild(image);
 
-  // Варианты ответов (только текст, без эмодзи)
+  // ---- Верхняя часть ----
+  if (mode === 'word_to_image') {
+    // Сверху — слово
+    const wordEl = createElement('div', { className: 'card-text' }, cardData.text);
+    card.appendChild(wordEl);
+  } else {
+    // Сверху — картинка или эмодзи
+    const image = createElement('div', { className: 'card-image' });
+    if (cardData.imageId) {
+      image.textContent = '🔄';
+      getImageUrl(cardData.imageId).then(url => {
+        if (url) {
+          image.style.backgroundImage = `url(${url})`;
+          image.textContent = '';
+        } else {
+          image.textContent = cardData.emoji || '❓';
+        }
+      });
+    } else {
+      image.textContent = cardData.emoji || '❓';
+    }
+    card.appendChild(image);
+  }
+
+  // ---- Варианты ответа ----
   const optionsGrid = createElement('div', { className: 'options-grid' });
   if (question.options && question.options.length > 0) {
     question.options.forEach(opt => {
-      const btn = createElement('div', {
-        className: `category ${feedback && opt.id === userAnswer ? (isCorrect ? 'active' : 'category-danger') : ''}`,
-      }, opt.text);
+      const isAnswerSelected = feedback && opt.id === userAnswer;
+      const btnClass = `category ${isAnswerSelected ? (isCorrect ? 'active' : 'category-danger') : ''}`;
+
+      let btn;
+      if (mode === 'word_to_image') {
+        btn = createElement('div', { className: btnClass });
+        btn.style.minHeight = '60px';
+        if (opt.imageId) {
+          btn.textContent = '🔄';
+          getImageUrl(opt.imageId).then(url => {
+            if (url) {
+              btn.textContent = '';
+              btn.style.backgroundImage = `url(${url})`;
+              btn.style.backgroundSize = 'contain';
+              btn.style.backgroundPosition = 'center';
+              btn.style.backgroundRepeat = 'no-repeat';
+            } else {
+              btn.textContent = opt.emoji || '❓';
+              btn.style.fontSize = '32px';
+            }
+          });
+        } else {
+          btn.textContent = opt.emoji || '❓';
+          btn.style.fontSize = '32px';
+        }
+      } else {
+        btn = createElement('div', { className: btnClass }, opt.text);
+      }
+
       if (onAnswer) {
         btn.addEventListener('click', () => onAnswer(opt.id));
       } else {
@@ -63,7 +97,6 @@ export function renderQuizQuestion(container, {
   }
   card.appendChild(optionsGrid);
 
-  // Обратная связь (если есть)
   if (feedback) {
     const fb = createElement('div', {
       className: `feedback ${isCorrect ? 'correct' : 'wrong'}`,

@@ -37,9 +37,7 @@ export function renderMathGame(container, {
     className: `math-part math-drop-zone ${feedback ? 'filled' : ''} ${feedback && isCorrect ? 'correct' : feedback && !isCorrect ? 'wrong' : ''}`,
   });
 
-  if (feedback) {
-    resultZone.textContent = userAnswer !== undefined ? userAnswer : '?';
-  }
+  resultZone.textContent = (feedback && userAnswer !== undefined) ? userAnswer : '?';
 
   equation.appendChild(a);
   equation.appendChild(op);
