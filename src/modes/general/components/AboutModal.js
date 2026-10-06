@@ -54,6 +54,9 @@ export function openAboutModal() {
           <span style="opacity: 0.7;">Автор:</span> <strong>Виталий (ProdilItant)</strong>
         </div>
         <div style="margin-bottom: 6px;">
+          📢 <a href="https://t.me/RASgovorilka" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Канал проекта — @RASgovorilka</a>
+        </div>
+        <div style="margin-bottom: 6px;">
           📧 <a href="mailto:prodilitant@gmail.com" style="color: var(--primary); text-decoration: none;">prodilitant@gmail.com</a>
         </div>
         <div style="margin-bottom: 6px;">
@@ -63,7 +66,6 @@ export function openAboutModal() {
           🐙 <a href="https://github.com/prodilitant-dev/RASgovorilka" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">github.com/prodilitant-dev/RASgovorilka</a>
         </div>
       </div>
-    </div>
   `;
 
   const modal = new Modal({
