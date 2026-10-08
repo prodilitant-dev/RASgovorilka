@@ -3,6 +3,7 @@ import { getState, setState } from '@state/store';
 import { logger } from '@utils/logger';
 import { toast } from '@utils/toast';
 import { speak, stopSpeech } from '@utils/speech';
+import { showResultsModal } from './ResultsModal';
 
 /**
  * Универсальный контроллер для активностей (обучение и игры)
@@ -62,7 +63,8 @@ export function startActivity({
   } else {
     items = generateData(profile, settings);
     if (!items || items.length === 0) {
-      container.innerHTML = '<div style="padding:20px;text-align:center;">Нет данных для активности</div>';
+      container.innerHTML =
+        '<div style="padding:20px;text-align:center;">Нет данных для активности</div>';
       logger.warn('No items generated');
       return;
     }
@@ -92,7 +94,11 @@ export function startActivity({
 
   async function speakFeedback(message) {
     const state = getState();
-    const voiceSettings = state.voiceSettings || { rate: 1, pitch: 1, voiceURI: '' };
+    const voiceSettings = state.voiceSettings || {
+      rate: 1,
+      pitch: 1,
+      voiceURI: '',
+    };
     await speak(message, voiceSettings.rate, voiceSettings.pitch, voiceSettings.voiceURI);
   }
 
@@ -140,7 +146,16 @@ export function startActivity({
 
     // Показываем обратную связь (рендерим с заблокированными кнопками)
     // Передаём null вместо onAnswer, чтобы заблокировать ввод
-    renderItem(container, item, currentIndex + 1, items.length, null, feedback, isCorrect, detail.userAnswer);
+    renderItem(
+      container,
+      item,
+      currentIndex + 1,
+      items.length,
+      null,
+      feedback,
+      isCorrect,
+      detail.userAnswer
+    );
 
     // Озвучиваем обратную связь
     await speakFeedback(feedback);
@@ -188,34 +203,30 @@ export function startActivity({
       });
     } else {
       // Иначе используем стандартную модалку результатов
-      // Импортируем динамически, чтобы избежать циклических зависимостей
-      import('./ResultsModal').then(({ showResultsModal }) => {
-        showResultsModal({
-          correct: stats.correct,
-          wrong: stats.wrong,
-          total: stats.total,
-          details: stats.details,
-          onRetry: () => {
-            clearState();
-            startActivity({
-              container,
-              profile,
-              settings,
-              activityType,
-              generateData,
-              renderItem,
-              handleAnswer,
-              renderResults,
-              savedState: null,
-              onBack,
-            });
-          },
-          onBack: () => {
-            clearState();
-            if (onBack) onBack();
-          },
-          // Для игр можно передать resultMessage, но это должно быть определено в renderResults
-        });
+      showResultsModal({
+        correct: stats.correct,
+        wrong: stats.wrong,
+        total: stats.total,
+        details: stats.details,
+        onRetry: () => {
+          clearState();
+          startActivity({
+            container,
+            profile,
+            settings,
+            activityType,
+            generateData,
+            renderItem,
+            handleAnswer,
+            renderResults,
+            savedState: null,
+            onBack,
+          });
+        },
+        onBack: () => {
+          clearState();
+          if (onBack) onBack();
+        },
       });
     }
   }

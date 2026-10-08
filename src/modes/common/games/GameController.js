@@ -60,7 +60,8 @@ export function startGame({
   // --- Инициализация состояния ---
   let state = savedState || generateData(profile, settings);
   if (!state) {
-    container.innerHTML = '<div style="padding:20px;text-align:center;">Не удалось инициализировать игру</div>';
+    container.innerHTML =
+      '<div style="padding:20px;text-align:center;">Не удалось инициализировать игру</div>';
     logger.error(`Failed to generate data for ${gameType}`);
     return;
   }
@@ -150,36 +151,34 @@ export function startGame({
       });
     } else {
       // Используем стандартную модалку результатов
-      import('@modes/common/activities/ResultsModal').then(({ showResultsModal }) => {
-        showResultsModal({
-          correct: 0, // для игр не используется
-          wrong: 0,
-          total: stats.moves,
-          details,
-          onRetry: () => {
-            clearState();
-            startGame({
-              container,
-              profile,
-              settings,
-              gameType,
-              generateData,
-              renderGame,
-              handleAction,
-              checkWin,
-              renderResults,
-              savedState: null,
-              onBack,
-              onGameOver,
-            });
-          },
-          onBack: () => {
-            clearState();
-            if (onBack) onBack();
-          },
-          resultMessage: resultMessage || `Игра завершена за ${stats.moves} ходов! 🎉`,
-          showDetails: false, // для игр детали обычно не показываем
-        });
+      showResultsModal({
+        correct: 0, // для игр не используется
+        wrong: 0,
+        total: stats.moves,
+        details,
+        onRetry: () => {
+          clearState();
+          startGame({
+            container,
+            profile,
+            settings,
+            gameType,
+            generateData,
+            renderGame,
+            handleAction,
+            checkWin,
+            renderResults,
+            savedState: null,
+            onBack,
+            onGameOver,
+          });
+        },
+        onBack: () => {
+          clearState();
+          if (onBack) onBack();
+        },
+        resultMessage: resultMessage || `Игра завершена за ${stats.moves} ходов! 🎉`,
+        showDetails: false, // для игр детали обычно не показываем
       });
     }
   }

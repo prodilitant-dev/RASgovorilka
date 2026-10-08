@@ -4,6 +4,7 @@ import { createElement, clear } from '@utils/dom';
 import { ModeOrderList } from '@components/common/Settings/ModeOrderList';
 import { getState, setState } from '@state/store';
 import { savePersistentState } from '@state/actions';
+import { saveProfile } from '@storage/appStorage';
 import { MODES } from '@config/modes';
 import { toast } from '@utils/toast';
 import { logger } from '@utils/logger';
@@ -94,10 +95,10 @@ export function openModeManager(onClose) {
           setState({ modeOrder: newModeOrder });
           savePersistentState();
           toast('Порядок режимов обновлён');
-          updateMainModeBar(); // обновляем панель
+          updateMainModeBar();
           renderModeList();
         },
-        onToggleVisibility: (id, visible) => {
+        onToggleVisibility: async (id, visible) => {
           logger.debug(`🔁 Toggle: id="${id}", visible=${visible}`);
           const currentState = getState();
           const oldHidden = currentState.hiddenModes || [];
@@ -119,19 +120,21 @@ export function openModeManager(onClose) {
           setState({ hiddenModes: newHidden });
 
           // Сохраняем в профиль
-          const profile = currentState.profiles.find(p => p.id === currentState.currentProfileId);
+          const profile = currentState.profiles.find(
+            (p) => p.id === currentState.currentProfileId
+          );
           if (profile) {
             profile.hiddenModes = newHidden;
-            import('@storage/appStorage').then(({ saveProfile }) => {
-              saveProfile(profile);
-              logger.debug(`✅ Profile updated: hiddenModes = ${newHidden.join(', ')}`);
-            });
+            await saveProfile(profile);
+            logger.debug(
+              `✅ Profile updated: hiddenModes = ${newHidden.join(', ')}`
+            );
           }
 
-          savePersistentState();
+          await savePersistentState();
           toast('Видимость режима обновлена');
-          updateMainModeBar(); // обновляем панель
-          renderModeList(); // перерисовываем список внутри модалки
+          updateMainModeBar();
+          renderModeList();
         },
       });
 
