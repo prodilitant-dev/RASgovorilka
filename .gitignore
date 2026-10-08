@@ -4,6 +4,7 @@ https://github.com/prodilitant-dev/RASgovorilka.RAS.json
 .1RAS.json
 *.RAS.zip
 RAS.json
+import_collect_bot_files.py
 
 # Python
 __pycache__/
