@@ -15,16 +15,15 @@ import { DEFAULT_LEARNING_SETTINGS, DEFAULT_GAMES_SETTINGS } from './defaultSett
  * @param {string} icon - эмодзи иконки
  * @returns {Object} объект профиля
  */
-export function createDefaultProfile(name = 'Мой профиль', icon = '🧑') {
-  // 1. Создаём категории с новыми id
-  const categories = CATEGORIES.map(cat => ({ ...cat }));
+export function createDefaultProfile(name = 'дом', icon = '🏠') {
+  // 1. Создаём категории
+  const categories = CATEGORIES.map((cat) => ({ ...cat }));
 
   // 2. Создаём карточки для каждой категории
   const cards = {};
-  categories.forEach(cat => {
+  categories.forEach((cat) => {
     const rawCards = CARDS_BY_CATEGORY[cat.id] || [];
-    // Если категория не найдена в CARDS_BY_CATEGORY, используем пустой массив
-    cards[cat.id] = rawCards.map(raw => {
+    cards[cat.id] = rawCards.map((raw) => {
       const card = {
         id: uid(),
         text: raw.text,
@@ -32,11 +31,16 @@ export function createDefaultProfile(name = 'Мой профиль', icon = '�
         wordType: raw.wordType || cat.wordType,
         animate: raw.animate || false,
         imageId: null,
+        imagePath: raw.imagePath || null, // ← стоковая WebP-картинка
         forms: null,
         formsEdited: false,
       };
-      // Если слово является существительным или прилагательным, автоопределение форм
-      if (card.wordType === 'noun' || card.wordType === 'pronoun' || card.wordType === 'adjective') {
+      // Автосклонение только для склоняемых частей речи
+      if (
+        card.wordType === 'noun' ||
+        card.wordType === 'pronoun' ||
+        card.wordType === 'adjective'
+      ) {
         autoDetectCard(card);
       }
       return card;
@@ -44,7 +48,7 @@ export function createDefaultProfile(name = 'Мой профиль', icon = '�
   });
 
   // 3. Быстрые кнопки
-  const quickButtons = QUICK_BUTTONS.map(btn => ({
+  const quickButtons = QUICK_BUTTONS.map((btn) => ({
     ...btn,
     id: uid(),
     imageId: null,
@@ -52,7 +56,7 @@ export function createDefaultProfile(name = 'Мой профиль', icon = '�
   }));
 
   // 4. Кнопки Да/Нет
-  const yesnoButtons = YESNO_BUTTONS.map(btn => ({
+  const yesnoButtons = YESNO_BUTTONS.map((btn) => ({
     ...btn,
     id: uid(),
     imageId: null,
@@ -60,21 +64,20 @@ export function createDefaultProfile(name = 'Мой профиль', icon = '�
   }));
 
   // 5. Шаблоны расписания
-  const scheduleTemplates = SCHEDULE_TEMPLATES.map(template => ({
+  const scheduleTemplates = SCHEDULE_TEMPLATES.map((template) => ({
     ...template,
     id: uid(),
-    events: template.events.map(event => ({
+    events: template.events.map((event) => ({
       ...event,
       id: uid(),
       imageId: null,
     })),
   }));
 
-  // 6. Привязка дней: заменяем имена шаблонов на реальные id
+  // 6. Привязка дней
   const scheduleDayMapping = {};
-  // Находим id для 'wd' (будни) и 'we' (выходные)
-  const weekdayTemplate = scheduleTemplates.find(t => t.name === 'Будний день');
-  const weekendTemplate = scheduleTemplates.find(t => t.name === 'Выходной день');
+  const weekdayTemplate = scheduleTemplates.find((t) => t.name === 'Будний день');
+  const weekendTemplate = scheduleTemplates.find((t) => t.name === 'Выходной день');
   if (weekdayTemplate && weekendTemplate) {
     for (const day in SCHEDULE_DAY_MAPPING) {
       const templateName = SCHEDULE_DAY_MAPPING[day];
@@ -86,10 +89,9 @@ export function createDefaultProfile(name = 'Мой профиль', icon = '�
     }
   }
 
-  // 7. Настройки по умолчанию (копируем, чтобы не мутировать)
+  // 7. Настройки по умолчанию
   const learningSettings = JSON.parse(JSON.stringify(DEFAULT_LEARNING_SETTINGS));
-  // Заполняем категории в настройках (все id категорий)
-  const categoryIds = categories.map(c => c.id);
+  const categoryIds = categories.map((c) => c.id);
   learningSettings.quiz.categoryIds = [...categoryIds];
   learningSettings.guess.categoryIds = [...categoryIds];
   learningSettings.sorting.categoryIds = [...categoryIds];

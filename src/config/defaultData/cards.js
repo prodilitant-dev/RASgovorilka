@@ -1,160 +1,58 @@
-// src/config/defaultData/cards.js
-
 export const CARDS_BY_CATEGORY = {
-  // Потребности (глаголы)
+  // ----- Потребности -----
   needs: [
-    { text: 'Пить', emoji: '🚰', wordType: 'verb' },
-    { text: 'Есть', emoji: '🍽️', wordType: 'verb' },
-    { text: 'Спать', emoji: '😴', wordType: 'verb' },
-    { text: 'Гулять', emoji: '🚶', wordType: 'verb' },
-    { text: 'Играть', emoji: '🎮', wordType: 'verb' },
-    { text: 'Туалет', emoji: '🚽', wordType: 'verb' },
-    { text: 'Помощь', emoji: '🆘', wordType: 'verb' },
-    { text: 'Отдыхать', emoji: '🛋️', wordType: 'verb' },
-    { text: 'Кушать', emoji: '🍜', wordType: 'verb' },
-    { text: 'Мыться', emoji: '🛁', wordType: 'verb' },
+    { text: 'Пить',   emoji: '🚰', wordType: 'other', imagePath: 'cards/drink.webp' },
+    { text: 'Есть',   emoji: '🍽️', wordType: 'other', imagePath: 'cards/eat.webp' },
+    { text: 'Спать',  emoji: '😴', wordType: 'other', imagePath: 'cards/sleep.webp' },
+    { text: 'Туалет', emoji: '🚽', wordType: 'other', imagePath: 'cards/toilet.webp' },
+    { text: 'Помощь', emoji: '🆘', wordType: 'other', imagePath: 'cards/help.webp' },
+    { text: 'Больно', emoji: '🤕', wordType: 'other', imagePath: 'cards/pain.webp' },
+    { text: 'Устал',  emoji: '😩', wordType: 'other', imagePath: 'cards/tired.webp' },
+    { text: 'Обнимашки',  emoji: '🤗', wordType: 'other', imagePath: 'cards/hug.webp' },
+    { text: 'Играть',  emoji: '🎮', wordType: 'other', imagePath: 'cards/game.webp' },
+
   ],
-  // Чувства (существительные)
-  feelings: [
-    { text: 'Радость', emoji: '😊', wordType: 'noun' },
-    { text: 'Грусть', emoji: '😢', wordType: 'noun' },
-    { text: 'Злость', emoji: '😡', wordType: 'noun' },
-    { text: 'Страх', emoji: '😨', wordType: 'noun' },
-    { text: 'Усталость', emoji: '😩', wordType: 'noun' },
-    { text: 'Больно', emoji: '🤕', wordType: 'noun' },
-    { text: 'Спокойствие', emoji: '😌', wordType: 'noun' },
-    { text: 'Весело', emoji: '😄', wordType: 'noun' },
-    { text: 'Скучно', emoji: '😑', wordType: 'noun' },
-    { text: 'Интересно', emoji: '🤔', wordType: 'noun' },
+
+  // ----- Эмоции -----
+  emotions: [
+    { text: 'Радость',  emoji: '😊', wordType: 'other', imagePath: 'cards/joy.webp' },
+    { text: 'Грусть',   emoji: '😢', wordType: 'other', imagePath: 'cards/sadness.webp' },
+    { text: 'Злость',   emoji: '😡', wordType: 'other', imagePath: 'cards/anger.webp' },
+    { text: 'Страх',    emoji: '😨', wordType: 'other', imagePath: 'cards/fear.webp' },
+    { text: 'Спокойно', emoji: '😌', wordType: 'other', imagePath: 'cards/calm.webp' },
+    { text: 'Скучно',   emoji: '😐', wordType: 'other', imagePath: 'cards/bored.webp' },
   ],
-  // Действия (глаголы)
-  actions: [
-    { text: 'Идти', emoji: '🚶', wordType: 'verb' },
-    { text: 'Сидеть', emoji: '🪑', wordType: 'verb' },
-    { text: 'Стоять', emoji: '🧍', wordType: 'verb' },
-    { text: 'Бежать', emoji: '🏃', wordType: 'verb' },
-    { text: 'Прыгать', emoji: '🤸', wordType: 'verb' },
-    { text: 'Рисовать', emoji: '🎨', wordType: 'verb' },
-    { text: 'Смотреть', emoji: '👀', wordType: 'verb' },
-    { text: 'Слушать', emoji: '👂', wordType: 'verb' },
-    { text: 'Танцевать', emoji: '💃', wordType: 'verb' },
-    { text: 'Петь', emoji: '🎤', wordType: 'verb' },
+
+  // ----- Просьбы -----
+  requests: [
+    { text: 'Дай',     emoji: '🤲', wordType: 'other', imagePath: 'cards/give.webp' },
+    { text: 'Помоги',  emoji: '🆘', wordType: 'other', imagePath: 'cards/help-request.webp' },
+    { text: 'Покажи',  emoji: '👀', wordType: 'other', imagePath: 'cards/show.webp' },
   ],
-  // Еда (существительные)
+
+  // ----- Еда (существительные) -----
   food: [
-    { text: 'Вода', emoji: '💧', wordType: 'noun' },
-    { text: 'Молоко', emoji: '🥛', wordType: 'noun' },
-    { text: 'Хлеб', emoji: '🍞', wordType: 'noun' },
-    { text: 'Яблоко', emoji: '🍎', wordType: 'noun' },
-    { text: 'Суп', emoji: '🍲', wordType: 'noun' },
-    { text: 'Каша', emoji: '🥣', wordType: 'noun' },
-    { text: 'Печенье', emoji: '🍪', wordType: 'noun' },
-    { text: 'Сок', emoji: '🧃', wordType: 'noun' },
-    { text: 'Банан', emoji: '🍌', wordType: 'noun' },
-    { text: 'Огурец', emoji: '🥒', wordType: 'noun' },
+    { text: 'Хлеб',     emoji: '🍞', wordType: 'noun', imagePath: 'cards/bread.webp' },
+    { text: 'Яблоко',   emoji: '🍎', wordType: 'noun', imagePath: 'cards/apple.webp' },
+    { text: 'Банан',    emoji: '🍌', wordType: 'noun', imagePath: 'cards/banana.webp' },
+    { text: 'Суп',      emoji: '🍲', wordType: 'noun', imagePath: 'cards/soup.webp' },
+    { text: 'Каша',     emoji: '🥣', wordType: 'noun', imagePath: 'cards/porridge.webp' },
+    { text: 'Печенье',  emoji: '🍪', wordType: 'noun', imagePath: 'cards/cookie.webp' },
+    { text: 'Сыр',      emoji: '🧀', wordType: 'noun', imagePath: 'cards/cheese.webp' },
   ],
-  // Игрушки (существительные)
-  play: [
-    { text: 'Мяч', emoji: '⚽', wordType: 'noun' },
-    { text: 'Книжка', emoji: '📖', wordType: 'noun' },
-    { text: 'Машинка', emoji: '🚗', wordType: 'noun' },
-    { text: 'Музыка', emoji: '🎵', wordType: 'noun' },
-    { text: 'Пазлы', emoji: '🧩', wordType: 'noun' },
-    { text: 'Мягкая игрушка', emoji: '🧸', wordType: 'noun' },
-    { text: 'Конструктор', emoji: '🔧', wordType: 'noun' },
-    { text: 'Рисование', emoji: '🎨', wordType: 'noun' },
-    { text: 'Кубики', emoji: '🧱', wordType: 'noun' },
-    { text: 'Качели', emoji: '🪢', wordType: 'noun' },
+
+  // ----- Напитки (существительные) -----
+  drinks: [
+    { text: 'Вода',   emoji: '💧', wordType: 'noun', imagePath: 'cards/water.webp' },
+    { text: 'Молоко', emoji: '🥛', wordType: 'noun', imagePath: 'cards/milk.webp' },
+    { text: 'Сок',    emoji: '🧃', wordType: 'noun', imagePath: 'cards/juice.webp' },
+    { text: 'Чай',    emoji: '🍵', wordType: 'noun', imagePath: 'cards/tea.webp' },
   ],
-  // Одежда (существительные)
-  clothes: [
-    { text: 'Кепка', emoji: '🧢', wordType: 'noun' },
-    { text: 'Куртка', emoji: '🧥', wordType: 'noun' },
-    { text: 'Штаны', emoji: '👖', wordType: 'noun' },
-    { text: 'Футболка', emoji: '👕', wordType: 'noun' },
-    { text: 'Носки', emoji: '🧦', wordType: 'noun' },
-    { text: 'Обувь', emoji: '👟', wordType: 'noun' },
-    { text: 'Шарф', emoji: '🧣', wordType: 'noun' },
-    { text: 'Варежки', emoji: '🧤', wordType: 'noun' },
-  ],
-  // Транспорт (существительные)
-  transport: [
-    { text: 'Машина', emoji: '🚗', wordType: 'noun' },
-    { text: 'Автобус', emoji: '🚌', wordType: 'noun' },
-    { text: 'Поезд', emoji: '🚆', wordType: 'noun' },
-    { text: 'Самолёт', emoji: '✈️', wordType: 'noun' },
-    { text: 'Корабль', emoji: '🚢', wordType: 'noun' },
-    { text: 'Велосипед', emoji: '🚲', wordType: 'noun' },
-    { text: 'Мотоцикл', emoji: '🏍️', wordType: 'noun' },
-  ],
-  // Животные (существительные, одушевлённые)
-  animals: [
-    { text: 'Кошка', emoji: '🐱', wordType: 'noun', animate: true },
-    { text: 'Собака', emoji: '🐶', wordType: 'noun', animate: true },
-    { text: 'Кролик', emoji: '🐰', wordType: 'noun', animate: true },
-    { text: 'Попугай', emoji: '🦜', wordType: 'noun', animate: true },
-    { text: 'Рыбка', emoji: '🐟', wordType: 'noun', animate: true },
-    { text: 'Хомяк', emoji: '🐹', wordType: 'noun', animate: true },
-    { text: 'Корова', emoji: '🐄', wordType: 'noun', animate: true },
-    { text: 'Лошадь', emoji: '🐴', wordType: 'noun', animate: true },
-    { text: 'Свинья', emoji: '🐷', wordType: 'noun', animate: true },
-    { text: 'Обезьяна', emoji: '🐒', wordType: 'noun', animate: true },
-  ],
-  // Цвета (прилагательные)
-  colors: [
-    { text: 'Красный', emoji: '🔴', wordType: 'adjective' },
-    { text: 'Синий', emoji: '🔵', wordType: 'adjective' },
-    { text: 'Жёлтый', emoji: '🟡', wordType: 'adjective' },
-    { text: 'Зелёный', emoji: '🟢', wordType: 'adjective' },
-    { text: 'Оранжевый', emoji: '🟠', wordType: 'adjective' },
-    { text: 'Фиолетовый', emoji: '🟣', wordType: 'adjective' },
-    { text: 'Белый', emoji: '⚪', wordType: 'adjective' },
-    { text: 'Чёрный', emoji: '⚫', wordType: 'adjective' },
-    { text: 'Коричневый', emoji: '🟤', wordType: 'adjective' },
-  ],
-  // Формы (существительные)
-  shapes: [
-    { text: 'Круг', emoji: '⭕', wordType: 'noun' },
-    { text: 'Квадрат', emoji: '🟨', wordType: 'noun' },
-    { text: 'Треугольник', emoji: '🔺', wordType: 'noun' },
-    { text: 'Прямоугольник', emoji: '▬', wordType: 'noun' },
-    { text: 'Овал', emoji: '⚪', wordType: 'noun' },
-    { text: 'Звезда', emoji: '⭐', wordType: 'noun' },
-    { text: 'Сердце', emoji: '❤️', wordType: 'noun' },
-  ],
-  // Числа (будут обрабатываться как числительные)
-  numbers: [
-    { text: '1', emoji: '1', wordType: 'other' },
-    { text: '2', emoji: '2', wordType: 'other' },
-    { text: '3', emoji: '3', wordType: 'other' },
-    { text: '4', emoji: '4', wordType: 'other' },
-    { text: '5', emoji: '5', wordType: 'other' },
-    { text: '6', emoji: '6', wordType: 'other' },
-    { text: '7', emoji: '7', wordType: 'other' },
-    { text: '8', emoji: '8', wordType: 'other' },
-    { text: '9', emoji: '9', wordType: 'other' },
-    { text: '10', emoji: '10', wordType: 'other' },
-  ],
-  // Семья (одушевлённые существительные)
-  family: [
-    { text: 'Мама', emoji: '👩', wordType: 'noun', animate: true },
-    { text: 'Папа', emoji: '👨', wordType: 'noun', animate: true },
-    { text: 'Бабушка', emoji: '👵', wordType: 'noun', animate: true },
-    { text: 'Дедушка', emoji: '👴', wordType: 'noun', animate: true },
-    { text: 'Сестра', emoji: '👧', wordType: 'noun', animate: true },
-    { text: 'Брат', emoji: '👦', wordType: 'noun', animate: true },
-    { text: 'Тётя', emoji: '👩', wordType: 'noun', animate: true },
-    { text: 'Дядя', emoji: '👨', wordType: 'noun', animate: true },
-  ],
-  // Места (неодушевлённые существительные)
-  places: [
-    { text: 'Дом', emoji: '🏠', wordType: 'noun' },
-    { text: 'Садик', emoji: '🏫', wordType: 'noun' },
-    { text: 'Школа', emoji: '📚', wordType: 'noun' },
-    { text: 'Магазин', emoji: '🛒', wordType: 'noun' },
-    { text: 'Парк', emoji: '🌳', wordType: 'noun' },
-    { text: 'Больница', emoji: '🏥', wordType: 'noun' },
-    { text: 'Площадка', emoji: '🎠', wordType: 'noun' },
-    { text: 'Гости', emoji: '🏡', wordType: 'noun' },
+
+  // ----- Игры -----
+  games: [
+    { text: 'Конструктор',emoji: '🧩', wordType: 'other', imagePath: 'cards/lego.webp' },
+    { text: 'Кубики',     emoji: '🎲', wordType: 'other', imagePath: 'cards/blocks.webp' },
+    { text: 'Машинка',    emoji: '🚗', wordType: 'other', imagePath: 'cards/car.webp' },
   ],
 };
