@@ -2,10 +2,16 @@
   "name": "РАСговорилка",
   "short_name": "РАСговорилка",
   "description": "Помощник для коммуникации при РАС",
+  "id": "/RASgovorilka/",
   "start_url": "./",
+  "scope": "/RASgovorilka/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#f0f2f5",
   "theme_color": "#4caf50",
+  "lang": "ru",
+  "dir": "ltr",
+  "categories": ["education", "medical", "utilities"],
   "icons": [
     {
       "src": "icon-192.png",
