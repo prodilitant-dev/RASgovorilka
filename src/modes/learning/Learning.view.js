@@ -23,7 +23,9 @@ export function renderLearning(container, onSelectActivity) {
     const bg = card.querySelector('.card__bg');
     if (bg) {
       bg.textContent = '';
-      bg.appendChild(createIcon(act.icon, { fallback: act.emoji, size: 48 }));
+      bg.appendChild(createIcon(act.icon, { fallback: act.emoji, size: 96
+      
+       }));
     }
     grid.appendChild(card);
   });
