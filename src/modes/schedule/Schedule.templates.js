@@ -7,6 +7,18 @@ import { confirm } from '@utils/dialog';
 import { openEventEditor } from './Schedule.editor';
 import { saveProfile } from '@storage/appStorage';
 
+// Порядок отображения: с понедельника (русская традиция).
+// Поле `dow` — значение Date.getDay(): 0=воскресенье … 6=суббота.
+const DAY_ORDER = [
+  { name: 'Понедельник', dow: 1 },
+  { name: 'Вторник',     dow: 2 },
+  { name: 'Среда',       dow: 3 },
+  { name: 'Четверг',     dow: 4 },
+  { name: 'Пятница',     dow: 5 },
+  { name: 'Суббота',     dow: 6 },
+  { name: 'Воскресенье', dow: 0 },
+];
+
 export function openTemplateManager(profile, onUpdate) {
   const modal = new Modal({
     title: 'Управление шаблонами',
@@ -29,7 +41,6 @@ export function openTemplateManager(profile, onUpdate) {
         });
 
         const actions = createElement('div', { style: 'display:flex; gap:6px;' });
-        // ✏️ Теперь кнопка "Редактировать" тоже открывает редактор событий
         const editBtn = createElement('div', { className: 'category' }, '✏️');
         on(editBtn, 'click', (e) => {
           e.stopPropagation();
@@ -40,7 +51,7 @@ export function openTemplateManager(profile, onUpdate) {
         on(delBtn, 'click', (e) => {
           e.stopPropagation();
           deleteTemplate(profile, tmpl.id, onUpdate, modal);
-        }); 
+        });
         actions.appendChild(editBtn);
         actions.appendChild(delBtn);
         row.appendChild(nameSpan);
@@ -50,10 +61,14 @@ export function openTemplateManager(profile, onUpdate) {
       wrap.appendChild(list);
 
       // Привязка дней
-      const mappingTitle = createElement('h4', { className: 'mt-4', style: 'margin-top:16px;' }, 'Привязка к дням недели');
+      const mappingTitle = createElement(
+        'h4',
+        { className: 'mt-4', style: 'margin-top:16px;' },
+        'Привязка к дням недели'
+      );
       wrap.appendChild(mappingTitle);
-      const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-      days.forEach((dayName, index) => {
+
+      DAY_ORDER.forEach(({ name: dayName, dow }) => {
         const row = createElement('div', {
           className: 'd-flex align-items-center gap-3 py-1',
           style: 'display:flex; align-items:center; gap:12px; padding:4px 0;',
@@ -64,15 +79,15 @@ export function openTemplateManager(profile, onUpdate) {
         select.appendChild(noneOpt);
         profile.scheduleTemplates.forEach(tmpl => {
           const opt = createElement('option', { value: tmpl.id }, tmpl.name);
-          if (profile.scheduleDayMapping?.[index] === tmpl.id) opt.selected = true;
+          if (profile.scheduleDayMapping?.[dow] === tmpl.id) opt.selected = true;
           select.appendChild(opt);
         });
         on(select, 'change', () => {
           const val = select.value;
           if (val) {
-            profile.scheduleDayMapping[index] = val;
+            profile.scheduleDayMapping[dow] = val;
           } else {
-            delete profile.scheduleDayMapping[index];
+            delete profile.scheduleDayMapping[dow];
           }
           saveProfile(profile);
           toast('Привязка сохранена');
@@ -85,8 +100,8 @@ export function openTemplateManager(profile, onUpdate) {
       return wrap;
     },
     buttons: [
-      { label: 'Закрыть', action: () => { modal.close(); if (onUpdate) onUpdate(); } }
-    ]
+      { label: 'Закрыть', action: () => { modal.close(); if (onUpdate) onUpdate(); } },
+    ],
   });
   modal.open();
 }
@@ -161,8 +176,8 @@ function openTemplateEventsEditor(profile, templateId, onUpdate) {
       return wrap;
     },
     buttons: [
-      { label: 'Назад', action: () => { modal.close(); openTemplateManager(profile, onUpdate); } }
-    ]
+      { label: 'Назад', action: () => { modal.close(); openTemplateManager(profile, onUpdate); } },
+    ],
   });
   modal.open();
 }

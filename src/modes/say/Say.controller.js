@@ -5,7 +5,14 @@ import { getState, setState } from '@state/store';
 import { renderCategories } from './Say.categories';
 import { renderCards } from './Say.cards';
 import { renderQuickButtons } from '@modes/common/quickButtons';
-import { renderSentence, addWord, removeWord, clearSentence, speakSentence } from '@modes/common/sentence';
+import {
+  renderSentence,
+  addWord,
+  removeWord,
+  clearSentence,
+  speakSentence,
+} from '@modes/common/sentence';
+import { setupSwipeNavigation } from './Say.swipe';
 import { logger } from '@utils/logger';
 import { saveProfile } from '@storage/appStorage';
 import { toast } from '@utils';
@@ -22,6 +29,12 @@ export function renderSay(container, profile) {
   logger.debug('🔄 Rendering Say mode', { profileId: profile?.id });
   containerRef = container;
   currentProfile = profile;
+
+  // Снимаем предыдущий свайп, если он был
+  if (container._saySwipeCleanup) {
+    container._saySwipeCleanup();
+    container._saySwipeCleanup = null;
+  }
 
   const content = createElement('div', { className: 'say-content' });
 
@@ -42,10 +55,24 @@ export function renderSay(container, profile) {
   renderMainLayout(container, { content, bottomPanel });
 
   const state = getState();
-  const activeCategoryId = state.currentCategoryId || currentProfile.categories[0]?.id || null;
+  const activeCategoryId =
+    state.currentCategoryId || currentProfile.categories[0]?.id || null;
 
-  renderCategories(categoriesContainer, currentProfile, activeCategoryId, onCategorySelect, handleCategoryEdit, handleCategoryReorder);
-  renderCards(cardsContainer, currentProfile, activeCategoryId, onCardClick, handleCardReorder);
+  renderCategories(
+    categoriesContainer,
+    currentProfile,
+    activeCategoryId,
+    onCategorySelect,
+    handleCategoryEdit,
+    handleCategoryReorder
+  );
+  renderCards(
+    cardsContainer,
+    currentProfile,
+    activeCategoryId,
+    onCardClick,
+    handleCardReorder
+  );
 
   renderQuickButtons(quickContainer, currentProfile, {
     onQuickClick: onQuickButtonClick,
@@ -64,40 +91,113 @@ export function renderSay(container, profile) {
     onSpeak: speakSentence,
   });
 
+  // Свайп по сетке карточек → переключение категорий.
+  // В режиме редактирования не подключаем (там drag&drop карточек).
+  if (!state.editingMode) {
+    container._saySwipeCleanup = setupSwipeNavigation(cardsContainer, {
+      onNext: () => navigateCategory(+1),
+      onPrev: () => navigateCategory(-1),
+    });
+  }
+
   if (!state.currentCategoryId && activeCategoryId) {
     setState({ currentCategoryId: activeCategoryId });
   }
 }
 
+/**
+ * Переключает активную категорию на delta позиций
+ * (учитывая только видимые категории — без скрытых).
+ */
+function navigateCategory(delta) {
+  if (!currentProfile) return;
+  const state = getState();
+  const cats = currentProfile.categories.filter((c) => !c.hidden);
+  if (cats.length === 0) return;
+
+  const currentId = state.currentCategoryId || cats[0].id;
+  const currentIdx = cats.findIndex((c) => c.id === currentId);
+  if (currentIdx === -1) return;
+
+  const nextIdx = currentIdx + delta;
+  if (nextIdx < 0 || nextIdx >= cats.length) return;
+
+  onCategorySelect(cats[nextIdx].id);
+}
+
 function onCategorySelect(categoryId) {
   setState({ currentCategoryId: categoryId });
-  renderCategories(categoriesContainer, currentProfile, categoryId, onCategorySelect, handleCategoryEdit, handleCategoryReorder);
-  renderCards(cardsContainer, currentProfile, categoryId, onCardClick, handleCardReorder);
+  renderCategories(
+    categoriesContainer,
+    currentProfile,
+    categoryId,
+    onCategorySelect,
+    handleCategoryEdit,
+    handleCategoryReorder
+  );
+  renderCards(
+    cardsContainer,
+    currentProfile,
+    categoryId,
+    onCardClick,
+    handleCardReorder
+  );
+
+  // Прокручиваем активную категорию в центр горизонтальной ленты,
+  // чтобы пользователь видел, куда переключился
+  const el = categoriesContainer.querySelector(
+    `[data-category-id="${categoryId}"]`
+  );
+  if (el && el.scrollIntoView) {
+    el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
 }
 
 function handleCategoryEdit(category) {
   openCategoryEditor(category, (updatedCategory, done) => {
     saveProfile(currentProfile);
     const state = getState();
-    renderCategories(categoriesContainer, currentProfile, state.currentCategoryId, onCategorySelect, handleCategoryEdit, handleCategoryReorder);
-    renderCards(cardsContainer, currentProfile, state.currentCategoryId, onCardClick, handleCardReorder);
+    renderCategories(
+      categoriesContainer,
+      currentProfile,
+      state.currentCategoryId,
+      onCategorySelect,
+      handleCategoryEdit,
+      handleCategoryReorder
+    );
+    renderCards(
+      cardsContainer,
+      currentProfile,
+      state.currentCategoryId,
+      onCardClick,
+      handleCardReorder
+    );
     toast('Категория обновлена');
     done();
   });
 }
 
 function handleCategoryReorder(newOrder) {
-  const sorted = newOrder.map(id => currentProfile.categories.find(c => c.id === id)).filter(Boolean);
+  const sorted = newOrder
+    .map((id) => currentProfile.categories.find((c) => c.id === id))
+    .filter(Boolean);
   currentProfile.categories = sorted;
   saveProfile(currentProfile);
   const state = getState();
-  renderCategories(categoriesContainer, currentProfile, state.currentCategoryId, onCategorySelect, handleCategoryEdit, handleCategoryReorder);
+  renderCategories(
+    categoriesContainer,
+    currentProfile,
+    state.currentCategoryId,
+    onCategorySelect,
+    handleCategoryEdit,
+    handleCategoryReorder
+  );
 }
 
 function onCardClick(cardId, categoryId) {
   const state = getState();
   if (state.editingMode) return;
-  const card = currentProfile.cards[categoryId]?.find(c => c.id === cardId);
+  const card = currentProfile.cards[categoryId]?.find((c) => c.id === cardId);
   if (card) {
     addWord(card.text, card);
     renderSentence(sentenceContainer);
@@ -106,7 +206,7 @@ function onCardClick(cardId, categoryId) {
 
 function handleCardReorder(newOrder, categoryId) {
   const cards = currentProfile.cards[categoryId] || [];
-  const sorted = newOrder.map(id => cards.find(c => c.id === id)).filter(Boolean);
+  const sorted = newOrder.map((id) => cards.find((c) => c.id === id)).filter(Boolean);
   currentProfile.cards[categoryId] = sorted;
   saveProfile(currentProfile);
   renderCards(cardsContainer, currentProfile, categoryId, onCardClick, handleCardReorder);
