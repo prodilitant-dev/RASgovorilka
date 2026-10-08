@@ -30,7 +30,6 @@ export function renderSay(container, profile) {
   containerRef = container;
   currentProfile = profile;
 
-  // Снимаем предыдущий свайп, если он был
   if (container._saySwipeCleanup) {
     container._saySwipeCleanup();
     container._saySwipeCleanup = null;
@@ -64,7 +63,8 @@ export function renderSay(container, profile) {
     activeCategoryId,
     onCategorySelect,
     handleCategoryEdit,
-    handleCategoryReorder
+    handleCategoryReorder,
+    onCategoryCreated
   );
   renderCards(
     cardsContainer,
@@ -91,8 +91,6 @@ export function renderSay(container, profile) {
     onSpeak: speakSentence,
   });
 
-  // Свайп по сетке карточек → переключение категорий.
-  // В режиме редактирования не подключаем (там drag&drop карточек).
   if (!state.editingMode) {
     container._saySwipeCleanup = setupSwipeNavigation(cardsContainer, {
       onNext: () => navigateCategory(+1),
@@ -105,10 +103,6 @@ export function renderSay(container, profile) {
   }
 }
 
-/**
- * Переключает активную категорию на delta позиций
- * (учитывая только видимые категории — без скрытых).
- */
 function navigateCategory(delta) {
   if (!currentProfile) return;
   const state = getState();
@@ -133,7 +127,8 @@ function onCategorySelect(categoryId) {
     categoryId,
     onCategorySelect,
     handleCategoryEdit,
-    handleCategoryReorder
+    handleCategoryReorder,
+    onCategoryCreated
   );
   renderCards(
     cardsContainer,
@@ -143,14 +138,17 @@ function onCategorySelect(categoryId) {
     handleCardReorder
   );
 
-  // Прокручиваем активную категорию в центр горизонтальной ленты,
-  // чтобы пользователь видел, куда переключился
   const el = categoriesContainer.querySelector(
     `[data-category-id="${categoryId}"]`
   );
   if (el && el.scrollIntoView) {
     el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
+}
+
+function onCategoryCreated(newCategoryId) {
+  // После создания — переключаемся на неё и перерисовываем
+  onCategorySelect(newCategoryId);
 }
 
 function handleCategoryEdit(category) {
@@ -163,7 +161,8 @@ function handleCategoryEdit(category) {
       state.currentCategoryId,
       onCategorySelect,
       handleCategoryEdit,
-      handleCategoryReorder
+      handleCategoryReorder,
+      onCategoryCreated
     );
     renderCards(
       cardsContainer,
@@ -190,7 +189,8 @@ function handleCategoryReorder(newOrder) {
     state.currentCategoryId,
     onCategorySelect,
     handleCategoryEdit,
-    handleCategoryReorder
+    handleCategoryReorder,
+    onCategoryCreated
   );
 }
 
@@ -219,6 +219,4 @@ function onQuickButtonClick(btn) {
   renderSentence(sentenceContainer);
 }
 
-function handleQuickReorder() {
-  // Порядок уже сохранён внутри renderQuickButtons
-}
+function handleQuickReorder() {}

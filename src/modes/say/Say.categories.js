@@ -1,16 +1,13 @@
 // src/modes/say/Say.categories.js
 import { createElement, clear } from '@utils/dom';
-import { uid } from '@utils/id';
-import { toast } from '@utils/toast';
-import { saveProfile } from '@storage/appStorage';
-import { getState, setState } from '@state/store';
 import { makeSortable } from '@utils/dragdrop';
+import { openCategoryCreateModal } from './Say.categoryCreate';
+import { getState } from '@state/store';
 import { logger } from '@utils/logger';
 
-export function renderCategories(container, profile, activeId, onSelect, onEdit, onReorder) {
+export function renderCategories(container, profile, activeId, onSelect, onEdit, onReorder, onCreated) {
   logger.debug('🔄 Rendering Categories');
 
-  // Снимаем предыдущий cleanup сортировки
   if (container._categoriesDragCleanup) {
     container._categoriesDragCleanup();
     container._categoriesDragCleanup = null;
@@ -30,20 +27,15 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
     if (cat.hidden && editing) classes.push('category-hidden');
     if (editing) classes.push('edit-mode');
 
-    const el = createElement(
-      'div',
-      {
-        className: classes.join(' '),
-        'data-id': cat.id,
-        'data-category-id': cat.id,
-      }
-    );
+    const el = createElement('div', {
+      className: classes.join(' '),
+      'data-id': cat.id,
+      'data-category-id': cat.id,
+    });
 
-    // Название категории (клик → переключение)
     const nameEl = createElement('span', { className: 'cat-name' }, cat.name);
     el.appendChild(nameEl);
 
-    // Кнопка-карандаш (только в режиме редактирования)
     if (editing && onEdit) {
       const actionsEl = createElement('span', { className: 'cat-actions' });
       const editBtn = createElement(
@@ -65,7 +57,6 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
       el.appendChild(actionsEl);
     }
 
-    // Клик по самой категории — переключение
     el.addEventListener('click', (e) => {
       e.stopPropagation();
       logger.debug(`Category clicked: ${cat.id}`);
@@ -79,25 +70,18 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
   if (editing) {
     const addBtn = createElement('div', { className: 'category category-add' }, '+');
     addBtn.addEventListener('click', () => {
-      const name = prompt('Название новой категории:');
-      if (name && name.trim()) {
-        const newCat = {
-          id: uid(),
-          name: name.trim(),
-          hidden: false,
-          wordType: 'noun',
-        };
-        profile.categories.push(newCat);
-        profile.cards[newCat.id] = [];
-        saveProfile(profile);
-        setState({ currentCategoryId: newCat.id });
-        renderCategories(container, profile, newCat.id, onSelect, onEdit, onReorder);
-      }
+      openCategoryCreateModal(profile, (newCategoryId) => {
+        if (onCreated) {
+          onCreated(newCategoryId);
+        } else {
+          // fallback: просто перерисуем
+          renderCategories(container, profile, newCategoryId, onSelect, onEdit, onReorder, onCreated);
+        }
+      });
     });
     container.appendChild(addBtn);
   }
 
-  // Drag&drop для изменения порядка категорий (через Pointer Events)
   if (editing && onReorder) {
     container._categoriesDragCleanup = makeSortable(container, {
       itemSelector: '.category:not(.category-add)',
