@@ -17,15 +17,28 @@ export function renderPreview(entity, callbacks) {
   function showFallback(box, ent) {
     const emoji = ent.emoji || ent.icon || '';
     const text = ent.text || ent.name || '';
+    const isLetterFallback = !emoji && !!text;
     const fallbackText = emoji || (text ? text.charAt(0).toUpperCase() : '➕');
+
     box.style.backgroundImage = 'none';
     box.style.background = 'var(--bg)';
+
     let textEl = box.querySelector('.ve-preview-text');
     if (!textEl) {
       textEl = createElement('div', { className: 've-preview-text' });
       box.appendChild(textEl);
     }
     textEl.textContent = fallbackText;
+
+    if (isLetterFallback) {
+      textEl.style.color = 'var(--text-muted)';
+      textEl.style.opacity = '0.4';
+      textEl.style.fontSize = '3em';
+    } else {
+      textEl.style.color = '';
+      textEl.style.opacity = '';
+      textEl.style.fontSize = '';
+    }
   }
 
   const applyImageUrl = (url) => {
@@ -45,7 +58,6 @@ export function renderPreview(entity, callbacks) {
       if (url) {
         applyImageUrl(url);
       } else if (entity.imagePath) {
-        // fallback на стоковую
         loadStockImage(entity.imagePath, box, applyImageUrl, () => showFallback(box, entity));
       } else {
         showFallback(box, entity);
@@ -78,8 +90,6 @@ export function renderPreview(entity, callbacks) {
 
   on(box, 'click', () => fileInput.click());
 
-  // Кнопка удаления — только для пользовательской картинки (imageId).
-  // Если пользователь удалит свою — вернётся стоковая (imagePath).
   if (entity.imageId) {
     const removeBtn = createElement('button', { className: 've-preview-remove' }, '✕');
     on(removeBtn, 'click', (e) => {

@@ -35,13 +35,7 @@ export function renderFields(entity, fields, callbacks) {
           const value = e.target.value;
           entity[field.id] = value;
           if (field.onChange) field.onChange(value, entity);
-          // обновляем превью (если имя/текст изменились)
-          const previewText = document.querySelector('.ve-preview-text');
-          if (previewText && !entity.imageId) {
-            const emoji = entity.emoji || entity.icon || '';
-            const text = entity.text || entity.name || '';
-            previewText.textContent = emoji || (text ? text.charAt(0).toUpperCase() : '➕');
-          }
+          updatePreviewText(entity);
         });
         on(inputEl, 'change', (e) => {
           callbacks.onFieldChange(field.id, e.target.value);
@@ -65,7 +59,6 @@ export function renderFields(entity, fields, callbacks) {
         break;
 
       case 'toggle': {
-        // Упрощённый переключатель — полагаемся на стандартное поведение <label>
         const toggleWrapper = createElement('div', {
           className: 'toggle-wrapper',
           style: 'display:flex; justify-content:flex-end; pointer-events:auto;',
@@ -86,7 +79,6 @@ export function renderFields(entity, fields, callbacks) {
         toggleLabel.appendChild(slider);
         toggleWrapper.appendChild(toggleLabel);
 
-        // Обработчик изменения
         const onToggleChange = (e) => {
           const value = e.target.checked;
           entity[field.id] = value;
@@ -94,9 +86,6 @@ export function renderFields(entity, fields, callbacks) {
           callbacks.onFieldChange(field.id, value);
         };
         checkbox.addEventListener('change', onToggleChange);
-
-        // Дополнительно: если клик по области toggle (не по чекбоксу), переключаем через label
-        // <label> уже умеет это делать, поэтому ничего не добавляем
 
         inputEl = toggleWrapper;
         break;
@@ -113,4 +102,32 @@ export function renderFields(entity, fields, callbacks) {
   });
 
   return container;
+}
+
+/**
+ * Обновляет текст в превью редактора при вводе.
+ * Серый полупрозрачный цвет = fallback-заглушка (первая буква текста),
+ * а не настоящее эмодзи.
+ */
+function updatePreviewText(entity) {
+  const previewText = document.querySelector('.ve-preview-text');
+  if (!previewText) return;
+  if (entity.imageId) return;
+
+  const emoji = entity.emoji || entity.icon || '';
+  const text = entity.text || entity.name || '';
+  const isLetterFallback = !emoji && !!text;
+  const fallbackText = emoji || (text ? text.charAt(0).toUpperCase() : '➕');
+
+  previewText.textContent = fallbackText;
+
+  if (isLetterFallback) {
+    previewText.style.color = 'var(--text-muted)';
+    previewText.style.opacity = '0.4';
+    previewText.style.fontSize = '3em';
+  } else {
+    previewText.style.color = '';
+    previewText.style.opacity = '';
+    previewText.style.fontSize = '';
+  }
 }
