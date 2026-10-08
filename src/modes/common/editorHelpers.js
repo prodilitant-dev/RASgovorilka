@@ -38,7 +38,7 @@ export function openSimpleEditor({
         id: 'emoji',
         label: 'Эмодзи',
         type: 'text',
-        placeholder: '😊',
+        // placeholder убран — серый «😊» путал пользователя
         visible: (entity) => !entity.imageId,
       },
     ],

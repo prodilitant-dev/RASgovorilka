@@ -39,7 +39,7 @@ export function openEventEditor(eventData, onSave, onDelete) {
         id: 'icon',
         label: 'Иконка (эмодзи)',
         type: 'text',
-        placeholder: '📌',
+        // placeholder убран — серый «📌» путал пользователя
         visible: (entity) => !entity.imageId,
       },
     ],

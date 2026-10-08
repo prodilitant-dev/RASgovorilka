@@ -1,7 +1,6 @@
 // src/components/Profile/ProfileEditorModal.js
 import { openVerticalEditor } from '@components/common/VerticalEditor';
 import { toast } from '@utils/toast';
-import { confirm } from '@utils/dialog';
 import { uid } from '@utils/id';
 
 export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel }) {
@@ -41,7 +40,7 @@ export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel 
         id: 'icon',
         label: 'Иконка (эмодзи)',
         type: 'text',
-        placeholder: '🧑',
+        // placeholder убран — серый «🧑» путал пользователя
         visible: () => true,
       },
     ],

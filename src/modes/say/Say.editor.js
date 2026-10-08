@@ -75,7 +75,7 @@ export function openCardEditor(cardData, onSave, onDelete) {
         id: 'emoji',
         label: 'Эмодзи',
         type: 'text',
-        placeholder: '😊',
+        // placeholder убран — серый «😊» путал пользователя
         visible: (entity) => !entity.imageId,
       },
     ],
