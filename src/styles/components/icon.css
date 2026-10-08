@@ -1,0 +1,13 @@
+.ui-icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.ui-icon--fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

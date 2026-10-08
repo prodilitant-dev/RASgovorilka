@@ -27,6 +27,8 @@
 @import './modes/learning.css';            /* ✅ Добавить */
 @import './modes/games.css';               /* ✅ Добавить */
 
+@import './components/icon.css';
+
 .main-area {
   flex: 1;
   display: flex;

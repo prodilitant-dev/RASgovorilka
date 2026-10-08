@@ -15,6 +15,7 @@ import {
 } from './General.controller';
 import { logger } from '@utils/logger';
 import { createElement } from '@utils/dom';
+import { createIcon } from '@utils/icon';
 
 export function renderGeneral(container) {
   logger.debug('🔄 Rendering General settings');
@@ -23,10 +24,10 @@ export function renderGeneral(container) {
 
   const content = createElement('div', { className: 'grid-container' });
 
-  // Настройки, которые открывают модалку с тоглом
   const configs = [
     {
       id: 'fullscreen',
+      iconName: 'fullscreen',
       emoji: '🖥️',
       text: 'Полноэкранный режим',
       type: 'click',
@@ -39,6 +40,7 @@ export function renderGeneral(container) {
     },
     {
       id: 'voice',
+      iconName: 'voice',
       emoji: '🔊',
       text: 'Голос',
       type: 'click',
@@ -54,6 +56,7 @@ export function renderGeneral(container) {
     },
     {
       id: 'modes',
+      iconName: 'modes',
       emoji: '📋',
       text: 'Режимы',
       type: 'click',
@@ -63,6 +66,7 @@ export function renderGeneral(container) {
     },
     {
       id: 'data',
+      iconName: 'data',
       emoji: '💾',
       text: 'Данные',
       type: 'click',
@@ -72,6 +76,7 @@ export function renderGeneral(container) {
     },
     {
       id: 'about',
+      iconName: 'about',
       emoji: 'ℹ️',
       text: 'Об авторе',
       type: 'click',
@@ -79,9 +84,9 @@ export function renderGeneral(container) {
         openAboutModal();
       },
     },
-    // Новая карточка: Склонения
     {
       id: 'inflection',
+      iconName: 'auto-inflect',
       emoji: '📖',
       text: 'Автосклонение',
       type: 'click',
@@ -94,7 +99,28 @@ export function renderGeneral(container) {
     },
   ];
 
-  const cards = configs.map(cfg => createSettingsCard(cfg));
+  const cards = configs.map((cfg) => {
+    const card = createSettingsCard({
+      id: cfg.id,
+      emoji: '', // очищаем — поставим иконку вручную
+      text: cfg.text,
+      type: cfg.type,
+      value: cfg.value,
+      isActive: cfg.isActive,
+      onChange: cfg.onChange,
+      onClick: cfg.onClick,
+    });
+
+    // Подменяем содержимое .card__bg на иконку
+    const bg = card.querySelector('.card__bg');
+    if (bg) {
+      bg.textContent = '';
+      bg.appendChild(createIcon(cfg.iconName, { fallback: cfg.emoji, size: 48 }));
+    }
+
+    return card;
+  });
+
   renderElementGrid(content, cards);
 
   renderMainLayout(container, { content, bottomPanel: null });
