@@ -1,47 +1,37 @@
+// src/utils/dialog.js
 import { Modal } from '@components/common/Modal/Modal';
 
+/**
+ * Модалка подтверждения.
+ * Возвращает Promise<boolean>: true — пользователь нажал «Да», false — «Отмена».
+ *
+ * @param {string} message - текст вопроса
+ * @param {string} [title=''] - заголовок модалки
+ * @returns {Promise<boolean>}
+ */
 export function confirm(message, title = '') {
   return new Promise((resolve) => {
     const modal = new Modal({
       title,
       body: `<p>${message}</p>`,
       buttons: [
-        { label: 'Отмена', action: () => { modal.close(); resolve(false); } },
-        { label: 'Да', primary: true, action: () => { modal.close(); resolve(true); } }
-      ]
+        {
+          label: 'Отмена',
+          action: () => {
+            modal.close();
+            resolve(false);
+          },
+        },
+        {
+          label: 'Да',
+          primary: true,
+          action: () => {
+            modal.close();
+            resolve(true);
+          },
+        },
+      ],
     });
     modal.open();
-  });
-}
-
-export function alert(message, title = '') {
-  return new Promise((resolve) => {
-    const modal = new Modal({
-      title,
-      body: `<p>${message}</p>`,
-      buttons: [
-        { label: 'OK', primary: true, action: () => { modal.close(); resolve(); } }
-      ]
-    });
-    modal.open();
-  });
-}
-
-export function prompt(message, defaultValue = '') {
-  return new Promise((resolve) => {
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.value = defaultValue;
-    input.className = 'modal-input'; // можно добавить стиль
-    const modal = new Modal({
-      title: message,
-      body: input,
-      buttons: [
-        { label: 'Отмена', action: () => { modal.close(); resolve(null); } },
-        { label: 'OK', primary: true, action: () => { modal.close(); resolve(input.value); } }
-      ]
-    });
-    modal.open();
-    setTimeout(() => input.focus(), 100);
   });
 }
