@@ -7,10 +7,9 @@ export function createCard({
   text = '',
   emoji = '',
   imageId = null,
-  imagePath = null,   // ← NEW: путь к стоковой картинке в /public/
+  imagePath = null,
   isActive = false,
   isAdd = false,
-  draggable = false,
   className = '',
   children = null,
 }) {
@@ -25,11 +24,11 @@ export function createCard({
       .join(' '),
     'data-id': id,
     'data-log': `card:${id || 'unknown'}`,
+    draggable: 'false', // отключаем HTML5 drag, используем Pointer Events
   });
 
   const bg = createElement('div', { className: 'card__bg' });
 
-  // Универсальный fallback: эмодзи → первая буква → 📄
   function showFallback() {
     bg.style.backgroundImage = 'none';
     if (emoji) {
@@ -47,7 +46,6 @@ export function createCard({
   if (isAdd) {
     bg.textContent = '➕';
   } else if (imageId) {
-    // Пользовательская картинка (IndexedDB)
     bg.textContent = '';
     bg.style.backgroundSize = 'contain';
     bg.style.backgroundPosition = 'center';
@@ -60,13 +58,11 @@ export function createCard({
       }
     });
   } else if (imagePath) {
-    // Стоковая картинка (/public/cards/...)
     const base = import.meta.env.BASE_URL || '/';
     const url = base.endsWith('/')
       ? `${base}${imagePath}`
       : `${base}/${imagePath}`;
 
-    // Проверяем загрузку заранее, чтобы не мигал фон
     const probe = new Image();
     probe.onload = () => {
       bg.textContent = '';
@@ -75,13 +71,9 @@ export function createCard({
       bg.style.backgroundRepeat = 'no-repeat';
       bg.style.backgroundImage = `url(${url})`;
     };
-    probe.onerror = () => {
-      // Файл не найден — fallback
-      showFallback();
-    };
+    probe.onerror = () => showFallback();
     probe.src = url;
   } else {
-    // Ничего не задано — эмодзи или первая буква
     showFallback();
   }
 
@@ -98,10 +90,6 @@ export function createCard({
     } else {
       card.appendChild(children);
     }
-  }
-
-  if (draggable) {
-    card.setAttribute('draggable', 'true');
   }
 
   return card;

@@ -12,7 +12,7 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
   const editing = state.editingMode || false;
   const cards = profile.cards[categoryId] || [];
 
-  const items = cards.map(c => ({ ...c }));
+  const items = cards.map((c) => ({ ...c }));
 
   if (editing) {
     items.push({ id: 'add', text: 'Добавить', emoji: '➕', isAdd: true });
@@ -21,8 +21,6 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
   const grid = renderGrid(container, items, {
     draggable: editing,
     onReorder: editing ? (newOrder) => onReorder(newOrder, categoryId) : null,
-    getDragData: editing ? (id) => JSON.stringify({ type: 'card', cardId: id, sourceCategoryId: categoryId }) : null,
-    dragEffect: editing ? 'copy' : 'move',
   });
 
   function editCard(card) {
@@ -41,7 +39,13 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
     });
   }
 
-  const cleanup = attachGridEvents(grid, {
+  // Снимаем предыдущий cleanup событий (клики)
+  if (container._cardCleanup) {
+    container._cardCleanup();
+    container._cardCleanup = null;
+  }
+
+  container._cardCleanup = attachGridEvents(grid, {
     onClick: (id) => {
       if (id === 'add') {
         const newCard = { id: uid(), text: '', emoji: '', wordType: 'noun', forms: {} };
@@ -58,9 +62,7 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
 
       if (editing) {
         const card = cards.find(c => c.id === id);
-        if (card) {
-          editCard(card);
-        }
+        if (card) editCard(card);
         return;
       }
 
@@ -68,6 +70,4 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
     },
     onLongPress: null,
   });
-
-  container._cardCleanup = cleanup;
 }

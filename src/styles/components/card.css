@@ -35,6 +35,7 @@
   font-size: 48px;
   background-size: contain;
   background-position: center;
+  background-repeat: no-repeat;
 }
 .card__label {
   padding: var(--spacing-xs);
@@ -52,4 +53,39 @@
 .card.done .card__label {
   text-decoration: line-through;
   color: var(--text-muted);
+}
+
+/* === Drag & Drop (Pointer Events) === */
+
+/* В режиме редактирования карточки не должны скроллить страницу при удержании */
+body.editing-mode .card:not(.card--add) {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Оригинал скрыт во время перетаскивания */
+.card.dragging {
+  opacity: 0;
+}
+
+/* Визуальная копия, следующая за пальцем */
+.dragging-ghost {
+  pointer-events: none;
+  background: var(--surface);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transform: scale(1.03);
+  overflow: hidden;
+  opacity: 0.95;
+}
+
+/* Место, куда встанет карточка */
+.sort-placeholder {
+  border: 2px dashed var(--primary);
+  border-radius: var(--radius-sm);
+  background: var(--primary-light);
+  opacity: 0.4;
+  pointer-events: none;
 }
