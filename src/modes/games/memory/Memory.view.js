@@ -1,13 +1,10 @@
 // src/modes/games/memory/Memory.view.js
 import { createElement, clear, on } from '@utils/dom';
-import { getImageUrl } from '@services/imageService';
+import { showCardImage } from '@utils/image/showCardImage';
 import { logger } from '@utils/logger';
 
 /**
  * Рендерит игровое поле Мемори
- * @param {HTMLElement} container - контейнер
- * @param {Object} state - состояние игры
- * @param {Function} onCardClick - (cardId) => void
  */
 export function renderMemoryBoard(container, state, onCardClick) {
   logger.debug(`🔄 Rendering Memory Board, ${state.cards.filter(c => c.isMatched).length / 2} pairs found`);
@@ -36,27 +33,14 @@ export function renderMemoryBoard(container, state, onCardClick) {
     });
 
     if (card.isFlipped || card.isMatched) {
-      if (card.imageId) {
-        cell.textContent = '🔄';
-        getImageUrl(card.imageId).then(url => {
-          if (url) {
-            cell.style.backgroundImage = `url(${url})`;
-            cell.style.backgroundSize = 'cover';
-            cell.style.backgroundPosition = 'center';
-            cell.textContent = '';
-          } else {
-            cell.textContent = card.emoji || '❓';
-          }
-        });
-      } else {
-        cell.textContent = card.emoji || '❓';
-      }
+      showCardImage(cell, card, { cover: true, fontSize: '1.5em' });
     } else {
       cell.textContent = '❓';
       cell.style.backgroundImage = 'none';
+      cell.style.backgroundSize = '';
+      cell.style.backgroundPosition = '';
     }
 
-    // Клик только если карточка не сопоставлена и не открыта
     if (!card.isMatched && !card.isFlipped) {
       on(cell, 'click', () => onCardClick(card.id));
     }

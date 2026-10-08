@@ -5,10 +5,6 @@ import { uid } from '@utils/id';
 
 /**
  * Генерирует пары карточек для игры Мемори.
- * @param {Object} profile - профиль пользователя
- * @param {Array<string>} categoryIds - ID категорий для выбора карточек
- * @param {number} gridSize - размер сетки (4, 6, 8) -> итого gridSize * gridSize / 2 пар
- * @returns {Array} массив объектов { id, pairId, emoji, imageId, text, isFlipped, isMatched }
  */
 export function generateMemoryPairs(profile, categoryIds, gridSize) {
   const allCards = getCardsFromCategories(profile, categoryIds);
@@ -41,6 +37,7 @@ export function generateMemoryPairs(profile, categoryIds, gridSize) {
       pairId: pairId,
       emoji: card.emoji,
       imageId: card.imageId,
+      imagePath: card.imagePath,   // ← NEW
       text: card.text,
       isFlipped: false,
       isMatched: false,
@@ -50,6 +47,7 @@ export function generateMemoryPairs(profile, categoryIds, gridSize) {
       pairId: pairId,
       emoji: card.emoji,
       imageId: card.imageId,
+      imagePath: card.imagePath,   // ← NEW
       text: card.text,
       isFlipped: false,
       isMatched: false,

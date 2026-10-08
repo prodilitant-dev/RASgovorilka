@@ -1,7 +1,7 @@
 // src/modes/learning/guess/Guess.view.js
 import { createElement, clear, on } from '@utils/dom';
 import { renderProgressBar } from '@components/common/ProgressBar';
-import { getImageUrl } from '@services/imageService';
+import { showCardImage } from '@utils/image/showCardImage';
 import { logger } from '@utils/logger';
 
 export function renderGuessQuestion(container, {
@@ -24,25 +24,13 @@ export function renderGuessQuestion(container, {
   renderProgressBar(progressWrap, current, total);
   card.appendChild(progressWrap);
 
-  // Изображение (эмодзи или фото) — берём из question.card
+  // Изображение
   const cardData = question.card || question;
   const image = createElement('div', { className: 'card-image' });
-  if (cardData.imageId) {
-    image.textContent = '🔄';
-    getImageUrl(cardData.imageId).then(url => {
-      if (url) {
-        image.style.backgroundImage = `url(${url})`;
-        image.textContent = '';
-      } else {
-        image.textContent = cardData.emoji || '❓';
-      }
-    });
-  } else {
-    image.textContent = cardData.emoji || '❓';
-  }
+  showCardImage(image, cardData, { fontSize: '3em' });
   card.appendChild(image);
 
-  // Подпись (вопрос) — оставляем "Что это?"
+  // Подпись
   const promptText = createElement('div', { className: 'card-text' }, 'Что это?');
   card.appendChild(promptText);
 

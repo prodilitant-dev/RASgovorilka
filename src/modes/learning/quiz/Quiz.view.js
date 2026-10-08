@@ -1,7 +1,7 @@
 // src/modes/learning/quiz/Quiz.view.js
 import { createElement, clear } from '@utils/dom';
 import { renderProgressBar } from '@components/common/ProgressBar';
-import { getImageUrl } from '@services/imageService';
+import { showCardImage } from '@utils/image/showCardImage';
 import { logger } from '@utils/logger';
 
 export function renderQuizQuestion(container, {
@@ -32,21 +32,9 @@ export function renderQuizQuestion(container, {
     const wordEl = createElement('div', { className: 'card-text' }, cardData.text);
     card.appendChild(wordEl);
   } else {
-    // Сверху — картинка или эмодзи
+    // Сверху — картинка
     const image = createElement('div', { className: 'card-image' });
-    if (cardData.imageId) {
-      image.textContent = '🔄';
-      getImageUrl(cardData.imageId).then(url => {
-        if (url) {
-          image.style.backgroundImage = `url(${url})`;
-          image.textContent = '';
-        } else {
-          image.textContent = cardData.emoji || '❓';
-        }
-      });
-    } else {
-      image.textContent = cardData.emoji || '❓';
-    }
+    showCardImage(image, cardData, { fontSize: '3em' });
     card.appendChild(image);
   }
 
@@ -61,24 +49,7 @@ export function renderQuizQuestion(container, {
       if (mode === 'word_to_image') {
         btn = createElement('div', { className: btnClass });
         btn.style.minHeight = '60px';
-        if (opt.imageId) {
-          btn.textContent = '🔄';
-          getImageUrl(opt.imageId).then(url => {
-            if (url) {
-              btn.textContent = '';
-              btn.style.backgroundImage = `url(${url})`;
-              btn.style.backgroundSize = 'contain';
-              btn.style.backgroundPosition = 'center';
-              btn.style.backgroundRepeat = 'no-repeat';
-            } else {
-              btn.textContent = opt.emoji || '❓';
-              btn.style.fontSize = '32px';
-            }
-          });
-        } else {
-          btn.textContent = opt.emoji || '❓';
-          btn.style.fontSize = '32px';
-        }
+        showCardImage(btn, opt, { fontSize: '32px' });
       } else {
         btn = createElement('div', { className: btnClass }, opt.text);
       }

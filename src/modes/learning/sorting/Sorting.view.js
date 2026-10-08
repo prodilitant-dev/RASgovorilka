@@ -1,7 +1,6 @@
 // src/modes/learning/sorting/Sorting.view.js
 import { createElement, clear } from '@utils/dom';
 import { createCard } from '@components/common/Card/Card';
-import { getImageUrl } from '@services/imageService';
 import { logger } from '@utils/logger';
 
 export function renderSortingGame(container, state, onDrop) {
@@ -11,7 +10,7 @@ export function renderSortingGame(container, state, onDrop) {
   const wrap = createElement('div', { className: 'grid-container flex-mode' });
   const area = createElement('div', { className: 'sorting-area' });
 
-  // --- Верхняя часть: карточки для сортировки (горизонтальный скролл) ---
+  // --- Верхняя часть: карточки для сортировки ---
   const cardsWrap = createElement('div', { className: 'sorting-cards-horizontal' });
 
   if (state.remainingCards.length === 0) {
@@ -26,11 +25,11 @@ export function renderSortingGame(container, state, onDrop) {
         text: card.text,
         emoji: card.emoji,
         imageId: card.imageId,
+        imagePath: card.imagePath,   // ← NEW
         className: 'card--sort',
         draggable: true,
       });
 
-      // Обработчики drag
       cardEl.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('text/plain', JSON.stringify({
           type: 'sorting-card',
@@ -50,7 +49,7 @@ export function renderSortingGame(container, state, onDrop) {
 
   area.appendChild(cardsWrap);
 
-  // --- Нижняя часть: зоны для сортировки ---
+  // --- Нижняя часть: зоны ---
   const zonesWrap = createElement('div', { className: 'sorting-zones' });
   state.zones.forEach(zone => {
     const zoneEl = createElement('div', {
@@ -70,7 +69,6 @@ export function renderSortingGame(container, state, onDrop) {
     });
     zoneEl.appendChild(itemsWrap);
 
-    // Drag & Drop для зон
     zoneEl.addEventListener('dragover', (e) => {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
@@ -102,6 +100,4 @@ export function renderSortingGame(container, state, onDrop) {
   area.appendChild(zonesWrap);
   wrap.appendChild(area);
   container.appendChild(wrap);
-
-  // Если все карточки отсортированы, показываем сообщение (оно уже в cardsWrap)
 }

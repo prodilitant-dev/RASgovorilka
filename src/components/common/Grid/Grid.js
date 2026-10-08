@@ -15,6 +15,7 @@ export function renderGrid(container, items, options = {}) {
       text: item.text,
       emoji: item.emoji,
       imageId: item.imageId,
+      imagePath: item.imagePath,   // ← NEW
       isActive: item.active || false,
       isAdd: item.isAdd || false,
       draggable: options.draggable || false,

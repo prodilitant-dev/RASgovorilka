@@ -1,10 +1,10 @@
-// src/modes/common/quickButtons.js
 import { createElement, clear, on } from '@utils/dom';
 import { makeSortable } from '@utils/dragdrop';
 import { getState } from '@state/store';
 import { uid, toast } from '@utils';
 import { saveProfile } from '@storage/appStorage';
 import { openSimpleEditor } from '@modes/common/editorHelpers';
+import { getImageUrl } from '@services/imageService';
 
 export function renderQuickButtons(container, profile, {
   onQuickClick,
@@ -13,6 +13,7 @@ export function renderQuickButtons(container, profile, {
   const state = getState();
   const editing = state.editingMode || false;
   const buttons = profile.quickButtons || [];
+  const base = import.meta.env.BASE_URL || '/';
 
   clear(container);
   const wrap = createElement('div', { className: 'quick-buttons' });
@@ -22,7 +23,31 @@ export function renderQuickButtons(container, profile, {
       className: 'quick-btn',
       'data-id': btn.id,
       draggable: editing ? 'true' : undefined,
-    }, `${btn.emoji || ''} ${btn.text}`);
+    });
+
+    // Иконка: пользовательская (IndexedDB) → стоковая (WebP) → эмодзи
+    if (btn.imageId) {
+      getImageUrl(btn.imageId).then(url => {
+        if (url) {
+          const img = createElement('img', { src: url, alt: '' });
+          el.insertBefore(img, el.firstChild);
+        } else {
+          prependEmoji(el, btn);
+        }
+      });
+    } else if (btn.imagePath) {
+      const url = base.endsWith('/') ? `${base}${btn.imagePath}` : `${base}/${btn.imagePath}`;
+      const img = createElement('img', { src: url, alt: '' });
+      img.onerror = () => {
+        img.remove();
+        prependEmoji(el, btn);
+      };
+      el.appendChild(img);
+    } else {
+      prependEmoji(el, btn);
+    }
+
+    el.appendChild(document.createTextNode(btn.text || ''));
 
     el.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -57,7 +82,7 @@ export function renderQuickButtons(container, profile, {
     const addBtn = createElement('div', { className: 'quick-btn' }, '➕');
     addBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      const newBtn = { id: uid(), text: '', emoji: '' };
+      const newBtn = { id: uid(), text: '', emoji: '', imagePath: null };
       openSimpleEditor({
         entity: newBtn,
         title: 'Новая быстрая кнопка',
@@ -98,4 +123,10 @@ export function renderQuickButtons(container, profile, {
   }
 
   container.appendChild(wrap);
+}
+
+function prependEmoji(el, btn) {
+  if (btn.emoji) {
+    el.insertBefore(document.createTextNode(`${btn.emoji} `), el.firstChild);
+  }
 }

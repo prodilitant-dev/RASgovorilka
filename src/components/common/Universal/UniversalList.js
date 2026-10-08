@@ -29,8 +29,8 @@ export function renderUniversalList(container, config) {
     return { element: container, cleanup: () => {} };
   }
 
-  const listContainer = createElement('div', { 
-    className: layout === 'grid' ? 'tiles-grid' : 'universal-list' 
+  const listContainer = createElement('div', {
+    className: layout === 'grid' ? 'tiles-grid' : 'universal-list'
   });
 
   items.forEach(item => {
@@ -42,6 +42,8 @@ export function renderUniversalList(container, config) {
         id: item.id,
         text: item.text || '',
         emoji: item.emoji || '',
+        imageId: item.imageId,
+        imagePath: item.imagePath,   // ← NEW
         isActive: item.active || false,
         isAdd: item.isAdd || false,
         draggable: !!onReorder,

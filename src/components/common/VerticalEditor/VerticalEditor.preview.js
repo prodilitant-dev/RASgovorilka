@@ -11,7 +11,7 @@ export function renderPreview(entity, callbacks) {
   const block = createElement('div', { className: 've-preview-block' });
   const box = createElement('div', {
     className: 've-preview-box',
-    'data-has-image': !!entity.imageId,
+    'data-has-image': !!(entity.imageId || entity.imagePath),
   });
 
   function showFallback(box, ent) {
@@ -28,20 +28,32 @@ export function renderPreview(entity, callbacks) {
     textEl.textContent = fallbackText;
   }
 
+  const applyImageUrl = (url) => {
+    box.style.backgroundImage = `url(${url})`;
+    box.style.backgroundSize = 'contain';
+    box.style.backgroundPosition = 'center';
+    box.style.backgroundRepeat = 'no-repeat';
+    const textEl = box.querySelector('.ve-preview-text');
+    if (textEl) textEl.textContent = '';
+  };
+
+  // Приоритет: imageId → imagePath → fallback
   if (entity.imageId) {
     box.classList.add('loading');
     getImageUrl(entity.imageId).then(url => {
       box.classList.remove('loading');
       if (url) {
-        box.style.backgroundImage = `url(${url})`;
-        box.style.backgroundSize = 'cover';
-        box.style.backgroundPosition = 'center';
-        const textEl = box.querySelector('.ve-preview-text');
-        if (textEl) textEl.textContent = '';
+        applyImageUrl(url);
+      } else if (entity.imagePath) {
+        // fallback на стоковую
+        loadStockImage(entity.imagePath, box, applyImageUrl, () => showFallback(box, entity));
       } else {
         showFallback(box, entity);
       }
     });
+  } else if (entity.imagePath) {
+    box.classList.add('loading');
+    loadStockImage(entity.imagePath, box, applyImageUrl, () => showFallback(box, entity));
   } else {
     showFallback(box, entity);
   }
@@ -66,6 +78,8 @@ export function renderPreview(entity, callbacks) {
 
   on(box, 'click', () => fileInput.click());
 
+  // Кнопка удаления — только для пользовательской картинки (imageId).
+  // Если пользователь удалит свою — вернётся стоковая (imagePath).
   if (entity.imageId) {
     const removeBtn = createElement('button', { className: 've-preview-remove' }, '✕');
     on(removeBtn, 'click', (e) => {
@@ -77,4 +91,19 @@ export function renderPreview(entity, callbacks) {
 
   block.appendChild(box);
   return block;
+}
+
+function loadStockImage(imagePath, box, onLoad, onError) {
+  const base = import.meta.env.BASE_URL || '/';
+  const url = base.endsWith('/') ? `${base}${imagePath}` : `${base}/${imagePath}`;
+  const probe = new Image();
+  probe.onload = () => {
+    box.classList.remove('loading');
+    onLoad(url);
+  };
+  probe.onerror = () => {
+    box.classList.remove('loading');
+    onError();
+  };
+  probe.src = url;
 }
