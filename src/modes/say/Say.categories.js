@@ -8,9 +8,10 @@ import { logger } from '@utils/logger';
 export function renderCategories(container, profile, activeId, onSelect, onEdit, onReorder, onCreated) {
   logger.debug('🔄 Rendering Categories');
 
-  if (container._categoriesDragCleanup) {
-    container._categoriesDragCleanup();
-    container._categoriesDragCleanup = null;
+  // Снимаем предыдущий cleanup категорий
+  if (typeof container._categoriesCleanup === 'function') {
+    container._categoriesCleanup();
+    container._categoriesCleanup = null;
   }
 
   clear(container);
@@ -66,7 +67,6 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
     container.appendChild(el);
   });
 
-  // Кнопка «+» — добавить категорию
   if (editing) {
     const addBtn = createElement('div', { className: 'category category-add' }, '+');
     addBtn.addEventListener('click', () => {
@@ -74,7 +74,6 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
         if (onCreated) {
           onCreated(newCategoryId);
         } else {
-          // fallback: просто перерисуем
           renderCategories(container, profile, newCategoryId, onSelect, onEdit, onReorder, onCreated);
         }
       });
@@ -82,13 +81,17 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
     container.appendChild(addBtn);
   }
 
+  // === Drag&drop + cleanup ===
+  let dragCleanup = null;
   if (editing && onReorder) {
-    container._categoriesDragCleanup = makeSortable(container, {
+    dragCleanup = makeSortable(container, {
       itemSelector: '.category:not(.category-add)',
       longPressDelay: 200,
-      onReorder: (ids) => {
-        onReorder(ids);
-      },
+      onReorder: (ids) => onReorder(ids),
     });
   }
+
+  container._categoriesCleanup = () => {
+    if (dragCleanup) dragCleanup();
+  };
 }

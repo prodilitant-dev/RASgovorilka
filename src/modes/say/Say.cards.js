@@ -8,6 +8,12 @@ import { openCardEditor } from './Say.editor';
 import { saveProfile } from '@storage/appStorage';
 
 export function renderCards(container, profile, categoryId, onCardClick, onReorder) {
+  // Снимаем предыдущий cleanup карточек
+  if (typeof container._cardsCleanup === 'function') {
+    container._cardsCleanup();
+    container._cardsCleanup = null;
+  }
+
   const state = getState();
   const editing = state.editingMode || false;
   const cards = profile.cards[categoryId] || [];
@@ -23,34 +29,16 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
     onReorder: editing ? (newOrder) => onReorder(newOrder, categoryId) : null,
   });
 
-  function editCard(card) {
-    openCardEditor(card, (updatedCard, done) => {
-      Object.assign(card, updatedCard);
-      saveProfile(profile);
-      renderCards(container, profile, categoryId, onCardClick, onReorder);
-      toast('Карточка обновлена');
-      done();
-    }, (cardId, close) => {
-      profile.cards[categoryId] = profile.cards[categoryId].filter(c => c.id !== cardId);
-      saveProfile(profile);
-      renderCards(container, profile, categoryId, onCardClick, onReorder);
-      toast('Карточка удалена');
-      close();
-    });
-  }
-
-  // Снимаем предыдущий cleanup событий (клики)
-  if (container._cardCleanup) {
-    container._cardCleanup();
-    container._cardCleanup = null;
-  }
-
-  container._cardCleanup = attachGridEvents(grid, {
+  const eventsCleanup = attachGridEvents(grid, {
     onClick: (id) => {
       if (id === 'add') {
         const newCard = { id: uid(), text: '', emoji: '', wordType: 'noun', forms: {} };
         openCardEditor(newCard, (savedCard, done) => {
-          if (!savedCard.text.trim()) { toast('Введите текст', 'error'); done(); return; }
+          if (!savedCard.text.trim()) {
+            toast('Введите текст', 'error');
+            done();
+            return;
+          }
           profile.cards[categoryId].push(savedCard);
           saveProfile(profile);
           renderCards(container, profile, categoryId, onCardClick, onReorder);
@@ -61,7 +49,7 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
       }
 
       if (editing) {
-        const card = cards.find(c => c.id === id);
+        const card = cards.find((c) => c.id === id);
         if (card) editCard(card);
         return;
       }
@@ -70,4 +58,31 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
     },
     onLongPress: null,
   });
+
+  function editCard(card) {
+    openCardEditor(card, (updatedCard, done) => {
+      Object.assign(card, updatedCard);
+      saveProfile(profile);
+      renderCards(container, profile, categoryId, onCardClick, onReorder);
+      toast('Карточка обновлена');
+      done();
+    }, (cardId, close) => {
+      profile.cards[categoryId] = profile.cards[categoryId].filter((c) => c.id !== cardId);
+      saveProfile(profile);
+      renderCards(container, profile, categoryId, onCardClick, onReorder);
+      toast('Карточка удалена');
+      close();
+    });
+  }
+
+  // Единый cleanup карточек
+  container._cardsCleanup = () => {
+    // grid cleanup — drag&drop от renderGrid
+    if (typeof container._gridCleanup === 'function') {
+      container._gridCleanup();
+      container._gridCleanup = null;
+    }
+    // events cleanup — клики от attachGridEvents
+    eventsCleanup();
+  };
 }

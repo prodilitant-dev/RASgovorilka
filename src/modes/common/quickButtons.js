@@ -1,3 +1,4 @@
+// src/modes/common/quickButtons.js
 import { createElement, clear, on } from '@utils/dom';
 import { makeSortable } from '@utils/dragdrop';
 import { getState } from '@state/store';
@@ -10,6 +11,12 @@ export function renderQuickButtons(container, profile, {
   onQuickClick,
   onReorder,
 }) {
+  // Снимаем предыдущий cleanup
+  if (typeof container._quickCleanup === 'function') {
+    container._quickCleanup();
+    container._quickCleanup = null;
+  }
+
   const state = getState();
   const editing = state.editingMode || false;
   const buttons = profile.quickButtons || [];
@@ -18,16 +25,15 @@ export function renderQuickButtons(container, profile, {
   clear(container);
   const wrap = createElement('div', { className: 'quick-buttons' });
 
-  buttons.forEach(btn => {
+  buttons.forEach((btn) => {
     const el = createElement('div', {
       className: 'quick-btn',
       'data-id': btn.id,
       draggable: editing ? 'true' : undefined,
     });
 
-    // Иконка: пользовательская (IndexedDB) → стоковая (WebP) → эмодзи
     if (btn.imageId) {
-      getImageUrl(btn.imageId).then(url => {
+      getImageUrl(btn.imageId).then((url) => {
         if (url) {
           const img = createElement('img', { src: url, alt: '' });
           el.insertBefore(img, el.firstChild);
@@ -63,7 +69,7 @@ export function renderQuickButtons(container, profile, {
             done();
           },
           onDelete: (id, close) => {
-            profile.quickButtons = profile.quickButtons.filter(b => b.id !== id);
+            profile.quickButtons = profile.quickButtons.filter((b) => b.id !== id);
             saveProfile(profile);
             renderQuickButtons(container, profile, { onQuickClick, onReorder });
             toast('Кнопка удалена');
@@ -77,6 +83,8 @@ export function renderQuickButtons(container, profile, {
 
     wrap.appendChild(el);
   });
+
+  let sortableCleanup = null;
 
   if (editing) {
     const addBtn = createElement('div', { className: 'quick-btn' }, '➕');
@@ -103,26 +111,23 @@ export function renderQuickButtons(container, profile, {
     });
     wrap.appendChild(addBtn);
 
-    const sortableCleanup = makeSortable(wrap, {
+    sortableCleanup = makeSortable(wrap, {
       itemSelector: '.quick-btn:not(:last-child)',
       onReorder: (ids) => {
-        const newOrder = ids.map(id => buttons.find(b => b.id === id)).filter(Boolean);
+        const newOrder = ids.map((id) => buttons.find((b) => b.id === id)).filter(Boolean);
         profile.quickButtons = newOrder;
         saveProfile(profile);
-        if (onReorder) onReorder(newOrder.map(b => b.id));
+        if (onReorder) onReorder(newOrder.map((b) => b.id));
         renderQuickButtons(container, profile, { onQuickClick, onReorder });
-      }
+      },
     });
-
-    container._quickSortableCleanup = sortableCleanup;
-  } else {
-    if (container._quickSortableCleanup) {
-      container._quickSortableCleanup();
-      container._quickSortableCleanup = null;
-    }
   }
 
   container.appendChild(wrap);
+
+  container._quickCleanup = () => {
+    if (sortableCleanup) sortableCleanup();
+  };
 }
 
 function prependEmoji(el, btn) {
