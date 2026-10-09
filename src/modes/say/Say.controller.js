@@ -13,6 +13,7 @@ import {
   speakSentence,
 } from '@modes/common/sentence';
 import { setupSwipeNavigation } from './Say.swipe';
+import { createCleanupCollector } from '@utils/lifecycle';
 import { logger } from '@utils/logger';
 import { saveProfile } from '@storage/appStorage';
 import { toast } from '@utils';
@@ -30,9 +31,10 @@ export function renderSay(container, profile) {
   containerRef = container;
   currentProfile = profile;
 
-  if (container._saySwipeCleanup) {
-    container._saySwipeCleanup();
-    container._saySwipeCleanup = null;
+  // Снимаем предыдущий общий cleanup, если режим рендерится повторно
+  if (typeof container._modeCleanup === 'function') {
+    container._modeCleanup();
+    container._modeCleanup = null;
   }
 
   const content = createElement('div', { className: 'say-content' });
@@ -91,8 +93,10 @@ export function renderSay(container, profile) {
     onSpeak: speakSentence,
   });
 
+  // Свайп — только вне режима редактирования
+  let swipeCleanup = null;
   if (!state.editingMode) {
-    container._saySwipeCleanup = setupSwipeNavigation(cardsContainer, {
+    swipeCleanup = setupSwipeNavigation(cardsContainer, {
       onNext: () => navigateCategory(+1),
       onPrev: () => navigateCategory(-1),
     });
@@ -101,6 +105,26 @@ export function renderSay(container, profile) {
   if (!state.currentCategoryId && activeCategoryId) {
     setState({ currentCategoryId: activeCategoryId });
   }
+
+  // === Единый cleanup режима ===
+  // Собираем все под-cleanups с их контейнеров
+  const collector = createCleanupCollector();
+  collector.add(categoriesContainer?._categoriesCleanup);
+  collector.add(cardsContainer?._cardsCleanup);
+  collector.add(quickContainer?._quickCleanup);
+  collector.add(swipeCleanup);
+
+  container._modeCleanup = () => {
+    collector.run();
+    // Сброс ссылок модуля
+    containerRef = null;
+    currentProfile = null;
+    categoriesContainer = null;
+    cardsContainer = null;
+    quickContainer = null;
+    sentenceContainer = null;
+    logger.debug('Say mode cleanup done');
+  };
 }
 
 function navigateCategory(delta) {
@@ -147,7 +171,6 @@ function onCategorySelect(categoryId) {
 }
 
 function onCategoryCreated(newCategoryId) {
-  // После создания — переключаемся на неё и перерисовываем
   onCategorySelect(newCategoryId);
 }
 
@@ -219,4 +242,6 @@ function onQuickButtonClick(btn) {
   renderSentence(sentenceContainer);
 }
 
-function handleQuickReorder() {}
+function handleQuickReorder() {
+  // Порядок сохраняется внутри renderQuickButtons
+}
