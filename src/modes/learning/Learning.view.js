@@ -3,6 +3,7 @@ import { createElement, clear } from '@utils/dom';
 import { createCard } from '@components/common/Card/Card';
 import { createIcon } from '@utils/icon';
 import { attachGridEvents } from '@components/common/Grid/Grid.events';
+import { logger } from '@utils/logger';
 
 const ACTIVITIES = [
   { id: 'quiz',    label: 'Викторина',   icon: 'quiz',    emoji: '🧠' },
@@ -12,6 +13,14 @@ const ACTIVITIES = [
 ];
 
 export function renderLearning(container, onSelectActivity) {
+  logger.debug('🔄 Rendering Learning menu');
+
+  // Снимаем предыдущий cleanup
+  if (typeof container._learningCleanup === 'function') {
+    container._learningCleanup();
+    container._learningCleanup = null;
+  }
+
   clear(container);
 
   const gridContainer = createElement('div', { className: 'grid-container no-panel' });
@@ -19,13 +28,10 @@ export function renderLearning(container, onSelectActivity) {
 
   ACTIVITIES.forEach((act) => {
     const card = createCard({ id: act.id, text: act.label, emoji: '' });
-    // Вставляем иконку вместо эмодзи
     const bg = card.querySelector('.card__bg');
     if (bg) {
       bg.textContent = '';
-      bg.appendChild(createIcon(act.icon, { fallback: act.emoji, size: 96
-      
-       }));
+      bg.appendChild(createIcon(act.icon, { fallback: act.emoji, size: 96 }));
     }
     grid.appendChild(card);
   });
@@ -33,12 +39,12 @@ export function renderLearning(container, onSelectActivity) {
   gridContainer.appendChild(grid);
   container.appendChild(gridContainer);
 
-  if (container._learningCleanup) {
-    container._learningCleanup();
-    container._learningCleanup = null;
-  }
-  container._learningCleanup = attachGridEvents(grid, {
+  const eventsCleanup = attachGridEvents(grid, {
     onClick: (id) => onSelectActivity(id),
     onLongPress: null,
   });
+
+  container._learningCleanup = () => {
+    eventsCleanup();
+  };
 }

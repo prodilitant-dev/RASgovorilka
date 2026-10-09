@@ -4,7 +4,7 @@ import { generateGuessQuestions } from './Guess.logic';
 import { renderGuessQuestion } from './Guess.view';
 
 export function startGuess(container, profile, settings, onBack, savedState) {
-  startActivity({
+  return startActivity({
     container,
     profile,
     settings,

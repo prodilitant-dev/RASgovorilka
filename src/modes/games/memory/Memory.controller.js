@@ -1,5 +1,4 @@
 // src/modes/games/memory/Memory.controller.js
-import { clear } from '@utils/dom';
 import { renderMemoryBoard } from './Memory.view';
 import { generateMemoryPairs } from './Memory.logic';
 import { showResultsModal } from '@modes/common/activities/ResultsModal';
@@ -9,7 +8,6 @@ import { toast } from '@utils/toast';
 import { getCardsFromCategories } from '@utils/game/pickCards';
 
 export function startMemory(container, profile, settings, onBack, savedState) {
-  // Адаптация размера сетки
   const allCards = getCardsFromCategories(profile, settings.categoryIds || []);
   const numPairs = (settings.gridSize * settings.gridSize) / 2;
   let adjustedSize = settings.gridSize;
@@ -19,9 +17,7 @@ export function startMemory(container, profile, settings, onBack, savedState) {
     const possibleSizes = [4, 6, 8];
     let newSize = 4;
     for (const s of possibleSizes) {
-      if ((s * s) / 2 <= maxPairs) {
-        newSize = s;
-      }
+      if ((s * s) / 2 <= maxPairs) newSize = s;
     }
     if (newSize !== settings.gridSize) {
       toast(`Недостаточно карточек для сетки ${settings.gridSize}×${settings.gridSize}. Используем ${newSize}×${newSize}.`, 'info');
@@ -29,11 +25,10 @@ export function startMemory(container, profile, settings, onBack, savedState) {
     } else {
       toast('Недостаточно карточек для игры. Добавьте карточки в выбранные категории.', 'error');
       onBack();
-      return;
+      return null;
     }
   }
 
-  // Инициализация состояния
   let state;
   if (savedState && savedState.type === 'memory') {
     state = savedState;
@@ -41,7 +36,7 @@ export function startMemory(container, profile, settings, onBack, savedState) {
     const cards = generateMemoryPairs(profile, settings.categoryIds, adjustedSize);
     if (cards.length === 0) {
       container.innerHTML = '<div style="padding:20px;text-align:center;">Нет карточек для игры</div>';
-      return;
+      return null;
     }
     state = {
       cards,
@@ -53,6 +48,8 @@ export function startMemory(container, profile, settings, onBack, savedState) {
     };
     saveState();
   }
+
+  let flipTimer = null;
 
   function saveState() {
     setState({
@@ -66,6 +63,13 @@ export function startMemory(container, profile, settings, onBack, savedState) {
 
   function clearState() {
     setState({ activityState: null });
+  }
+
+  function clearFlipTimer() {
+    if (flipTimer) {
+      clearTimeout(flipTimer);
+      flipTimer = null;
+    }
   }
 
   async function speakFeedback(message) {
@@ -82,7 +86,6 @@ export function startMemory(container, profile, settings, onBack, savedState) {
     const card = state.cards.find(c => c.id === cardId);
     if (!card || card.isFlipped || card.isMatched) return;
 
-    // Переворачиваем карточку
     card.isFlipped = true;
 
     if (!state.firstCard) {
@@ -98,12 +101,10 @@ export function startMemory(container, profile, settings, onBack, savedState) {
       saveState();
       render();
 
-      // Проверяем совпадение
       const first = state.firstCard;
       const second = state.secondCard;
 
       if (first.pairId === second.pairId) {
-        // Совпадение
         first.isMatched = true;
         second.isMatched = true;
         const pairText = first.text || 'картинка';
@@ -114,17 +115,21 @@ export function startMemory(container, profile, settings, onBack, savedState) {
         saveState();
         render();
 
-        // Проверяем победу
         if (state.cards.every(c => c.isMatched)) {
           clearState();
-          setTimeout(() => showResults(), 500);
+          clearFlipTimer();
+          flipTimer = setTimeout(() => {
+            flipTimer = null;
+            showResults();
+          }, 500);
         }
       } else {
-        // Не совпали – блокируем и через 800 мс переворачиваем обратно
         state.lockBoard = true;
         render();
 
-        setTimeout(() => {
+        clearFlipTimer();
+        flipTimer = setTimeout(() => {
+          flipTimer = null;
           state.firstCard.isFlipped = false;
           state.secondCard.isFlipped = false;
           state.firstCard = null;
@@ -160,4 +165,16 @@ export function startMemory(container, profile, settings, onBack, savedState) {
   }
 
   render();
+
+  return {
+    stop: () => {
+      clearFlipTimer();
+      stopSpeech();
+      clearState();
+    },
+    pause: () => {
+      clearFlipTimer();
+      stopSpeech();
+    },
+  };
 }

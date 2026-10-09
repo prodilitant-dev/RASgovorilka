@@ -4,7 +4,7 @@ import { generateQuizQuestions } from './Quiz.logic';
 import { renderQuizQuestion } from './Quiz.view';
 
 export function startQuiz(container, profile, settings, onBack, savedState) {
-  startActivity({
+  return startActivity({
     container,
     profile,
     settings,

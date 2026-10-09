@@ -2,7 +2,6 @@
 import { startGame } from '@modes/common/games/GameController';
 import { generateSortingGame } from './Sorting.logic';
 import { renderSortingGame } from './Sorting.view';
-import { toast } from '@utils/toast';
 
 export function startSorting(container, profile, settings, onBack, savedState) {
   function generateData(prof, set) {
@@ -62,7 +61,7 @@ export function startSorting(container, profile, settings, onBack, savedState) {
     return state.remainingCards.length === 0;
   }
 
-  startGame({
+  return startGame({
     container,
     profile,
     settings,

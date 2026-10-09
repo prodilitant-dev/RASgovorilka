@@ -3,6 +3,7 @@ import { createElement, clear } from '@utils/dom';
 import { createCard } from '@components/common/Card/Card';
 import { createIcon } from '@utils/icon';
 import { attachGridEvents } from '@components/common/Grid/Grid.events';
+import { logger } from '@utils/logger';
 
 const GAMES = [
   { id: 'memory',  label: 'Мемори',    icon: 'memory',  emoji: '🃏' },
@@ -10,6 +11,14 @@ const GAMES = [
 ];
 
 export function renderGames(container, onSelectGame) {
+  logger.debug('🔄 Rendering Games menu');
+
+  // Снимаем предыдущий cleanup
+  if (typeof container._gamesCleanup === 'function') {
+    container._gamesCleanup();
+    container._gamesCleanup = null;
+  }
+
   clear(container);
 
   const gridContainer = createElement('div', { className: 'grid-container no-panel' });
@@ -28,12 +37,12 @@ export function renderGames(container, onSelectGame) {
   gridContainer.appendChild(grid);
   container.appendChild(gridContainer);
 
-  if (container._gamesCleanup) {
-    container._gamesCleanup();
-    container._gamesCleanup = null;
-  }
-  container._gamesCleanup = attachGridEvents(grid, {
+  const eventsCleanup = attachGridEvents(grid, {
     onClick: (id) => onSelectGame(id),
     onLongPress: null,
   });
+
+  container._gamesCleanup = () => {
+    eventsCleanup();
+  };
 }

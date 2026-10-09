@@ -6,16 +6,7 @@ import { getState, setState } from '@state/store';
 import { speak, stopSpeech } from '@utils/speech';
 import { toast } from '@utils/toast';
 
-/**
- * Запускает игру "Пятнашки" (только числовой режим)
- * @param {HTMLElement} container - контейнер
- * @param {Object} profile - профиль пользователя
- * @param {Object} settings - настройки { size }
- * @param {Function} onBack - колбэк возврата в меню
- * @param {Object} savedState - сохранённое состояние (из activityState)
- */
 export function startFifteen(container, profile, settings, onBack, savedState) {
-  // Инициализация состояния
   let state;
   if (savedState && savedState.type === 'fifteen') {
     state = savedState;
@@ -24,7 +15,7 @@ export function startFifteen(container, profile, settings, onBack, savedState) {
     if (!result) {
       container.innerHTML = '<div style="padding:20px;text-align:center;">Не удалось создать доску. Проверьте настройки.</div>';
       toast('Ошибка генерации доски', 'error');
-      return;
+      return null;
     }
     state = {
       board: result.values,
@@ -34,6 +25,8 @@ export function startFifteen(container, profile, settings, onBack, savedState) {
     };
     saveState();
   }
+
+  let resultTimer = null;
 
   function saveState() {
     setState({
@@ -47,6 +40,13 @@ export function startFifteen(container, profile, settings, onBack, savedState) {
 
   function clearState() {
     setState({ activityState: null });
+  }
+
+  function clearResultTimer() {
+    if (resultTimer) {
+      clearTimeout(resultTimer);
+      resultTimer = null;
+    }
   }
 
   async function speakFeedback(message) {
@@ -67,11 +67,9 @@ export function startFifteen(container, profile, settings, onBack, savedState) {
     const emptyRow = Math.floor(state.emptyIdx / size);
     const emptyCol = state.emptyIdx % size;
 
-    // Проверяем, что клетка соседняя с пустой (по горизонтали или вертикали)
     const isAdjacent = (Math.abs(cellRow - emptyRow) + Math.abs(cellCol - emptyCol)) === 1;
     if (!isAdjacent) return;
 
-    // Меняем местами
     state.board[state.emptyIdx] = state.board[index];
     state.board[index] = null;
     state.emptyIdx = index;
@@ -80,10 +78,13 @@ export function startFifteen(container, profile, settings, onBack, savedState) {
     saveState();
     render();
 
-    // Проверяем победу
     if (checkWin()) {
       clearState();
-      setTimeout(() => showResults(), 500);
+      clearResultTimer();
+      resultTimer = setTimeout(() => {
+        resultTimer = null;
+        showResults();
+      }, 500);
     }
   }
 
@@ -118,11 +119,15 @@ export function startFifteen(container, profile, settings, onBack, savedState) {
 
   render();
 
-  // На всякий случай возвращаем управление — вдруг где-то используется.
   return {
     stop: () => {
+      clearResultTimer();
       stopSpeech();
       clearState();
+    },
+    pause: () => {
+      clearResultTimer();
+      stopSpeech();
     },
   };
 }

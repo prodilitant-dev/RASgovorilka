@@ -4,7 +4,7 @@ import { generateMathQuestions } from './Math.logic';
 import { renderMathGame } from './Math.view';
 
 export function startMath(container, profile, settings, onBack, savedState) {
-  startActivity({
+  return startActivity({
     container,
     profile,
     settings,
