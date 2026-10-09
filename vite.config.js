@@ -26,7 +26,7 @@ export default defineConfig({
       injectRegister: false, // регистрируем SW вручную (см. main.js)
       workbox: {
         // Что кешировать
-        globPatterns: ['**/*.{js,css,html,svg,png,webmanifest,ico,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,webmanifest,ico,woff,woff2}'],
         // Максимальный размер кешируемого файла — 5 МБ
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         // Fallback для навигации (SPA)
