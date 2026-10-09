@@ -9,6 +9,7 @@ import { toast } from '@utils/toast';
 import { saveProfile } from '@storage/appStorage';
 import { speak } from '@utils/speech';
 import { uid } from '@utils/id';
+import { logger } from '@utils/logger';
 
 let container = null;
 let currentProfile = null;
@@ -17,8 +18,25 @@ let selectedOffset = 0;
 export function renderSchedule(containerEl, profile) {
   container = containerEl;
   currentProfile = profile;
-  selectedOffset = 0; // сегодня по умолчанию
+  selectedOffset = 0;
+
+  if (typeof container._modeCleanup === 'function') {
+    container._modeCleanup();
+    container._modeCleanup = null;
+  }
+
   render();
+
+  container._modeCleanup = () => {
+    if (typeof container._scheduleCleanup === 'function') {
+      container._scheduleCleanup();
+      container._scheduleCleanup = null;
+    }
+    container = null;
+    currentProfile = null;
+    selectedOffset = 0;
+    logger.debug('Schedule mode cleanup done');
+  };
 }
 
 function render() {

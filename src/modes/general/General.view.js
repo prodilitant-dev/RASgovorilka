@@ -19,6 +19,12 @@ import { createIcon } from '@utils/icon';
 
 export function renderGeneral(container) {
   logger.debug('🔄 Rendering General settings');
+
+  if (typeof container._modeCleanup === 'function') {
+    container._modeCleanup();
+    container._modeCleanup = null;
+  }
+
   const state = getState();
   const globalSettings = state.globalSettings || {};
 
@@ -102,7 +108,7 @@ export function renderGeneral(container) {
   const cards = configs.map((cfg) => {
     const card = createSettingsCard({
       id: cfg.id,
-      emoji: '', // очищаем — поставим иконку вручную
+      emoji: '',
       text: cfg.text,
       type: cfg.type,
       value: cfg.value,
@@ -111,11 +117,10 @@ export function renderGeneral(container) {
       onClick: cfg.onClick,
     });
 
-    // Подменяем содержимое .card__bg на иконку
     const bg = card.querySelector('.card__bg');
     if (bg) {
       bg.textContent = '';
-      bg.appendChild(createIcon(cfg.iconName, { fallback: cfg.emoji, size: 48 }));
+      bg.appendChild(createIcon(cfg.iconName, { fallback: cfg.emoji, size: 96 }));
     }
 
     return card;
@@ -124,5 +129,8 @@ export function renderGeneral(container) {
   renderElementGrid(content, cards);
 
   renderMainLayout(container, { content, bottomPanel: null });
-  logger.debug('✅ General rendered');
+
+  container._modeCleanup = () => {
+    logger.debug('General mode cleanup done');
+  };
 }

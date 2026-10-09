@@ -8,7 +8,6 @@ import { saveProfile } from '@storage/appStorage';
 import { uid, toast, debounce } from '@utils';
 import { logger } from '@utils/logger';
 
-let containerRef = null;
 let currentProfile = null;
 let textarea = null;
 let quickContainer = null;
@@ -16,8 +15,12 @@ let sentenceContainer = null;
 
 export function renderWrite(container, profile) {
   logger.debug('🔄 Rendering Write mode', { profileId: profile?.id });
-  containerRef = container;
   currentProfile = profile;
+
+  if (typeof container._modeCleanup === 'function') {
+    container._modeCleanup();
+    container._modeCleanup = null;
+  }
 
   const content = createElement('div', { className: 'grid-container write-mode' });
   textarea = createElement('textarea', {
@@ -44,12 +47,9 @@ export function renderWrite(container, profile) {
       updateTextareaFromWords();
       renderSentence(sentenceContainer);
     },
-    onReorder: () => {
-      // Порядок сохранён внутри renderQuickButtons
-    },
+    onReorder: () => {},
   });
 
-  // ✅ Передаём кастомные колбэки для обновления textarea и перерисовки
   renderSentence(sentenceContainer, {
     onRemove: (index) => {
       removeWord(index);
@@ -64,49 +64,67 @@ export function renderWrite(container, profile) {
     onSpeak: speakSentence,
   });
 
-  // Заполняем textarea из состояния
   if (words.length) {
     const text = words.map(w => w.original || w.text).join(' ');
     textarea.value = text;
   }
 
-  textarea.addEventListener('input', debounce(handleTextInput, 300));
-  textarea.addEventListener('keydown', (e) => {
+  const debouncedHandle = debounce(handleTextInput, 300);
+
+  function handleTextInput() {
+    const raw = textarea.value;
+    const words = raw.split(/\s+/).filter(w => w.length > 0);
+
+    if (words.length === 0) {
+      setState({ sentenceWords: [] });
+      renderSentence(sentenceContainer);
+      return;
+    }
+
+    const wordObjects = words.map(w => ({
+      text: w,
+      display: w,
+      original: w,
+      type: 'noun',
+      forms: {},
+    }));
+
+    setState({ sentenceWords: wordObjects });
+    renderSentence(sentenceContainer);
+  }
+
+  function updateTextareaFromWords() {
+    const words = getWords();
+    const text = words.map(w => w.original || w.text).join(' ');
+    if (textarea.value !== text) {
+      textarea.value = text;
+    }
+  }
+
+  function onKeyDown(e) {
     if (e.key === 'Enter' && e.ctrlKey) {
       e.preventDefault();
       speakSentence();
     }
-  });
+  }
 
+  textarea.addEventListener('input', debouncedHandle);
+  textarea.addEventListener('keydown', onKeyDown);
   textarea.focus();
-}
 
-function handleTextInput() {
-  const raw = textarea.value;
-  const words = raw.split(/\s+/).filter(w => w.length > 0);
-
-  if (words.length === 0) {
-    setState({ sentenceWords: [] });
-    renderSentence(sentenceContainer);
-    return;
-  }
-
-  const wordObjects = words.map(w => ({
-    text: w,
-    display: w,
-    original: w,
-    type: 'noun',
-    forms: {},
-  }));
-
-  setState({ sentenceWords: wordObjects });
-  renderSentence(sentenceContainer);
-}
-
-function updateTextareaFromWords() {
-  const words = getWords();
-  const text = words.map(w => w.original || w.text).join(' ');
-  if (textarea.value !== text) {
-    textarea.value = text;
-  }
+  container._modeCleanup = () => {
+    if (textarea) {
+      textarea.removeEventListener('input', debouncedHandle);
+      textarea.removeEventListener('keydown', onKeyDown);
+    }
+    if (quickContainer?._quickCleanup) {
+      quickContainer._quickCleanup();
+      quickContainer._quickCleanup = null;
+    }
+    currentProfile = null;
+    textarea = null;
+    quickContainer = null;
+    sentenceContainer = null;
+    logger.debug('Write mode cleanup done');
+  };
 }

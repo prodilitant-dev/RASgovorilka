@@ -7,19 +7,37 @@ import { speak } from '@utils/speech';
 import { toast } from '@utils/toast';
 import { saveProfile } from '@storage/appStorage';
 import { uid } from '@utils/id';
+import { logger } from '@utils/logger';
 
 let container = null;
 let currentProfile = null;
 let gridContainer = null;
-let cleanup = null;
+let gridCleanup = null;
 
 export function renderYesNo(containerEl, profile) {
   container = containerEl;
   currentProfile = profile;
+
+  if (typeof container._modeCleanup === 'function') {
+    container._modeCleanup();
+    container._modeCleanup = null;
+  }
+
   clear(container);
   gridContainer = createElement('div', { className: 'grid-container full-height' });
   container.appendChild(gridContainer);
   renderTiles();
+
+  container._modeCleanup = () => {
+    if (typeof gridCleanup === 'function') {
+      gridCleanup();
+      gridCleanup = null;
+    }
+    container = null;
+    currentProfile = null;
+    gridContainer = null;
+    logger.debug('YesNo mode cleanup done');
+  };
 }
 
 function renderTiles() {
@@ -30,9 +48,9 @@ function renderTiles() {
     items.push({ id: 'add', text: 'Добавить', emoji: '➕', isAdd: true });
   }
 
-  if (cleanup) {
-    cleanup();
-    cleanup = null;
+  if (gridCleanup) {
+    gridCleanup();
+    gridCleanup = null;
   }
 
   const grid = renderGrid(gridContainer, items, {
@@ -40,7 +58,7 @@ function renderTiles() {
     onReorder: editing ? handleReorder : null,
   });
 
-  cleanup = attachGridEvents(grid, {
+  gridCleanup = attachGridEvents(grid, {
     onClick: (id) => handleButtonClick(id),
   });
 }

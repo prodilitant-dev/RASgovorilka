@@ -11,9 +11,9 @@ import { logger } from '@utils/logger';
 import { createElement } from '@utils/dom';
 
 export async function renderProfiles(container) {
-  if (container._cleanup) {
-    container._cleanup();
-    container._cleanup = null;
+  if (typeof container._modeCleanup === 'function') {
+    container._modeCleanup();
+    container._modeCleanup = null;
   }
 
   logger.debug('🔄 Rendering Profiles');
@@ -30,7 +30,7 @@ export async function renderProfiles(container) {
 
   const content = createElement('div', { className: 'grid-container full-height' });
 
-  const { cleanup } = renderProfileList(
+  const { cleanup: listCleanup } = renderProfileList(
     content,
     profiles,
     activeId,
@@ -109,7 +109,6 @@ export async function renderProfiles(container) {
                 modeOrder: newActive.modeOrder || [],
                 hiddenModes: newActive.hiddenModes || [],
               });
-              logger.info(`Active profile changed to ${newActive.id}`);
             }
           }
           await saveAppData(updatedData);
@@ -132,7 +131,10 @@ export async function renderProfiles(container) {
     }
   );
 
-  container._cleanup = cleanup;
   renderMainLayout(container, { content, bottomPanel: null });
-  logger.debug('✅ Profiles rendered');
+
+  container._modeCleanup = () => {
+    if (typeof listCleanup === 'function') listCleanup();
+    logger.debug('Profiles mode cleanup done');
+  };
 }
