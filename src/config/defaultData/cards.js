@@ -5,7 +5,7 @@ export const CARDS_BY_CATEGORY = {
     { text: 'Есть',   emoji: '🍽️', wordType: 'other', imagePath: 'cards/eat.webp' },
     { text: 'Спать',  emoji: '😴', wordType: 'other', imagePath: 'cards/sleep.webp' },
     { text: 'Туалет', emoji: '🚽', wordType: 'other', imagePath: 'cards/toilet.webp' },
-    { text: 'Помощь', emoji: '🆘', wordType: 'other', imagePath: 'cards/help.webp' },
+    { text: 'Помоги', emoji: '🆘', wordType: 'other', imagePath: 'cards/help-request.webp' },
     { text: 'Больно', emoji: '🤕', wordType: 'other', imagePath: 'cards/pain.webp' },
     { text: 'Устал',  emoji: '😩', wordType: 'other', imagePath: 'cards/tired.webp' },
     { text: 'Обнимашки',  emoji: '🤗', wordType: 'other', imagePath: 'cards/hug.webp' },

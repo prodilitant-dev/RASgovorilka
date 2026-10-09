@@ -1,20 +1,16 @@
 // src/utils/dragdrop.js
-import { reorderArray } from './array';
-
 /**
- * Универсальный сортируемый список с поддержкой мыши и тач-устройств.
- * Использует Pointer Events API.
+ * Универсальный сортируемый список.
+ * Работает на тач-устройствах и мыши.
  *
- * Старт перетаскивания — после long-press (по умолчанию 200 мс),
- * чтобы не мешать обычному тапу / клику по элементу.
- *
- * @param {HTMLElement} container - контейнер с сортируемыми элементами
- * @param {Object} options
- * @param {string} [options.itemSelector='[data-id]'] - селектор элементов
- * @param {Function} [options.onReorder=null] - (newIds: string[]) => void
- * @param {number} [options.longPressDelay=200] - задержка перед стартом drag (мс)
- * @param {number} [options.moveTolerance=8] - сдвиг до отмены long-press (px)
- * @returns {Function} cleanup
+ * Логика:
+ * - touchstart / mousedown — запускаем таймер long-press.
+ * - Если палец сдвинулся > moveTolerance до срабатывания таймера — отменяем
+ *   (обычный скролл / клик работает как всегда).
+ * - Если таймер сработал — начинаем drag: с этого момента touchmove
+ *   вызывает preventDefault, скролл заблокирован до конца жеста.
+ * - Если пользователь не двигал палец и отпустил — браузер сам
+ *   генерирует click, наш обработчик onClick срабатывает как обычно.
  */
 export function makeSortable(container, options = {}) {
   const {
@@ -24,17 +20,19 @@ export function makeSortable(container, options = {}) {
     moveTolerance = 8,
   } = options;
 
-  let pointerId = null;
-  let startX = 0;
-  let startY = 0;
+  // Состояние
   let draggedEl = null;
   let ghostEl = null;
   let placeholderEl = null;
   let isDragging = false;
   let longPressTimer = null;
+  let startX = 0;
+  let startY = 0;
   let offsetX = 0;
   let offsetY = 0;
+  let currentInputType = null; // 'touch' | 'mouse'
 
+  // === Утилиты ===
   const getItems = () =>
     Array.from(container.querySelectorAll(itemSelector)).filter(
       (el) => el.dataset.id !== 'add'
@@ -51,6 +49,13 @@ export function makeSortable(container, options = {}) {
     return null;
   };
 
+  const clearTimer = () => {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+    }
+  };
+
   const beginDrag = (initX, initY) => {
     isDragging = true;
 
@@ -58,7 +63,7 @@ export function makeSortable(container, options = {}) {
     offsetX = initX - rect.left;
     offsetY = initY - rect.top;
 
-    // Ghost — визуальная копия, следующая за пальцем
+    // Ghost — визуальная копия под пальцем
     ghostEl = draggedEl.cloneNode(true);
     ghostEl.classList.add('dragging-ghost');
     Object.assign(ghostEl.style, {
@@ -72,7 +77,7 @@ export function makeSortable(container, options = {}) {
     });
     document.body.appendChild(ghostEl);
 
-    // Placeholder — невидимое место, куда вернётся оригинал
+    // Placeholder — куда встанет
     placeholderEl = document.createElement('div');
     placeholderEl.className = 'sort-placeholder';
     Object.assign(placeholderEl.style, {
@@ -87,7 +92,7 @@ export function makeSortable(container, options = {}) {
   };
 
   const moveDrag = (clientX, clientY) => {
-    if (!isDragging) return;
+    if (!isDragging || !ghostEl) return;
 
     ghostEl.style.left = `${clientX - offsetX}px`;
     ghostEl.style.top = `${clientY - offsetY}px`;
@@ -100,7 +105,7 @@ export function makeSortable(container, options = {}) {
     const ghostMidX = ghostRect.left + ghostRect.width / 2;
     const ghostMidY = ghostRect.top + ghostRect.height / 2;
 
-    // Определяем, сетка многоколоночная или однолоночная
+    // Определяем, многоколоночная ли сетка
     const parentStyle = getComputedStyle(target.parentNode);
     const cols = (parentStyle.gridTemplateColumns || '').split(' ').filter(Boolean);
     const isMultiColumn = parentStyle.display === 'grid' && cols.length > 1;
@@ -150,51 +155,114 @@ export function makeSortable(container, options = {}) {
     draggedEl = null;
   };
 
-  const cleanupAll = () => {
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      longPressTimer = null;
-    }
-    if (isDragging) endDrag();
-    pointerId = null;
-    draggedEl = null;
-
-    document.removeEventListener('pointermove', onPointerMove);
-    document.removeEventListener('pointerup', onPointerUp);
-    document.removeEventListener('pointercancel', onPointerUp);
-  };
-
-  const onPointerDown = (e) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
+  // === Touch ===
+  const onTouchStart = (e) => {
+    if (e.touches.length !== 1) return;
 
     const item = e.target.closest(itemSelector);
     if (!item) return;
     if (item.dataset.id === 'add') return;
 
-    pointerId = e.pointerId;
-    startX = e.clientX;
-    startY = e.clientY;
+    currentInputType = 'touch';
     draggedEl = item;
+    const t = e.touches[0];
+    startX = t.clientX;
+    startY = t.clientY;
 
-    document.addEventListener('pointermove', onPointerMove);
-    document.addEventListener('pointerup', onPointerUp);
-    document.addEventListener('pointercancel', onPointerUp);
-
+    clearTimer();
     longPressTimer = setTimeout(() => {
       longPressTimer = null;
       if (draggedEl) beginDrag(startX, startY);
     }, longPressDelay);
+
+    // Слушаем touchmove на document — чтобы работало, даже если палец
+    // ушёл за пределы контейнера
+    document.addEventListener('touchmove', onTouchMove, { passive: false });
+    document.addEventListener('touchend', onTouchEnd);
+    document.addEventListener('touchcancel', onTouchCancel);
   };
 
-  const onPointerMove = (e) => {
-    if (e.pointerId !== pointerId) return;
+  const onTouchMove = (e) => {
+    if (!draggedEl) return;
 
-    // Фаза long-press: если палец сдвинулся — отменяем
-    if (longPressTimer && draggedEl) {
+    // Фаза long-press — если палец сдвинулся, отменяем
+    if (longPressTimer) {
+      const t = e.touches[0];
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+      if (Math.sqrt(dx * dx + dy * dy) > moveTolerance) {
+        clearTimer();
+        cleanupTouchListeners();
+        draggedEl = null;
+        currentInputType = null;
+      }
+      return;
+    }
+
+    // Фаза drag — блокируем скролл и двигаем ghost
+    if (isDragging) {
+      e.preventDefault();
+      const t = e.touches[0];
+      moveDrag(t.clientX, t.clientY);
+    }
+  };
+
+  const onTouchEnd = () => {
+    clearTimer();
+    if (isDragging) endDrag();
+    cleanupTouchListeners();
+    draggedEl = null;
+    currentInputType = null;
+  };
+
+  const onTouchCancel = () => {
+    clearTimer();
+    if (isDragging) endDrag();
+    cleanupTouchListeners();
+    draggedEl = null;
+    currentInputType = null;
+  };
+
+  const cleanupTouchListeners = () => {
+    document.removeEventListener('touchmove', onTouchMove);
+    document.removeEventListener('touchend', onTouchEnd);
+    document.removeEventListener('touchcancel', onTouchCancel);
+  };
+
+  // === Mouse ===
+  const onMouseDown = (e) => {
+    if (e.button !== 0) return;
+
+    const item = e.target.closest(itemSelector);
+    if (!item) return;
+    if (item.dataset.id === 'add') return;
+
+    currentInputType = 'mouse';
+    draggedEl = item;
+    startX = e.clientX;
+    startY = e.clientY;
+
+    clearTimer();
+    longPressTimer = setTimeout(() => {
+      longPressTimer = null;
+      if (draggedEl) beginDrag(startX, startY);
+    }, longPressDelay);
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  };
+
+  const onMouseMove = (e) => {
+    if (!draggedEl) return;
+
+    if (longPressTimer) {
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
       if (Math.sqrt(dx * dx + dy * dy) > moveTolerance) {
-        cleanupAll();
+        clearTimer();
+        cleanupMouseListeners();
+        draggedEl = null;
+        currentInputType = null;
       }
       return;
     }
@@ -205,15 +273,30 @@ export function makeSortable(container, options = {}) {
     }
   };
 
-  const onPointerUp = (e) => {
-    if (e.pointerId !== pointerId) return;
-    cleanupAll();
+  const onMouseUp = () => {
+    clearTimer();
+    if (isDragging) endDrag();
+    cleanupMouseListeners();
+    draggedEl = null;
+    currentInputType = null;
   };
 
-  container.addEventListener('pointerdown', onPointerDown);
+  const cleanupMouseListeners = () => {
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
 
+  // === Подписка ===
+  container.addEventListener('touchstart', onTouchStart, { passive: true });
+  container.addEventListener('mousedown', onMouseDown);
+
+  // === Cleanup ===
   return () => {
-    container.removeEventListener('pointerdown', onPointerDown);
-    cleanupAll();
+    container.removeEventListener('touchstart', onTouchStart);
+    container.removeEventListener('mousedown', onMouseDown);
+    cleanupTouchListeners();
+    cleanupMouseListeners();
+    clearTimer();
+    if (isDragging) endDrag();
   };
 }

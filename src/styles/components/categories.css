@@ -98,7 +98,8 @@
 
 /* В режиме редактирования запрещаем скролл страницы по категории */
 body.editing-mode .category:not(.category-add) {
-  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
 }
 
 /* Оригинал скрыт во время перетаскивания */

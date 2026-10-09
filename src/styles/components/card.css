@@ -55,12 +55,12 @@
   color: var(--text-muted);
 }
 
-/* === Drag & Drop (Pointer Events) === */
+/* === Drag & Drop === */
 
-/* В режиме редактирования карточки не должны скроллить страницу при удержании */
 body.editing-mode .card:not(.card--add) {
-  touch-action: none;
-  -webkit-user-select: none;
+  /* Блокируем iOS long-press меню и "share/открыть в новой вкладке" */
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
   user-select: none;
 }
 
