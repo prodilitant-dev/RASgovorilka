@@ -9,9 +9,9 @@ import { handleGames } from '@modes/games';
 import { renderYesNo } from '@modes/yesno';
 import { renderSchedule } from '@modes/schedule';
 import { getActiveProfile } from '@state/actions';
+import { closeAllModals } from '@components/common/Modal/Modal';
 import { logger } from '@utils/logger';
 
-// Карта режимов: modeId -> функция рендера
 const modeRenderers = {
   profiles: (container) => renderProfiles(container),
   general: (container) => renderGeneral(container),
@@ -47,17 +47,13 @@ const modeRenderers = {
   },
 };
 
-/**
- * Рендерит контент в зависимости от режима.
- * Перед рендером вызывает cleanup предыдущего режима.
- *
- * @param {HTMLElement} container - основная область
- * @param {string} modeId - идентификатор режима
- */
 export function renderContent(container, modeId) {
   logger.debug(`📱 Switching to mode: ${modeId}`);
 
-  // 1. Снимаем обработчики предыдущего режима
+  // 1. Закрываем все модалки
+  closeAllModals();
+
+  // 2. Снимаем cleanup предыдущего режима
   if (typeof container._modeCleanup === 'function') {
     try {
       container._modeCleanup();
@@ -67,7 +63,7 @@ export function renderContent(container, modeId) {
     container._modeCleanup = null;
   }
 
-  // 2. Рендерим новый режим
+  // 3. Рендерим новый режим
   const renderFn = modeRenderers[modeId];
   if (renderFn) {
     renderFn(container);

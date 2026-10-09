@@ -2,6 +2,25 @@
 import { createElement } from '@utils/dom';
 import { logger } from '@utils/logger';
 
+// Реестр открытых модалок
+const openModals = new Set();
+
+/**
+ * Принудительно закрывает все открытые модалки.
+ * Вызывается при смене режима.
+ */
+export function closeAllModals() {
+  const snapshot = [...openModals];
+  for (const modal of snapshot) {
+    try {
+      modal.close();
+    } catch (err) {
+      logger.error('closeAllModals error:', err);
+    }
+  }
+  openModals.clear();
+}
+
 export class Modal {
   constructor({ title, body, buttons = [], onClose = null }) {
     this.title = title;
@@ -10,6 +29,8 @@ export class Modal {
     this.onClose = onClose;
     this.element = null;
     this.isOpen = false;
+    this._outsideClickHandler = null;
+    this._closeTimer = null;
   }
 
   open() {
@@ -52,16 +73,19 @@ export class Modal {
       });
       content.appendChild(footer);
     }
-    
+
     this.element.appendChild(content);
 
-    this.element.addEventListener('click', (e) => {
+    this._outsideClickHandler = (e) => {
       if (e.target === this.element) this.close();
-    });
+    };
+    this.element.addEventListener('click', this._outsideClickHandler);
 
     document.body.appendChild(this.element);
+    openModals.add(this);
+
     requestAnimationFrame(() => {
-      this.element.classList.add('visible');
+      if (this.element) this.element.classList.add('visible');
     });
   }
 
@@ -69,15 +93,25 @@ export class Modal {
     if (!this.isOpen) return;
     this.isOpen = false;
     logger.debug(`Modal closed: "${this.title}"`);
+    openModals.delete(this);
+
     if (this.element) {
+      if (this._outsideClickHandler) {
+        this.element.removeEventListener('click', this._outsideClickHandler);
+        this._outsideClickHandler = null;
+      }
       this.element.classList.remove('visible');
-      setTimeout(() => {
+
+      this._closeTimer = setTimeout(() => {
+        this._closeTimer = null;
         if (this.element && this.element.parentNode) {
           this.element.parentNode.removeChild(this.element);
         }
         this.element = null;
         if (this.onClose) this.onClose();
       }, 300);
+    } else if (this.onClose) {
+      this.onClose();
     }
   }
 }
