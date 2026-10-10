@@ -5,5 +5,4 @@ export const CATEGORIES = [
   { id: 'food',    name: 'Еда',          wordType: 'noun' },
   { id: 'drinks',  name: 'Напитки',      wordType: 'noun' },
   { id: 'games',   name: 'Игры',         wordType: 'other' },
-  { id: 'test',    name: 'тест',         wordType: 'other' },
 ];

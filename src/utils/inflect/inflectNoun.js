@@ -2,22 +2,51 @@
 import { nounExceptions } from './dictionaries';
 import { getNounGender } from './getNounGender';
 import { guessAnimate } from './guessAnimate';
+import { isIndeclinable } from './indeclinable';
+import { getFleetingEntry } from './fleetingVowels';
 
 /**
- * Генерирует все шесть падежных форм для существительного
- * @param {string} word - слово в именительном падеже
- * @param {boolean} animate - одушевлённое? (если не указано, будет вычислено автоматически)
- * @returns {Object} { nominative, genitive, dative, accusative, instrumental, prepositional }
+ * Генерирует шесть падежных форм для существительного.
+ *
+ * @param {string} word - слово в Им. падеже
+ * @param {boolean} [animate] - одушевлённое? (если не указано — определится)
+ * @returns {Object|null} { nominative, genitive, dative, accusative, instrumental, prepositional }
  */
 export function inflectNoun(word, animate) {
   if (!word) return null;
   const w = word.trim();
   if (!w) return null;
   const lower = w.toLowerCase().replace(/ё/g, 'е');
-  // Обработка исключений (включая несклоняемые)
+
+  // 1. Несклоняемые — все формы равны исходной
+  if (isIndeclinable(lower)) {
+    return {
+      nominative: w,
+      genitive: w,
+      dative: w,
+      accusative: w,
+      instrumental: w,
+      prepositional: w,
+    };
+  }
+
+  // 2. Беглые гласные
+  const fleeting = getFleetingEntry(lower);
+  if (fleeting) {
+    const isAnim = animate !== undefined ? animate : guessAnimate(w);
+    return {
+      nominative: w,
+      genitive: fleeting.gen,
+      dative: fleeting.dat,
+      accusative: isAnim ? fleeting.gen : w,
+      instrumental: fleeting.ins,
+      prepositional: fleeting.pre,
+    };
+  }
+
+  // 3. Исключения (особые случаи)
   if (nounExceptions[lower]) {
     const forms = { nominative: w, genitive: w, dative: w, accusative: w, instrumental: w, prepositional: w };
-    // Для некоторых исключений можно попытаться склонять
     if (lower === 'ребёнок') {
       forms.genitive = 'ребёнка';
       forms.dative = 'ребёнку';
@@ -95,11 +124,12 @@ export function inflectNoun(word, animate) {
     return forms;
   }
 
+  // 4. Общие эвристики
   const gender = getNounGender(w);
   const forms = { nominative: w };
   const last = w.slice(-1);
   const last2 = w.slice(-2);
-  const isAnimate = (animate !== undefined) ? animate : guessAnimate(w);
+  const isAnimate = animate !== undefined ? animate : guessAnimate(w);
 
   if (gender === 'masculine') {
     if (last === 'й') {
@@ -204,9 +234,9 @@ export function inflectNoun(word, animate) {
     }
   }
 
-  // Заполняем недостающие (если что-то не задано)
+  // Заполняем недостающие формы
   const caseKeys = ['nominative', 'genitive', 'dative', 'accusative', 'instrumental', 'prepositional'];
-  for (let k of caseKeys) {
+  for (const k of caseKeys) {
     if (!forms[k]) forms[k] = forms.nominative || w;
   }
   return forms;

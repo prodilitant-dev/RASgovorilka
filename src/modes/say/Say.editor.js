@@ -82,7 +82,7 @@ export function openCardEditor(cardData, onSave, onDelete) {
     extraActions: [
       {
         id: 'declensions',
-        label: '📖 Падежи (исключения)',
+        label: '📖 Склонения',
         visible: (entity) => {
           const type = entity.wordType || 'noun';
           return type === 'noun' || type === 'pronoun' || type === 'adjective';
