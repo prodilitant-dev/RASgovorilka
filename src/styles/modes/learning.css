@@ -47,8 +47,8 @@
 }
 
 .learning-card .card-image {
-  width: 100px;
-  height: 100px;
+  width: 200px;
+  height: 200px;
   border-radius: var(--radius-sm);
   background: #f1f3f5;
   display: flex;
@@ -513,4 +513,10 @@
   border-color: var(--primary);
 }
 
-/* Стили для размещённых элементов (уже есть) */
+@media (max-width: 480px) {
+  .learning-card .card-image {
+    width: 140px;
+    height: 140px;
+    font-size: 60px;
+  }
+}

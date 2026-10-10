@@ -25,7 +25,7 @@ export function renderSortingGame(container, state, onDrop) {
         text: card.text,
         emoji: card.emoji,
         imageId: card.imageId,
-        imagePath: card.imagePath,   // ← NEW
+        imagePath: card.imagePath,
         className: 'card--sort',
         draggable: true,
       });
@@ -62,9 +62,10 @@ export function renderSortingGame(container, state, onDrop) {
 
     const itemsWrap = createElement('div', { className: 'zone-items' });
     zone.items.forEach(item => {
+      // ✅ Только текст, без эмодзи
       const itemEl = createElement('span', {
         className: `placed-item ${item.isCorrect ? 'correct' : 'wrong'}`,
-      }, `${item.emoji || ''} ${item.text}`);
+      }, item.text);
       itemsWrap.appendChild(itemEl);
     });
     zoneEl.appendChild(itemsWrap);
