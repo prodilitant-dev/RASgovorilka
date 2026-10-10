@@ -8,6 +8,8 @@ import { renderModeBar } from '@components/ModeBar/ModeBar';
 import { openExportDialog } from './components/ExportDialog';
 import { exportToZip } from '@services/backup/export';
 import { importFromZip } from '@services/backup/import';
+import { applyAutoInflectToAllCards } from '@utils/inflect';
+import { logger } from '@utils/logger';
 
 function updateModeBar() {
   const container = document.querySelector('.mode-bar');
@@ -45,6 +47,49 @@ export function saveSetting(key, value) {
   toast('Настройка сохранена');
 }
 
+/**
+ * Переключает автосклонение.
+ * При включении — проходит по всем карточкам и заполняет
+ * пустые падежные формы. При выключении — формы не трогает.
+ */
+export async function toggleAutoInflect(newValue) {
+  const state = getState();
+  const globalSettings = { ...state.globalSettings, autoInflect: newValue };
+  setState({ globalSettings });
+
+  if (newValue === true) {
+    const profile = state.profiles.find((p) => p.id === state.currentProfileId);
+    if (!profile) {
+      logger.warn('toggleAutoInflect: активный профиль не найден');
+      toast('Автосклонение включено');
+    } else {
+      try {
+        const { totalFilled, cardsProcessed } = applyAutoInflectToAllCards(profile);
+
+        if (totalFilled > 0) {
+          const updatedProfiles = state.profiles.map((p) =>
+            p.id === profile.id ? profile : p
+          );
+          setState({ profiles: updatedProfiles });
+          await saveProfile(profile);
+          toast(
+            `Автосклонение включено: заполнено ${totalFilled} форм в ${cardsProcessed} карточках`
+          );
+        } else {
+          toast('Автосклонение включено');
+        }
+      } catch (err) {
+        logger.error('toggleAutoInflect: ошибка при заполнении форм:', err);
+        toast('Автосклонение включено (ошибка при заполнении)', 'error');
+      }
+    }
+  } else {
+    toast('Автосклонение выключено');
+  }
+
+  await savePersistentState();
+}
+
 export function saveVoiceSettings(voiceSettings) {
   const state = getState();
   const globalSettings = { ...state.globalSettings, voiceSettings };
@@ -67,8 +112,6 @@ export function saveModeOrder(newOrder) {
 
   savePersistentState();
   toast('Порядок режимов обновлён');
-
-  // Обновляем панель после завершения текущего цикла событий
   setTimeout(updateModeBar, 0);
 }
 
@@ -92,13 +135,14 @@ export function toggleModeVisibility(modeId, visible) {
 
   savePersistentState();
   toast('Видимость режима обновлена');
-
-  // Обновляем панель после завершения текущего цикла событий
   setTimeout(updateModeBar, 0);
 }
 
 export async function resetAllData() {
-  const ok = await confirm('Вы уверены, что хотите сбросить все данные? Это действие необратимо.', 'Сброс данных');
+  const ok = await confirm(
+    'Вы уверены, что хотите сбросить все данные? Это действие необратимо.',
+    'Сброс данных'
+  );
   if (!ok) return;
   const dbName = 'RASGovorilkaDB';
   const request = indexedDB.deleteDatabase(dbName);
@@ -109,7 +153,6 @@ export async function resetAllData() {
   request.onerror = () => toast('Ошибка при сбросе данных', 'error');
 }
 
-// ✅ Обновлённые функции экспорта/импорта
 export function exportData() {
   openExportDialog((selectedKeys, selectedCategoryIds) => {
     exportToZip(selectedKeys, selectedCategoryIds);

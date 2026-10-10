@@ -12,6 +12,7 @@ import {
   saveVoiceSettings,
   resetAllData,
   saveSetting,
+  toggleAutoInflect,
 } from './General.controller';
 import { logger } from '@utils/logger';
 import { createElement } from '@utils/dom';
@@ -97,9 +98,9 @@ export function renderGeneral(container) {
       text: 'Автосклонение',
       type: 'click',
       isActive: globalSettings.autoInflect === true,
-      onClick: () => {
+      onClick: async () => {
         const newVal = globalSettings.autoInflect !== true;
-        saveSetting('autoInflect', newVal);
+        await toggleAutoInflect(newVal);
         renderGeneral(container);
       },
     },
