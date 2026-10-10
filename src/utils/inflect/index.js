@@ -9,3 +9,5 @@ export { generateForms } from './generateForms';
 export { autoDetectCard } from './autoDetectCard';
 export { getInflectedWords } from './getInflectedWords';
 export { getInflectedSentence } from './getInflectedSentence';
+export { fillEmptyForms } from './fillEmptyForms';
+export { applyAutoInflectToAllCards } from './applyAutoInflect';
