@@ -54,5 +54,5 @@ export const CARDS_BY_CATEGORY = {
     { text: 'Конструктор',emoji: '🧩', wordType: 'other', imagePath: 'cards/lego.webp' },
     { text: 'Кубики',     emoji: '🎲', wordType: 'other', imagePath: 'cards/blocks.webp' },
     { text: 'Машинка',    emoji: '🚗', wordType: 'other', imagePath: 'cards/car.webp' },
-  ],
+  ], 
 };
