@@ -28,7 +28,7 @@ export async function loadInitialState() {
     }
   } else {
     logger.info('No data found, creating default profile');
-    const defaultProfile = createDefaultProfile('Мой профиль', '🧑');
+    const defaultProfile = createDefaultProfile();
     const newData = {
       profiles: [defaultProfile],
       activeProfileId: defaultProfile.id,
