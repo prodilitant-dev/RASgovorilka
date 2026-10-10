@@ -33,7 +33,6 @@ export function createDefaultProfile(name = 'дом', icon = '🏠') {
         imageId: null,
         imagePath: raw.imagePath || null, // ← стоковая WebP-картинка
         forms: null,
-        formsEdited: false,
       };
       // Автосклонение только для склоняемых частей речи
       if (

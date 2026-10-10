@@ -40,7 +40,8 @@ export function openCardEditor(cardData, onSave, onDelete) {
         return;
       }
 
-      if (!updated.formsEdited && updated.text !== cardData.text) {
+      // Если текст изменился — пересчитываем формы молча
+      if (updated.text !== cardData.text) {
         autoDetectCard(updated);
       }
       onSave(updated, done);
@@ -75,7 +76,6 @@ export function openCardEditor(cardData, onSave, onDelete) {
         id: 'emoji',
         label: 'Эмодзи',
         type: 'text',
-        // placeholder убран — серый «😊» путал пользователя
         visible: (entity) => !entity.imageId,
       },
     ],
@@ -89,7 +89,6 @@ export function openCardEditor(cardData, onSave, onDelete) {
         },
         onClick: (entity, closeModal) => {
           openDeclensionModal(entity, (updatedEntity) => {
-            updatedEntity.formsEdited = true;
             Object.assign(entity, updatedEntity);
             toast('Падежи обновлены');
           });

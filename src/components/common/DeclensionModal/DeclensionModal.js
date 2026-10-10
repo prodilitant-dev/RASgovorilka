@@ -2,7 +2,7 @@
 import { Modal } from '../Modal/Modal';
 import { createElement, on } from '@utils/dom';
 import { toast } from '@utils/toast';
-import { getNounGender, autoDetectCard } from '@utils/inflect';
+import { autoDetectCard } from '@utils/inflect';
 
 export function openDeclensionModal(card, onSave) {
   const isNoun = card.wordType === 'noun' || card.wordType === 'pronoun';
@@ -60,9 +60,7 @@ export function openDeclensionModal(card, onSave) {
         label: 'Сбросить к автоматическим',
         primary: false,
         action: () => {
-          const backup = { ...card };
           card.forms = null;
-          card.formsEdited = false;
           autoDetectCard(card);
           modal.close();
           openDeclensionModal(card, onSave);
@@ -93,7 +91,6 @@ export function openDeclensionModal(card, onSave) {
             });
           }
           card.forms = newForms;
-          card.formsEdited = true;
           modal.close();
           if (onSave) onSave(card);
         },
