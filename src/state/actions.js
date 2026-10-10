@@ -11,7 +11,7 @@ export async function loadInitialState() {
     setState({
       currentProfileId: data.activeProfileId || null,
       globalSettings: data.globalSettings || {
-        autoInflect: true,
+        autoInflect: false,
         voiceSettings: { rate: 1, pitch: 1, voiceURI: '' },
       },
       profiles: data.profiles || [],
@@ -33,7 +33,7 @@ export async function loadInitialState() {
       profiles: [defaultProfile],
       activeProfileId: defaultProfile.id,
       globalSettings: {
-        autoInflect: true,
+        autoInflect: false,
         voiceSettings: { rate: 1, pitch: 1, voiceURI: '' },
       },
       activityStates: {},

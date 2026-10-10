@@ -96,9 +96,9 @@ export function renderGeneral(container) {
       emoji: '📖',
       text: 'Автосклонение',
       type: 'click',
-      isActive: globalSettings.autoInflect !== false,
+      isActive: globalSettings.autoInflect === true,
       onClick: () => {
-        const newVal = !globalSettings.autoInflect;
+        const newVal = globalSettings.autoInflect !== true;
         saveSetting('autoInflect', newVal);
         renderGeneral(container);
       },

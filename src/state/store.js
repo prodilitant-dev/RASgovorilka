@@ -7,7 +7,7 @@ let state = {
   sentenceWords: [],
   profiles: [],
   globalSettings: {
-    autoInflect: true,
+    autoInflect: false,
     voiceSettings: { rate: 1, pitch: 1, voiceURI: '' },
   },
   activityState: null,

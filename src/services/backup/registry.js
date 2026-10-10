@@ -150,7 +150,7 @@ export const EXPORT_COMPONENTS = {
       return {
         data: {
           fullscreen: globalData.fullscreen || false,
-          autoInflect: globalData.autoInflect !== undefined ? globalData.autoInflect : true,
+          autoInflect: globalData.autoInflect !== undefined ? globalData.autoInflect : false,
           hiddenModes: profile.hiddenModes || []   // ← теперь берём из профиля
         },
         imageIds: new Set()

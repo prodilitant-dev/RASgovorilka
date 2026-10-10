@@ -44,7 +44,7 @@ export async function speakSentence() {
     toast('Нет слов для озвучивания', 'info');
     return;
   }
-  const autoInflect = state.globalSettings?.autoInflect !== false;
+  const autoInflect = state.globalSettings?.autoInflect === true
   const phrase = getInflectedSentence(words, autoInflect);
   if (!phrase) return;
   const voiceSettings = state.voiceSettings || { rate: 1, pitch: 1, voiceURI: '' };
@@ -54,7 +54,7 @@ export async function speakSentence() {
 export function renderSentence(container, options = {}) {
   const state = getState();
   const words = state.sentenceWords || [];
-  const autoInflect = state.globalSettings?.autoInflect !== false;
+  const autoInflect = state.globalSettings?.autoInflect === true
   const displayWords = autoInflect ? getInflectedWords(words, true) : words.map(w => w.text);
 
   if (options.onRemove) lastCallbacks.onRemove = options.onRemove;
