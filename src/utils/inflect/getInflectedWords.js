@@ -3,6 +3,33 @@ import { prepMap, verbCaseMap } from './dictionaries';
 import { getNounGender } from './getNounGender';
 import { inflectNumber } from './inflectNumber';
 
+/** Двойные глаголы: кому (Дат.) / что (Вин.) — по одушевлённости. */
+const DOUBLE_VERBS = [
+  'дай', 'дать', 'давать',
+  'подай', 'подать',
+  'принеси', 'принести',
+  'покажи', 'показать',
+];
+
+/**
+ * Ищет ближайший глагол или предлог слева от позиции i,
+ * пропуская промежуточные слова (существительные, прилагательные).
+ *
+ * @returns {{ type: 'prep'|'verb', caseKey: string, verb?: string } | null}
+ */
+function findCaseSource(wordsArray, i) {
+  for (let j = i - 1; j >= 0; j--) {
+    const word = wordsArray[j].text.trim().toLowerCase();
+    if (prepMap[word]) {
+      return { type: 'prep', caseKey: prepMap[word] };
+    }
+    if (verbCaseMap[word]) {
+      return { type: 'verb', caseKey: verbCaseMap[word], verb: word };
+    }
+  }
+  return null;
+}
+
 export function getInflectedWords(wordsArray, autoInflect) {
   if (!autoInflect) return wordsArray.map(w => w.text || '');
 
@@ -13,23 +40,28 @@ export function getInflectedWords(wordsArray, autoInflect) {
     // ===== Числительные =====
     const num = parseInt(w.text, 10);
     if (!isNaN(num) && num >= 0 && num <= 20 && String(num) === w.text.trim()) {
+      const source = findCaseSource(wordsArray, i);
       let caseKey = 'nominative';
-      if (i > 0) {
-        const prev = wordsArray[i - 1].text.trim().toLowerCase();
-        if (prepMap[prev]) caseKey = prepMap[prev];
+      if (source && source.type === 'prep') {
+        caseKey = source.caseKey;
+      } else if (source && source.type === 'verb') {
+        caseKey = source.caseKey;
+        if (DOUBLE_VERBS.includes(source.verb)) {
+          caseKey = 'accusative';
+        }
       }
+
       let gender = 'masculine';
       if (i + 1 < wordsArray.length && wordsArray[i + 1].wordType === 'noun') {
-        const nextNoun = wordsArray[i + 1];
-        const nounGender = getNounGender(nextNoun.text);
+        const nounGender = getNounGender(wordsArray[i + 1].text);
         if (nounGender) gender = nounGender;
       }
-      const inflectedNum = inflectNumber(num, gender, caseKey);
-      result.push(inflectedNum);
+
+      result.push(inflectNumber(num, gender, caseKey));
       continue;
     }
 
-    // ===== Остальные части речи =====
+    // ===== Не склоняемые части речи =====
     if (
       !w.forms ||
       !w.wordType ||
@@ -41,31 +73,27 @@ export function getInflectedWords(wordsArray, autoInflect) {
       continue;
     }
 
-    // Определяем падеж по предыдущему слову
+    // ===== Определяем падеж по источнику слева =====
+    const source = findCaseSource(wordsArray, i);
     let caseKey = 'nominative';
-    if (i > 0) {
-      const prevText = wordsArray[i - 1].text.trim().toLowerCase();
-      if (prepMap[prevText]) {
-        caseKey = prepMap[prevText];
-      } else if (verbCaseMap[prevText]) {
-        caseKey = verbCaseMap[prevText];
-
-        const DOUBLE_VERBS = [
-          'дай', 'дать', 'давать',
-          'подай', 'подать',
-          'принеси', 'принести',
-          'покажи', 'показать',
-        ];
-        if (DOUBLE_VERBS.includes(prevText)) {
-          caseKey = w.animate === true ? 'dative' : 'accusative';
-        }
+    if (source) {
+      caseKey = source.caseKey;
+      if (source.type === 'verb' && DOUBLE_VERBS.includes(source.verb)) {
+        // Одушевлённое → Дат. (дай маме)
+        // Неодушевлённое → Вин. (дай машинку / дай воду)
+        caseKey = w.animate === true ? 'dative' : 'accusative';
       }
     }
 
+    // ===== Существительные и местоимения =====
     if (w.wordType === 'noun' || w.wordType === 'pronoun') {
       const form = w.forms[caseKey] || w.forms.nominative || w.text;
       result.push(form);
-    } else if (w.wordType === 'adjective') {
+      continue;
+    }
+
+    // ===== Прилагательные =====
+    if (w.wordType === 'adjective') {
       let nounIndex = -1;
       for (let j = i + 1; j < wordsArray.length; j++) {
         if (wordsArray[j].wordType === 'noun') { nounIndex = j; break; }
@@ -77,20 +105,20 @@ export function getInflectedWords(wordsArray, autoInflect) {
       }
       let gender = 'masculine';
       if (nounIndex !== -1) {
-        const nounWord = wordsArray[nounIndex];
-        const nounGender = getNounGender(nounWord.text);
+        const nounGender = getNounGender(wordsArray[nounIndex].text);
         if (nounGender) gender = nounGender;
       }
+
       const genderForms = w.forms[gender];
       if (genderForms) {
-        const form = genderForms[caseKey] || genderForms.nominative || w.text;
-        result.push(form);
+        result.push(genderForms[caseKey] || genderForms.nominative || w.text);
       } else {
         result.push(w.text);
       }
-    } else {
-      result.push(w.text);
+      continue;
     }
+
+    result.push(w.text);
   }
   return result;
 }
