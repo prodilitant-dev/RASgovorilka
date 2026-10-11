@@ -20,6 +20,7 @@ export function addWord(text, sourceItem = null) {
     original: text,
     wordType: sourceItem?.wordType || 'noun',
     forms: sourceItem?.forms || null,
+    animate: sourceItem?.animate
   };
   setState({ sentenceWords: [...words, newWord] });
 }
