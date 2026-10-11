@@ -23,7 +23,26 @@
   cursor: pointer;
   transition: background var(--transition), color var(--transition);
   color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
+
+.mode-btn__icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: inline-block;
+  font-size: 18px;
+  line-height: 1;
+  text-align: center;
+}
+
+.mode-btn__label {
+  display: inline-block;
+}
+  
 .mode-btn.active {
   background: var(--primary);
   color: #000;

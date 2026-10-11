@@ -1,6 +1,7 @@
 // src/components/ModeBar/ModeBar.js
 import { createElement, clear } from '@utils/dom';
 import { MODES } from '@config/modes';
+import { iconUrl } from '@utils/icon';
 import { logger } from '@utils/logger';
 
 export function renderModeBar(
@@ -17,7 +18,7 @@ export function renderModeBar(
   let modes = [];
 
   if (editingMode) {
-    modes.push({ id: 'profiles', label: 'Профили', icon: '👤' });
+    modes.push({ id: 'profiles', label: 'Профили', icon: 'profiles', emoji: '👤' });
   }
 
   const visibleModes = MODES.filter((m) => !hiddenModes.includes(m.id));
@@ -29,7 +30,7 @@ export function renderModeBar(
   modes.push(...sortedVisible);
 
   if (editingMode) {
-    modes.push({ id: 'general', label: 'Общие', icon: '⚙️' });
+    modes.push({ id: 'general', label: 'Общие', icon: 'general', emoji: '⚙️' });
   }
 
   modes.forEach((mode) => {
@@ -37,7 +38,25 @@ export function renderModeBar(
       className: `mode-btn ${mode.id === activeModeId ? 'active' : ''}`,
       'data-mode-id': mode.id,
       'data-log': `mode-switch:${mode.id}`,
-    }, `${mode.icon} ${mode.label}`);
+    });
+
+    // Иконка WebP с fallback на эмодзи
+    const iconEl = createElement('img', {
+      src: iconUrl(mode.icon),
+      alt: '',
+      className: 'mode-btn__icon',
+      draggable: 'false',
+    });
+    iconEl.addEventListener('error', () => {
+      const span = createElement('span', { className: 'mode-btn__icon' }, mode.emoji || '');
+      iconEl.replaceWith(span);
+    });
+    btn.appendChild(iconEl);
+
+    // Текст кнопки
+    const labelEl = createElement('span', { className: 'mode-btn__label' }, mode.label);
+    btn.appendChild(labelEl);
+
     btn.addEventListener('click', () => onModeSelect(mode.id));
     container.appendChild(btn);
   });
