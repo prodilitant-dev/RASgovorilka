@@ -44,7 +44,9 @@
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
+  gap: var(--spacing-md);
 }
+
 
 .modal-title-wrap {
   display: flex;
@@ -69,6 +71,39 @@
 .modal-header h3 {
   margin: 0;
   font-size: 20px;
+  flex: 1;
+}
+
+.modal-close-btn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.15s;
+}
+
+.modal-close-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.modal-close-btn:active {
+  transform: scale(0.92);
+}
+
+.modal-close-btn__icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
 
 .modal-body {
