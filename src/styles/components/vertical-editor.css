@@ -264,3 +264,8 @@
     min-height: 38px;
   }
 }
+
+.ve-preview-img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+}

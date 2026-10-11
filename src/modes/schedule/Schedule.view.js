@@ -49,10 +49,9 @@ export function renderScheduleView(container, {
   if (editingMode) {
     const addCard = createCard({
       id: 'add',
-      text: 'Добавить событие',
-      emoji: '➕',
+      text: '',
+      emoji: 'add',
       isAdd: false,
-      draggable: false,
       className: 'card--add',
     });
     cards.push(addCard);
@@ -60,10 +59,9 @@ export function renderScheduleView(container, {
     if (events.length > 0) {
       const saveCard = createCard({
         id: 'save-template',
-        text: 'Сохранить шаблон',
-        emoji: '💾',
+        text: '',
+        emoji: 'save',
         isAdd: false,
-        draggable: false,
         className: 'card--add',
       });
       cards.push(saveCard);

@@ -1,5 +1,6 @@
 // src/components/common/VerticalEditor/VerticalEditor.fields.js
 import { createElement, on } from '@utils/dom';
+import { iconUrl, isIconName } from '@utils/icon';
 
 let idCounter = 0;
 function generateId() {
@@ -9,7 +10,7 @@ function generateId() {
 export function renderFields(entity, fields, callbacks) {
   const container = createElement('div', { className: 've-fields' });
 
-  fields.forEach(field => {
+  fields.forEach((field) => {
     const isVisible = typeof field.visible === 'function' ? field.visible(entity) : true;
     if (!isVisible) return;
 
@@ -45,17 +46,17 @@ export function renderFields(entity, fields, callbacks) {
       case 'select':
         inputEl = createElement('select', { id: fieldId, name: fieldId });
         if (field.options) {
-          field.options.forEach(opt => {
-            const option = createElement('option', {
-              value: typeof opt === 'string' ? opt : opt.value,
-            }, typeof opt === 'string' ? opt : opt.label);
+          field.options.forEach((opt) => {
+            const option = createElement(
+              'option',
+              { value: typeof opt === 'string' ? opt : opt.value },
+              typeof opt === 'string' ? opt : opt.label
+            );
             if (entity[field.id] === option.value) option.selected = true;
             inputEl.appendChild(option);
           });
         }
-        on(inputEl, 'change', (e) => {
-          callbacks.onFieldChange(field.id, e.target.value);
-        });
+        on(inputEl, 'change', (e) => callbacks.onFieldChange(field.id, e.target.value));
         break;
 
       case 'toggle': {
@@ -79,13 +80,12 @@ export function renderFields(entity, fields, callbacks) {
         toggleLabel.appendChild(slider);
         toggleWrapper.appendChild(toggleLabel);
 
-        const onToggleChange = (e) => {
+        checkbox.addEventListener('change', (e) => {
           const value = e.target.checked;
           entity[field.id] = value;
           if (field.onChange) field.onChange(value, entity);
           callbacks.onFieldChange(field.id, value);
-        };
-        checkbox.addEventListener('change', onToggleChange);
+        });
 
         inputEl = toggleWrapper;
         break;
@@ -104,30 +104,55 @@ export function renderFields(entity, fields, callbacks) {
   return container;
 }
 
-/**
- * Обновляет текст в превью редактора при вводе.
- * Серый полупрозрачный цвет = fallback-заглушка (первая буква текста),
- * а не настоящее эмодзи.
- */
 function updatePreviewText(entity) {
-  const previewText = document.querySelector('.ve-preview-text');
-  if (!previewText) return;
+  const box = document.querySelector('.ve-preview-box');
+  if (!box) return;
   if (entity.imageId) return;
 
   const emoji = entity.emoji || entity.icon || '';
   const text = entity.text || entity.name || '';
-  const isLetterFallback = !emoji && !!text;
-  const fallbackText = emoji || (text ? text.charAt(0).toUpperCase() : '➕');
 
-  previewText.textContent = fallbackText;
+  let textEl = box.querySelector('.ve-preview-text');
+  const existingImg = box.querySelector('.ve-preview-img');
+
+  // Если стало именем иконки — рендерим картинку
+  if (emoji && isIconName(emoji)) {
+    if (existingImg) return; // уже показана
+    if (textEl) textEl.textContent = '';
+    const img = createElement('img', {
+      src: iconUrl(emoji),
+      alt: '',
+      className: 've-preview-img',
+      draggable: 'false',
+    });
+    img.style.maxWidth = '70%';
+    img.style.maxHeight = '70%';
+    img.style.objectFit = 'contain';
+    img.addEventListener('error', () => {
+      img.remove();
+      if (textEl) textEl.textContent = text ? text.charAt(0).toUpperCase() : '➕';
+    });
+    box.appendChild(img);
+    return;
+  }
+
+  // Иначе — эмодзи/буква
+  if (existingImg) existingImg.remove();
+  if (!textEl) {
+    textEl = createElement('div', { className: 've-preview-text' });
+    box.appendChild(textEl);
+  }
+
+  const isLetterFallback = !emoji && !!text;
+  textEl.textContent = emoji || (text ? text.charAt(0).toUpperCase() : '➕');
 
   if (isLetterFallback) {
-    previewText.style.color = 'var(--text-muted)';
-    previewText.style.opacity = '0.4';
-    previewText.style.fontSize = '3em';
+    textEl.style.color = 'var(--text-muted)';
+    textEl.style.opacity = '0.4';
+    textEl.style.fontSize = '3em';
   } else {
-    previewText.style.color = '';
-    previewText.style.opacity = '';
-    previewText.style.fontSize = '';
+    textEl.style.color = '';
+    textEl.style.opacity = '';
+    textEl.style.fontSize = '';
   }
 }

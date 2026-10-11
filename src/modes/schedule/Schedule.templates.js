@@ -6,9 +6,8 @@ import { uid } from '@utils/id';
 import { confirm } from '@utils/dialog';
 import { openEventEditor } from './Schedule.editor';
 import { saveProfile } from '@storage/appStorage';
+import { iconUrl } from '@utils/icon';
 
-// Порядок отображения: с понедельника (русская традиция).
-// Поле `dow` — значение Date.getDay(): 0=воскресенье … 6=суббота.
 const DAY_ORDER = [
   { name: 'Понедельник', dow: 1 },
   { name: 'Вторник',     dow: 2 },
@@ -19,6 +18,23 @@ const DAY_ORDER = [
   { name: 'Воскресенье', dow: 0 },
 ];
 
+/** Хелпер: создаёт кнопку-иконку с fallback на эмодзи. */
+function createIconButton({ iconName, fallbackEmoji, className, onClick, title, ariaLabel }) {
+  const btn = createElement('div', { className, title, 'aria-label': ariaLabel });
+  const img = createElement('img', {
+    src: iconUrl(iconName),
+    alt: '',
+    className: 'cat-action-btn__icon',
+    draggable: 'false',
+  });
+  img.addEventListener('error', () => {
+    img.replaceWith(document.createTextNode(fallbackEmoji));
+  });
+  btn.appendChild(img);
+  on(btn, 'click', onClick);
+  return btn;
+}
+
 export function openTemplateManager(profile, onUpdate) {
   const modal = new Modal({
     title: 'Управление шаблонами',
@@ -26,31 +42,42 @@ export function openTemplateManager(profile, onUpdate) {
       const wrap = createElement('div', {});
 
       const list = createElement('div', { className: 'template-list' });
-      profile.scheduleTemplates.forEach(tmpl => {
+      profile.scheduleTemplates.forEach((tmpl) => {
         const row = createElement('div', {
           className: 'template-row',
           style: 'display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border);',
         });
-        const nameSpan = createElement('span', {
-          className: 'cursor-pointer',
-          style: 'flex:1; cursor:pointer; font-weight:500;',
-        }, `${tmpl.icon || '📋'} ${tmpl.name || 'Без названия'}`);
+        const nameSpan = createElement(
+          'span',
+          { className: 'cursor-pointer', style: 'flex:1; cursor:pointer; font-weight:500;' },
+          tmpl.name || 'Без названия'
+        );
         on(nameSpan, 'click', () => {
           modal.close();
           openTemplateEventsEditor(profile, tmpl.id, onUpdate);
         });
 
         const actions = createElement('div', { style: 'display:flex; gap:6px;' });
-        const editBtn = createElement('div', { className: 'category' }, '✏️');
-        on(editBtn, 'click', (e) => {
-          e.stopPropagation();
-          modal.close();
-          openTemplateEventsEditor(profile, tmpl.id, onUpdate);
+        const editBtn = createIconButton({
+          iconName: 'edit',
+          fallbackEmoji: '✏️',
+          className: 'category',
+          ariaLabel: 'Редактировать',
+          onClick: (e) => {
+            e.stopPropagation();
+            modal.close();
+            openTemplateEventsEditor(profile, tmpl.id, onUpdate);
+          },
         });
-        const delBtn = createElement('div', { className: 'category category-danger' }, '🗑️');
-        on(delBtn, 'click', (e) => {
-          e.stopPropagation();
-          deleteTemplate(profile, tmpl.id, onUpdate, modal);
+        const delBtn = createIconButton({
+          iconName: 'delete',
+          fallbackEmoji: '🗑️',
+          className: 'category category-danger',
+          ariaLabel: 'Удалить',
+          onClick: (e) => {
+            e.stopPropagation();
+            deleteTemplate(profile, tmpl.id, onUpdate, modal);
+          },
         });
         actions.appendChild(editBtn);
         actions.appendChild(delBtn);
@@ -60,7 +87,6 @@ export function openTemplateManager(profile, onUpdate) {
       });
       wrap.appendChild(list);
 
-      // Привязка дней
       const mappingTitle = createElement(
         'h4',
         { className: 'mt-4', style: 'margin-top:16px;' },
@@ -77,7 +103,7 @@ export function openTemplateManager(profile, onUpdate) {
         const select = createElement('select', { style: 'flex:1; padding:4px;' });
         const noneOpt = createElement('option', { value: '' }, '—');
         select.appendChild(noneOpt);
-        profile.scheduleTemplates.forEach(tmpl => {
+        profile.scheduleTemplates.forEach((tmpl) => {
           const opt = createElement('option', { value: tmpl.id }, tmpl.name);
           if (profile.scheduleDayMapping?.[dow] === tmpl.id) opt.selected = true;
           select.appendChild(opt);
@@ -107,7 +133,7 @@ export function openTemplateManager(profile, onUpdate) {
 }
 
 function openTemplateEventsEditor(profile, templateId, onUpdate) {
-  const template = profile.scheduleTemplates.find(t => t.id === templateId);
+  const template = profile.scheduleTemplates.find((t) => t.id === templateId);
   if (!template) { toast('Шаблон не найден', 'error'); return; }
 
   const modal = new Modal({
@@ -120,37 +146,54 @@ function openTemplateEventsEditor(profile, templateId, onUpdate) {
         const empty = createElement('div', { className: 'text-muted text-center p-4' }, 'Нет событий');
         list.appendChild(empty);
       } else {
-        template.events.forEach(event => {
+        template.events.forEach((event) => {
           const row = createElement('div', {
             className: 'event-row',
             style: 'display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border);',
           });
           const info = createElement('span', {}, `${event.time || ''} ${event.icon || '📌'} ${event.text || ''}`);
           const actions = createElement('div', { style: 'display:flex; gap:6px;' });
-          const editBtn = createElement('div', { className: 'category' }, '✏️');
-          on(editBtn, 'click', () => {
-            modal.close();
-            openEventEditor(event, (updatedData) => {
-              Object.assign(event, updatedData);
-              saveProfile(profile);
-              toast('Событие обновлено');
-              openTemplateEventsEditor(profile, templateId, onUpdate);
-            }, (id) => {
-              template.events = template.events.filter(e => e.id !== id);
-              saveProfile(profile);
-              toast('Событие удалено');
-              openTemplateEventsEditor(profile, templateId, onUpdate);
-            });
+
+          const editBtn = createIconButton({
+            iconName: 'edit',
+            fallbackEmoji: '✏️',
+            className: 'category',
+            ariaLabel: 'Редактировать событие',
+            onClick: () => {
+              modal.close();
+              openEventEditor(
+                event,
+                (updatedData) => {
+                  Object.assign(event, updatedData);
+                  saveProfile(profile);
+                  toast('Событие обновлено');
+                  openTemplateEventsEditor(profile, templateId, onUpdate);
+                },
+                (id) => {
+                  template.events = template.events.filter((e) => e.id !== id);
+                  saveProfile(profile);
+                  toast('Событие удалено');
+                  openTemplateEventsEditor(profile, templateId, onUpdate);
+                }
+              );
+            },
           });
-          const delBtn = createElement('button', { className: 'btn-danger btn-sm' }, '🗑️');
-          on(delBtn, 'click', () => {
-            if (confirm('Удалить событие?')) {
-              template.events = template.events.filter(e => e.id !== event.id);
-              saveProfile(profile);
-              toast('Событие удалено');
-              openTemplateEventsEditor(profile, templateId, onUpdate);
-            }
+
+          const delBtn = createIconButton({
+            iconName: 'delete',
+            fallbackEmoji: '🗑️',
+            className: 'category category-danger',
+            ariaLabel: 'Удалить событие',
+            onClick: () => {
+              if (confirm('Удалить событие?')) {
+                template.events = template.events.filter((e) => e.id !== event.id);
+                saveProfile(profile);
+                toast('Событие удалено');
+                openTemplateEventsEditor(profile, templateId, onUpdate);
+              }
+            },
           });
+
           actions.appendChild(editBtn);
           actions.appendChild(delBtn);
           row.appendChild(info);
@@ -183,11 +226,11 @@ function openTemplateEventsEditor(profile, templateId, onUpdate) {
 }
 
 async function deleteTemplate(profile, templateId, onUpdate, modal) {
-  const tmpl = profile.scheduleTemplates.find(t => t.id === templateId);
+  const tmpl = profile.scheduleTemplates.find((t) => t.id === templateId);
   if (!tmpl) return;
   const ok = await confirm(`Удалить шаблон "${tmpl.name}"?`);
   if (!ok) return;
-  profile.scheduleTemplates = profile.scheduleTemplates.filter(t => t.id !== templateId);
+  profile.scheduleTemplates = profile.scheduleTemplates.filter((t) => t.id !== templateId);
   for (const day in profile.scheduleDayMapping) {
     if (profile.scheduleDayMapping[day] === templateId) delete profile.scheduleDayMapping[day];
   }

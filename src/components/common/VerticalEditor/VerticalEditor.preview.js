@@ -1,6 +1,7 @@
 // src/components/common/VerticalEditor/VerticalEditor.preview.js
 import { createElement, on } from '@utils/dom';
 import { getImageUrl } from '@services/image';
+import { iconUrl, isIconName } from '@utils/icon';
 
 let idCounter = 0;
 function generateId() {
@@ -17,17 +18,43 @@ export function renderPreview(entity, callbacks) {
   function showFallback(box, ent) {
     const emoji = ent.emoji || ent.icon || '';
     const text = ent.text || ent.name || '';
-    const isLetterFallback = !emoji && !!text;
-    const fallbackText = emoji || (text ? text.charAt(0).toUpperCase() : '➕');
 
     box.style.backgroundImage = 'none';
     box.style.background = 'var(--bg)';
+
+    // Удаляем прошлый контент
+    const existingImg = box.querySelector('.ve-preview-img');
+    if (existingImg) existingImg.remove();
 
     let textEl = box.querySelector('.ve-preview-text');
     if (!textEl) {
       textEl = createElement('div', { className: 've-preview-text' });
       box.appendChild(textEl);
     }
+
+    // Имя иконки — рендерим картинку
+    if (emoji && isIconName(emoji)) {
+      textEl.textContent = '';
+      const img = createElement('img', {
+        src: iconUrl(emoji),
+        alt: '',
+        className: 've-preview-img',
+        draggable: 'false',
+      });
+      img.style.maxWidth = '70%';
+      img.style.maxHeight = '70%';
+      img.style.objectFit = 'contain';
+      img.addEventListener('error', () => {
+        img.remove();
+        textEl.textContent = text ? text.charAt(0).toUpperCase() : '➕';
+      });
+      box.appendChild(img);
+      return;
+    }
+
+    // Обычный эмодзи или буква
+    const isLetterFallback = !emoji && !!text;
+    const fallbackText = emoji || (text ? text.charAt(0).toUpperCase() : '➕');
     textEl.textContent = fallbackText;
 
     if (isLetterFallback) {
@@ -48,12 +75,14 @@ export function renderPreview(entity, callbacks) {
     box.style.backgroundRepeat = 'no-repeat';
     const textEl = box.querySelector('.ve-preview-text');
     if (textEl) textEl.textContent = '';
+    const existingImg = box.querySelector('.ve-preview-img');
+    if (existingImg) existingImg.remove();
   };
 
-  // Приоритет: imageId → imagePath → fallback
+  // Приоритет: imageId → imagePath → fallback (эмодзи / иконка)
   if (entity.imageId) {
     box.classList.add('loading');
-    getImageUrl(entity.imageId).then(url => {
+    getImageUrl(entity.imageId).then((url) => {
       box.classList.remove('loading');
       if (url) {
         applyImageUrl(url);

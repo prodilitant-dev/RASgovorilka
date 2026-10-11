@@ -144,3 +144,17 @@ body.editing-mode .category:not(.category-add) {
 .category-danger:active {
   background: #b71c1c;
 }
+.cat-action-btn__icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.cat-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

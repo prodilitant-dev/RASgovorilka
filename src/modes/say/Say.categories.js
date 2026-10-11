@@ -4,6 +4,7 @@ import { makeSortable } from '@utils/dragdrop';
 import { openCategoryCreateModal } from './Say.categoryCreate';
 import { getState } from '@state/store';
 import { logger } from '@utils/logger';
+import { iconUrl } from '@utils/icon';
 
 export function renderCategories(container, profile, activeId, onSelect, onEdit, onReorder, onCreated) {
   logger.debug('🔄 Rendering Categories');
@@ -39,16 +40,23 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
 
     if (editing && onEdit) {
       const actionsEl = createElement('span', { className: 'cat-actions' });
-      const editBtn = createElement(
-        'button',
-        {
-          type: 'button',
-          className: 'cat-action-btn',
-          'aria-label': 'Редактировать категорию',
-          title: 'Редактировать',
-        },
-        '✏️'
-      );
+      const editBtn = createElement('button', {
+        type: 'button',
+        className: 'cat-action-btn',
+        'aria-label': 'Редактировать категорию',
+        title: 'Редактировать',
+      });
+      const editImg = createElement('img', {
+        src: iconUrl('edit'),
+        alt: '',
+        className: 'cat-action-btn__icon',
+        draggable: 'false',
+      });
+      editImg.addEventListener('error', () => {
+        editImg.replaceWith(document.createTextNode('✏️'));
+      });
+      editBtn.appendChild(editImg);
+
       editBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         logger.debug(`Category edit clicked: ${cat.id}`);
