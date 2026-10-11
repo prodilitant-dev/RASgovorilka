@@ -1,94 +1,104 @@
 // src/components/common/Settings/VoiceSettingsModal.js
 import { Modal } from '../Modal/Modal';
 import { createElement } from '@utils/dom';
-import { speak, ensureVoicesLoaded } from '@utils/speech';
+import { speak } from '@utils/speech';
+import { iconUrl } from '@utils/icon';
 import { logger } from '@utils/logger';
-import { createCustomSelect } from '../CustomSelect/CustomSelect';
 
 export function openVoiceSettings(voiceSettings, onSave) {
-  let rateInput, pitchInput;
-  let voiceSelectInstance = null;
+  let rateInput = null;
+  let pitchInput = null;
+  let volumeInput = null;
 
   const modal = new Modal({
     title: 'Настройки голоса',
     body: () => {
-      const wrap = createElement('div', {});
+      const wrap = createElement('div', { className: 'voice-settings' });
 
-      // --- Скорость ---
-      const rateRow = createElement('div', { className: 'form-row' });
-      const rateLabel = createElement('label', { for: 'voice-rate' }, 'Скорость');
-      rateInput = createElement('input', {
-        type: 'range',
-        min: '0.5',
-        max: '2.0',
-        step: '0.1',
-        value: voiceSettings.rate || 1,
-        id: 'voice-rate',
-        name: 'voice-rate',
-      });
-      const rateValue = createElement('span', {}, voiceSettings.rate || 1);
-      rateInput.addEventListener('input', () => {
-        rateValue.textContent = rateInput.value;
-      });
-      rateRow.appendChild(rateLabel);
-      rateRow.appendChild(rateInput);
-      rateRow.appendChild(rateValue);
-      wrap.appendChild(rateRow);
-
-      // --- Тональность ---
-      const pitchRow = createElement('div', { className: 'form-row' });
-      const pitchLabel = createElement('label', { for: 'voice-pitch' }, 'Тональность');
-      pitchInput = createElement('input', {
-        type: 'range',
-        min: '0.5',
-        max: '2.0',
-        step: '0.1',
-        value: voiceSettings.pitch || 1,
-        id: 'voice-pitch',
-        name: 'voice-pitch',
-      });
-      const pitchValue = createElement('span', {}, voiceSettings.pitch || 1);
-      pitchInput.addEventListener('input', () => {
-        pitchValue.textContent = pitchInput.value;
-      });
-      pitchRow.appendChild(pitchLabel);
-      pitchRow.appendChild(pitchInput);
-      pitchRow.appendChild(pitchValue);
-      wrap.appendChild(pitchRow);
-
-      // --- Выбор голоса (кастомный) ---
-      const voiceRow = createElement('div', { className: 'form-row' });
-      const voiceLabel = createElement('label', { for: 'voice-select' }, 'Голос');
-      const voiceContainer = createElement('div', { style: 'flex:1;' });
-      voiceRow.appendChild(voiceLabel);
-      voiceRow.appendChild(voiceContainer);
-      wrap.appendChild(voiceRow);
-
-      // Загружаем голоса и создаём кастомный select
-      ensureVoicesLoaded().then((loadedVoices) => {
-        const options = [
-          { value: '', label: 'Системный' },
-          ...loadedVoices.map(v => ({ value: v.voiceURI, label: `${v.name} (${v.lang})` })),
-        ];
-        const currentVoice = voiceSettings.voiceURI || '';
-        voiceSelectInstance = createCustomSelect({
-          options,
-          value: currentVoice,
-          placeholder: 'Выберите голос...',
+      const createSliderRow = ({ id, label, min, max, step, value }) => {
+        const row = createElement('div', { className: 'voice-slider-row' });
+        const labelEl = createElement('label', {
+          for: id,
+          className: 'voice-slider-label',
+        }, label);
+        const input = createElement('input', {
+          type: 'range',
+          id,
+          name: id,
+          min: String(min),
+          max: String(max),
+          step: String(step),
+          value: String(value),
         });
-        voiceSelectInstance.element.id = 'voice-select';
-        voiceSelectInstance.element.name = 'voice-select';
-        voiceContainer.appendChild(voiceSelectInstance.element);
-      });
+        const valueEl = createElement('span', {
+          className: 'voice-slider-value',
+        }, String(value));
+        input.addEventListener('input', () => {
+          valueEl.textContent = input.value;
+        });
+        row.appendChild(labelEl);
+        row.appendChild(input);
+        row.appendChild(valueEl);
+        return { row, input, valueEl };
+      };
 
-      // --- Кнопка проверки ---
-      const testRow = createElement('div', { className: 'form-row', style: 'justify-content:center; margin-top: 8px;' });
-      const testBtn = createElement('div', { className: 'category' }, '🔊 Проверить');
+      // Скорость
+      const rate = createSliderRow({
+        id: 'voice-rate',
+        label: 'Скорость',
+        min: 0.5, max: 2.0, step: 0.1,
+        value: voiceSettings.rate ?? 1,
+      });
+      rateInput = rate.input;
+      wrap.appendChild(rate.row);
+
+      // Тональность
+      const pitch = createSliderRow({
+        id: 'voice-pitch',
+        label: 'Тональность',
+        min: 0.5, max: 2.0, step: 0.1,
+        value: voiceSettings.pitch ?? 1,
+      });
+      pitchInput = pitch.input;
+      wrap.appendChild(pitch.row);
+
+      // Громкость + кнопка Проверить
+      const volume = createSliderRow({
+        id: 'voice-volume',
+        label: 'Громкость',
+        min: 0, max: 1, step: 0.05,
+        value: voiceSettings.volume ?? 1,
+      });
+      volumeInput = volume.input;
+      wrap.appendChild(volume.row);
+
+      // Кнопка Проверить — отдельной строкой
+      const testRow = createElement('div', { className: 'voice-test-row' });
+      const testBtn = createElement('button', {
+        type: 'button',
+        className: 'voice-test-btn',
+        'aria-label': 'Проверить',
+      });
+      const testImg = createElement('img', {
+        src: iconUrl('say-small'),
+        alt: '',
+        className: 'voice-test-btn__icon',
+        draggable: 'false',
+      });
+      testImg.addEventListener('error', () => {
+        testImg.replaceWith(document.createTextNode('🔊'));
+      });
+      testBtn.appendChild(testImg);
+      const testLabel = createElement('span', {}, 'Проверить');
+      testBtn.appendChild(testLabel);
       testBtn.addEventListener('click', () => {
-        const currentRate = parseFloat(rateInput.value);
-        const currentPitch = parseFloat(pitchInput.value);
-        const currentVoice = voiceSelectInstance ? voiceSelectInstance.getValue() : '';
-        speak(' Раз - два. раз - два. Проверка связи. Прием', currentRate, currentPitch, currentVoice);
+        speak(
+          'Раз — два. Проверка связи.',
+          parseFloat(rateInput.value),
+          parseFloat(pitchInput.value),
+          parseFloat(volumeInput.value),
+          ''
+        );
         logger.debug('Test speech played');
       });
       testRow.appendChild(testBtn);
@@ -97,25 +107,21 @@ export function openVoiceSettings(voiceSettings, onSave) {
       return wrap;
     },
     buttons: [
-      { label: 'Отмена', action: () => modal.close() },
       {
         label: 'Сохранить',
         primary: true,
         action: () => {
-          const rate = parseFloat(rateInput.value);
-          const pitch = parseFloat(pitchInput.value);
-          const voiceURI = voiceSelectInstance ? voiceSelectInstance.getValue() : '';
-          onSave({ rate, pitch, voiceURI });
+          onSave({
+            rate: parseFloat(rateInput.value),
+            pitch: parseFloat(pitchInput.value),
+            volume: parseFloat(volumeInput.value),
+            voiceURI: '',
+          });
           modal.close();
         },
       },
     ],
-    onClose: () => {
-      if (voiceSelectInstance) {
-        voiceSelectInstance.destroy();
-        voiceSelectInstance = null;
-      }
-    },
+    onClose: () => {},
   });
 
   modal.open();

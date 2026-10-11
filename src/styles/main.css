@@ -28,6 +28,7 @@
 @import './modes/games.css';               /* ✅ Добавить */
 
 @import './components/icon.css';
+@import './components/voice-settings.css';
 
 .main-area {
   flex: 1;

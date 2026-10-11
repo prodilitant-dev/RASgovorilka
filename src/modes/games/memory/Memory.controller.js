@@ -3,9 +3,9 @@ import { renderMemoryBoard } from './Memory.view';
 import { generateMemoryPairs } from './Memory.logic';
 import { showResultsModal } from '@modes/common/activities/ResultsModal';
 import { getState, setState } from '@state/store';
-import { speak, stopSpeech } from '@utils/speech';
 import { toast } from '@utils/toast';
 import { getCardsFromCategories } from '@utils/game/pickCards';
+import { stopSpeech, speakFromState } from '@utils/speech';
 
 export function startMemory(container, profile, settings, onBack, savedState) {
   const allCards = getCardsFromCategories(profile, settings.categoryIds || []);
@@ -73,8 +73,7 @@ export function startMemory(container, profile, settings, onBack, savedState) {
   }
 
   async function speakFeedback(message) {
-    const voiceSettings = getState().voiceSettings || { rate: 1, pitch: 1, voiceURI: '' };
-    await speak(message, voiceSettings.rate, voiceSettings.pitch, voiceSettings.voiceURI);
+    await speakFromState(message);
   }
 
   function render() {

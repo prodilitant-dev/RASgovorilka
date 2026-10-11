@@ -12,7 +12,7 @@ export async function loadInitialState() {
       currentProfileId: data.activeProfileId || null,
       globalSettings: data.globalSettings || {
         autoInflect: false,
-        voiceSettings: { rate: 1, pitch: 1, voiceURI: '' },
+        voiceSettings: { rate: 1, pitch: 1, volume: 1, voiceURI: '' },
       },
       profiles: data.profiles || [],
     });
@@ -34,7 +34,7 @@ export async function loadInitialState() {
       activeProfileId: defaultProfile.id,
       globalSettings: {
         autoInflect: false,
-        voiceSettings: { rate: 1, pitch: 1, voiceURI: '' },
+        voiceSettings: { rate: 1, pitch: 1, volume: 1, voiceURI: '' },
       },
       activityStates: {},
     };

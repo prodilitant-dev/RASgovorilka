@@ -1,7 +1,7 @@
 // src/modes/common/activities/ActivityController.js
 import { getState, setState } from '@state/store';
 import { logger } from '@utils/logger';
-import { speak, stopSpeech } from '@utils/speech';
+import { speak, stopSpeech, speakFromState } from '@utils/speech';
 import { showResultsModal } from './ResultsModal';
 
 export function startActivity({
@@ -19,7 +19,7 @@ export function startActivity({
   logger.debug(`🚀 Starting activity: ${activityType}`);
 
   let items = [];
-  let answeredCount = 0;      // сколько вопросов уже отвечено
+  let answeredCount = 0;
   let correctCount = 0;
   let wrongCount = 0;
   let details = [];
@@ -28,7 +28,7 @@ export function startActivity({
 
   if (savedState && savedState.type === activityType) {
     items = savedState.items || [];
-    answeredCount = savedState.currentIndex || 0; // читаем старое поле
+    answeredCount = savedState.currentIndex || 0;
     correctCount = savedState.correctCount || 0;
     wrongCount = savedState.wrongCount || 0;
     details = savedState.details || [];
@@ -36,7 +36,8 @@ export function startActivity({
   } else {
     items = generateData(profile, settings);
     if (!items || items.length === 0) {
-      container.innerHTML = '<div style="padding:20px;text-align:center;">Нет данных для активности</div>';
+      container.innerHTML =
+        '<div style="padding:20px;text-align:center;">Нет данных для активности</div>';
       logger.warn('No items generated');
       return null;
     }
@@ -48,7 +49,7 @@ export function startActivity({
       activityState: {
         type: activityType,
         items,
-        currentIndex: answeredCount, // пишем под старым именем для совместимости
+        currentIndex: answeredCount,
         correctCount,
         wrongCount,
         details,
@@ -69,9 +70,7 @@ export function startActivity({
   }
 
   async function speakFeedback(message) {
-    const state = getState();
-    const voiceSettings = state.voiceSettings || { rate: 1, pitch: 1, voiceURI: '' };
-    await speak(message, voiceSettings.rate, voiceSettings.pitch, voiceSettings.voiceURI);
+    await speakFromState(message);
   }
 
   function renderCurrentItem() {
@@ -106,13 +105,11 @@ export function startActivity({
 
     details.push({ ...detail, correct: isCorrect });
 
-    // ⚠️ Увеличиваем счётчик СРАЗУ, до saveState.
-    // Если пользователь уйдёт в течение 1200 мс — состояние сохранится корректно.
+    // Увеличиваем счётчик ДО saveState — чтобы при уходе во время паузы
+    // 1200 мс прогресс сохранялся корректно.
     answeredCount++;
     saveState();
 
-    // Показываем feedback. Номер вопроса = answeredCount
-    // (тот, на который только что ответили).
     renderItem(
       container,
       item,

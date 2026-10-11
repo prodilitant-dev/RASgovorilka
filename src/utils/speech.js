@@ -1,5 +1,6 @@
 // src/utils/speech.js
 import { logger } from './logger';
+import { getState } from '@state/store';
 
 let currentUtterance = null;
 
@@ -7,9 +8,6 @@ export function getVoices() {
   return window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
 }
 
-/**
- * Гарантирует, что список голосов загружен.
- */
 export function ensureVoicesLoaded() {
   return new Promise((resolve) => {
     const voices = getVoices();
@@ -32,9 +30,6 @@ export function ensureVoicesLoaded() {
   });
 }
 
-/**
- * Останавливает текущий синтез речи
- */
 export function stopSpeech() {
   if (currentUtterance) {
     logger.debug('Stopping speech');
@@ -44,15 +39,19 @@ export function stopSpeech() {
 }
 
 /**
- * Синтезирует речь. Если уже идёт речь – останавливает её и начинает новую.
+ * Синтез речи.
+ * @param {string} text
+ * @param {number} rate   — скорость 0.5–2.0
+ * @param {number} pitch  — тональность 0.5–2.0
+ * @param {number} volume — громкость 0–1
+ * @param {string} voiceURI — URI голоса (пусто = системный)
  */
-export function speak(text, rate = 1, pitch = 1, voiceURI = '') {
+export function speak(text, rate = 1, pitch = 1, volume = 1, voiceURI = '') {
   if (!window.speechSynthesis) {
     logger.warn('Speech synthesis not supported');
     return;
   }
 
-  // Останавливаем текущую речь, если она есть
   stopSpeech();
 
   if (!text || !text.trim()) {
@@ -60,14 +59,16 @@ export function speak(text, rate = 1, pitch = 1, voiceURI = '') {
     return;
   }
 
-  logger.debug(`Speak: "${text}"`, { rate, pitch, voiceURI });
+  logger.debug(`Speak: "${text}"`, { rate, pitch, volume, voiceURI });
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'ru-RU';
   utterance.rate = rate;
   utterance.pitch = pitch;
+  utterance.volume = volume;
+
   if (voiceURI) {
     const voices = getVoices();
-    const found = voices.find(v => v.voiceURI === voiceURI);
+    const found = voices.find((v) => v.voiceURI === voiceURI);
     if (found) utterance.voice = found;
   }
 
@@ -75,7 +76,6 @@ export function speak(text, rate = 1, pitch = 1, voiceURI = '') {
     currentUtterance = null;
     logger.debug('Speech ended');
   };
-
   utterance.onerror = (e) => {
     currentUtterance = null;
     logger.warn('Speech error:', e);
@@ -83,4 +83,22 @@ export function speak(text, rate = 1, pitch = 1, voiceURI = '') {
 
   currentUtterance = utterance;
   window.speechSynthesis.speak(utterance);
+}
+
+/**
+ * Синтез речи с настройками из текущего стейта.
+ * Читает `state.globalSettings.voiceSettings`.
+ *
+ * @param {string} text
+ */
+export function speakFromState(text) {
+  const state = getState();
+  const vs = state.globalSettings?.voiceSettings || {};
+  return speak(
+    text,
+    vs.rate ?? 1,
+    vs.pitch ?? 1,
+    vs.volume ?? 1,
+    vs.voiceURI ?? ''
+  );
 }

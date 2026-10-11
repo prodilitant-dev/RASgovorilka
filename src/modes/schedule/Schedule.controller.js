@@ -7,9 +7,10 @@ import { getDateByOffset, getEventsForDate, getTemplateForDay, formatDateKey } f
 import { getState } from '@state/store';
 import { toast } from '@utils/toast';
 import { saveProfile } from '@storage/appStorage';
-import { speak } from '@utils/speech';
 import { uid } from '@utils/id';
 import { logger } from '@utils/logger';
+import { speakFromState } from '@utils/speech';
+
 
 let container = null;
 let currentProfile = null;
@@ -86,8 +87,7 @@ function handleEventClick(eventId) {
 
   if (!wasCompleted) {
     completed.push(eventId);
-    const voiceSettings = state.voiceSettings || { rate: 1, voiceURI: '' };
-    speak('Выполнено', voiceSettings.rate, voiceSettings.pitch, voiceSettings.voiceURI);
+    speakFromState('Выполнено');
   } else {
     completed.splice(index, 1);
   }

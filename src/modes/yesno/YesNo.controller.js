@@ -3,11 +3,12 @@ import { createElement, clear } from '@utils/dom';
 import { renderGrid, attachGridEvents } from '@components/common/Grid';
 import { openSimpleEditor } from '@modes/common/editorHelpers';
 import { getState } from '@state/store';
-import { speak } from '@utils/speech';
 import { toast } from '@utils/toast';
 import { saveProfile } from '@storage/appStorage';
 import { uid } from '@utils/id';
 import { logger } from '@utils/logger';
+import { speakFromState } from '@utils/speech';
+
 
 let container = null;
 let currentProfile = null;
@@ -15,7 +16,7 @@ let gridContainer = null;
 let gridCleanup = null;
 
 export function renderYesNo(containerEl, profile) {
-  container = containerEl;
+  container = containerEl;``
   currentProfile = profile;
 
   if (typeof container._modeCleanup === 'function') {
@@ -116,8 +117,7 @@ function handleButtonClick(id) {
   }
 
   if (btn.text.trim()) {
-    const voiceSettings = state.voiceSettings || { rate: 1, voiceURI: '' };
-    speak(btn.text, voiceSettings.rate, voiceSettings.pitch, voiceSettings.voiceURI);
+    speakFromState(btn.text);
   } else {
     toast('Пустая кнопка', 'info');
   }

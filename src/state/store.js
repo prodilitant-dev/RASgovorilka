@@ -8,7 +8,7 @@ let state = {
   profiles: [],
   globalSettings: {
     autoInflect: false,
-    voiceSettings: { rate: 1, pitch: 1, voiceURI: '' },
+    voiceSettings: { rate: 1, pitch: 1, volume: 1, voiceURI: '' },
   },
   activityState: null,
 };
