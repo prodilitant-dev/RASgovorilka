@@ -125,9 +125,8 @@ export function openTemplateManager(profile, onUpdate) {
 
       return wrap;
     },
-    buttons: [
-      { label: 'Закрыть', action: () => { modal.close(); if (onUpdate) onUpdate(); } },
-    ],
+    buttons: [],
+    onClose: () => { if (onUpdate) onUpdate(); },
   });
   modal.open();
 }

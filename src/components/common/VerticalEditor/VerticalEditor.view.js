@@ -3,6 +3,7 @@ import { createElement } from '@utils/dom';
 import { renderPreview } from './VerticalEditor.preview';
 import { renderFields } from './VerticalEditor.fields';
 import { renderFooter } from './VerticalEditor.footer';
+import { iconUrl } from '@utils/icon';
 
 export function renderVerticalEditorContent({
   entity,
@@ -18,7 +19,21 @@ export function renderVerticalEditorContent({
   // Шапка
   const header = createElement('div', { className: 've-header' });
   const headerTitle = createElement('span', { className: 've-title' }, title);
-  const closeBtn = createElement('button', { className: 've-close-btn' }, '✕');
+  const closeBtn = createElement('button', {
+    type: 'button',
+    className: 've-close-btn',
+    'aria-label': 'Закрыть',
+  });
+  const closeImg = createElement('img', {
+    src: iconUrl('close'),
+    alt: '',
+    className: 've-close-btn__icon',
+    draggable: 'false',
+  });
+  closeImg.addEventListener('error', () => {
+    closeImg.replaceWith(document.createTextNode('✕'));
+  });
+  closeBtn.appendChild(closeImg);
   closeBtn.addEventListener('click', callbacks.onClose);
   header.appendChild(headerTitle);
   header.appendChild(closeBtn);

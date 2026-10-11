@@ -110,10 +110,11 @@ export function openVerticalEditor(config) {
     }
     contentContainer._cleanup = cleanup;
   }
-
-  modalInstance = new Modal({
-    title: '',
-    body: () => {
+  
+    modalInstance = new Modal({
+      title: '',
+      showCloseButton: false,
+      body: () => {
       const wrap = document.createElement('div');
       wrap.className = 'vertical-editor-wrapper';
       contentContainer = wrap;

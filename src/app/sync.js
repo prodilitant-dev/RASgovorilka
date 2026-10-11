@@ -2,6 +2,9 @@
 import { subscribe, setState } from '@state/store';
 import { renderModeBar } from '@components/ModeBar/ModeBar';
 import { renderContent } from './render';
+import { createElement } from '@utils/dom';
+import { iconUrl, isIconName } from '@utils/icon';
+import { getActiveProfile } from '@state/actions';
 import { logger } from '@utils/logger';
 
 let modeBarSlot = null;
@@ -12,9 +15,31 @@ export function setContainers(mbs, ma) {
   mainArea = ma;
 }
 
+function updateProfileIcon(profileBtn, state) {
+  profileBtn.innerHTML = '';
+
+  const iconValue = state.editingMode
+    ? 'close'
+    : (getActiveProfile()?.icon || '👤');
+
+  if (isIconName(iconValue)) {
+    const img = createElement('img', {
+      src: iconUrl(iconValue),
+      alt: '',
+      className: 'profile-fab__icon',
+      draggable: 'false',
+    });
+    img.addEventListener('error', () => {
+      img.replaceWith(document.createTextNode(state.editingMode ? '✕' : '👤'));
+    });
+    profileBtn.appendChild(img);
+  } else {
+    profileBtn.textContent = iconValue;
+  }
+}
+
 export function subscribeToStore() {
   subscribe((changed, newState) => {
-    // ✅ Если modeBarSlot стал невалидным – ищем новый
     if (modeBarSlot && !document.contains(modeBarSlot)) {
       const newModeBar = document.querySelector('.mode-bar');
       if (newModeBar) {
@@ -26,7 +51,6 @@ export function subscribeToStore() {
       }
     }
 
-    // ✅ Аналогично для mainArea
     if (mainArea && !document.contains(mainArea)) {
       const newMainArea = document.querySelector('.main-area');
       if (newMainArea) {
@@ -38,12 +62,11 @@ export function subscribeToStore() {
       }
     }
 
-    // --- Основная логика обновления ---
     if (changed.editingMode !== undefined) {
       document.body.classList.toggle('editing-mode', newState.editingMode);
       const profileBtn = document.querySelector('.profile-fab');
       if (profileBtn) {
-        profileBtn.textContent = newState.editingMode ? '✕' : '👤';
+        updateProfileIcon(profileBtn, newState);
       }
     }
 
@@ -57,9 +80,7 @@ export function subscribeToStore() {
         renderModeBar(
           modeBarSlot,
           newState.currentMode,
-          (modeId) => {
-            setState({ currentMode: modeId });
-          },
+          (modeId) => setState({ currentMode: modeId }),
           newState.editingMode,
           newState.hiddenModes || [],
           newState.modeOrder || []

@@ -46,6 +46,21 @@
   line-height: 1;
 }
 
+.ve-close-btn__icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.ve-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* --- Превью --- */
 .ve-preview-block {
   display: flex;

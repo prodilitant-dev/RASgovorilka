@@ -71,9 +71,7 @@ export function openAboutModal() {
   const modal = new Modal({
     title: 'Об авторе',
     body,
-    buttons: [
-      { label: 'Закрыть', primary: true, action: () => modal.close() },
-    ],
+    buttons: [],
   });
   modal.open();
 }

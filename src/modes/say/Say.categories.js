@@ -6,6 +6,7 @@ import { getState } from '@state/store';
 import { logger } from '@utils/logger';
 import { iconUrl } from '@utils/icon';
 
+
 export function renderCategories(container, profile, activeId, onSelect, onEdit, onReorder, onCreated) {
   logger.debug('🔄 Rendering Categories');
 
@@ -75,9 +76,19 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
     container.appendChild(el);
   });
 
-  if (editing) {
-    const addBtn = createElement('div', { className: 'category category-add' }, '+');
-    addBtn.addEventListener('click', () => {
+      if (editing) {
+        const addBtn = createElement('div', { className: 'category category-add' });
+        const addImg = createElement('img', {
+          src: iconUrl('add'),
+          alt: '',
+          className: 'cat-action-btn__icon',
+          draggable: 'false',
+        });
+        addImg.addEventListener('error', () => {
+          addImg.replaceWith(document.createTextNode('+'));
+        });
+        addBtn.appendChild(addImg);
+        addBtn.addEventListener('click', () => {
       openCategoryCreateModal(profile, (newCategoryId) => {
         if (onCreated) {
           onCreated(newCategoryId);

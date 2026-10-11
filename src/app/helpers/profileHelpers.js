@@ -9,7 +9,7 @@ import { logger } from '@utils/logger';
  * @returns {string} иконка (эмодзи)
  */
 export function getProfileIcon(state) {
-  if (state.editingMode) return '✕';
+  if (state.editingMode) return 'close';
   const profile = getActiveProfile();
   return profile?.icon || '👤';
 }

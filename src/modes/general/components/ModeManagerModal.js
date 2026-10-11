@@ -24,15 +24,8 @@ export function openModeManager(onClose) {
       renderModeList();
       return wrap;
     },
-    buttons: [
-      {
-        label: 'Закрыть',
-        action: () => {
-          modal.close();
-          if (onClose) onClose();
-        },
-      },
-    ],
+    buttons: [],
+    
     onClose: () => {
       if (currentCleanup) {
         currentCleanup();

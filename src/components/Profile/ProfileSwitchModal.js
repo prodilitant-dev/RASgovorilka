@@ -61,9 +61,7 @@ export function openProfileSwitchModal(onProfileSwitched) {
 
       return wrap;
     },
-    buttons: [
-      { label: 'Закрыть', action: () => modal.close() }
-    ],
+    buttons: [],
     onClose: () => {
       if (cleanup) {
         cleanup();

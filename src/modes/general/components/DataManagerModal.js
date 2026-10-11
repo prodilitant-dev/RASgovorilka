@@ -7,9 +7,15 @@ export function openDataManager(onClose) {
   const modal = new Modal({
     title: 'Управление данными',
     body: () => {
-      const wrap = createElement('div', { className: 'data-manager', style: 'display:flex; flex-direction:column; gap:12px;' });
-      
-      const row = createElement('div', { style: 'display:flex; gap:12px; justify-content:center;' });
+      const wrap = createElement('div', {
+        className: 'data-manager',
+        style: 'display:flex; flex-direction:column; gap:12px;',
+      });
+
+      const row = createElement('div', {
+        style: 'display:flex; gap:12px; justify-content:center;',
+      });
+
       const exportBtn = createElement('div', { className: 'category active' }, 'Экспорт');
       exportBtn.addEventListener('click', () => {
         exportData();
@@ -26,7 +32,9 @@ export function openDataManager(onClose) {
       row.appendChild(importBtn);
       wrap.appendChild(row);
 
-      const resetBtn = createElement('div', { className: 'category category-danger' }, '🗑️ Сбросить все данные');
+      const resetBtn = createElement('div', {
+        className: 'category category-danger',
+      }, '🗑️ Сбросить все данные');
       resetBtn.addEventListener('click', () => {
         resetAllData();
         modal.close();
@@ -36,9 +44,8 @@ export function openDataManager(onClose) {
 
       return wrap;
     },
-    buttons: [
-      { label: 'Закрыть', action: () => { modal.close(); if (onClose) onClose(); } }
-    ]
+    buttons: [],
+    onClose: () => { if (onClose) onClose(); },
   });
   modal.open();
 }
