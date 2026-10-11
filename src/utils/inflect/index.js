@@ -11,3 +11,4 @@ export { getInflectedWords } from './getInflectedWords';
 export { getInflectedSentence } from './getInflectedSentence';
 export { fillEmptyForms } from './fillEmptyForms';
 export { applyAutoInflectToAllCards } from './applyAutoInflect';
+export { inflectMultiWordNoun } from './inflectMultiWordNoun';   // ← NEW
