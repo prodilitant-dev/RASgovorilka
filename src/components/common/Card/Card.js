@@ -1,6 +1,7 @@
 // src/components/common/Card/Card.js
 import { createElement } from '@utils/dom';
 import { getImageUrl } from '@services/imageService';
+import { iconUrl, isIconName } from '@utils/icon';
 
 export function createCard({
   id,
@@ -24,16 +25,15 @@ export function createCard({
       .join(' '),
     'data-id': id,
     'data-log': `card:${id || 'unknown'}`,
-    draggable: 'false', // отключаем HTML5 drag, используем Pointer Events
+    draggable: 'false',
   });
 
   const bg = createElement('div', { className: 'card__bg' });
 
-  function showFallback() {
+  function showLetterFallback() {
     bg.style.backgroundImage = 'none';
-    if (emoji) {
-      bg.textContent = emoji;
-    } else if (text) {
+    bg.textContent = '';
+    if (text) {
       bg.textContent = text.trim().charAt(0).toUpperCase();
       bg.style.fontSize = '2.5em';
       bg.style.fontWeight = '700';
@@ -43,8 +43,33 @@ export function createCard({
     }
   }
 
+  function showIcon(name, fallbackEmoji) {
+    bg.textContent = '';
+    bg.style.backgroundImage = 'none';
+    const img = createElement('img', {
+      src: iconUrl(name),
+      alt: '',
+      className: 'card__icon',
+      draggable: 'false',
+    });
+    img.addEventListener('error', () => {
+      img.remove();
+      if (fallbackEmoji) {
+        bg.textContent = fallbackEmoji;
+      } else {
+        showLetterFallback();
+      }
+    });
+    bg.appendChild(img);
+  }
+
+  function showEmojiFallback() {
+    bg.style.backgroundImage = 'none';
+    bg.textContent = emoji || (text ? text.trim().charAt(0).toUpperCase() : '📄');
+  }
+
   if (isAdd) {
-    bg.textContent = '➕';
+    showIcon('add', '➕');
   } else if (imageId) {
     bg.textContent = '';
     bg.style.backgroundSize = 'contain';
@@ -54,15 +79,12 @@ export function createCard({
       if (url) {
         bg.style.backgroundImage = `url(${url})`;
       } else {
-        showFallback();
+        showEmojiFallback();
       }
     });
   } else if (imagePath) {
     const base = import.meta.env.BASE_URL || '/';
-    const url = base.endsWith('/')
-      ? `${base}${imagePath}`
-      : `${base}/${imagePath}`;
-
+    const url = base.endsWith('/') ? `${base}${imagePath}` : `${base}/${imagePath}`;
     const probe = new Image();
     probe.onload = () => {
       bg.textContent = '';
@@ -71,10 +93,12 @@ export function createCard({
       bg.style.backgroundRepeat = 'no-repeat';
       bg.style.backgroundImage = `url(${url})`;
     };
-    probe.onerror = () => showFallback();
+    probe.onerror = () => showEmojiFallback();
     probe.src = url;
+  } else if (emoji && isIconName(emoji)) {
+    showIcon(emoji, null);
   } else {
-    showFallback();
+    showEmojiFallback();
   }
 
   card.appendChild(bg);

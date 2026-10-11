@@ -46,3 +46,19 @@
 }
 .quick-btn:active { background: #e9ecef; }
 .quick-btn img { width: 24px; height: 24px; object-fit: contain; }
+
+.quick-btn__icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.quick-btn--add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+}

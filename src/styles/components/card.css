@@ -89,3 +89,11 @@ body.editing-mode .card:not(.card--add) {
   opacity: 0.4;
   pointer-events: none;
 }
+
+.card__icon {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}

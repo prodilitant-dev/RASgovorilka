@@ -83,3 +83,20 @@
   transform: scale(1.1);
   box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
 }
+
+/* Иконки внутри кнопок предложения */
+.sentence-btn__icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.sentence-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

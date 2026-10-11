@@ -6,12 +6,12 @@ import { uid, toast } from '@utils';
 import { saveProfile } from '@storage/appStorage';
 import { openSimpleEditor } from '@modes/common/editorHelpers';
 import { getImageUrl } from '@services/imageService';
+import { iconUrl } from '@utils/icon';
 
 export function renderQuickButtons(container, profile, {
   onQuickClick,
   onReorder,
 }) {
-  // Снимаем предыдущий cleanup
   if (typeof container._quickCleanup === 'function') {
     container._quickCleanup();
     container._quickCleanup = null;
@@ -87,7 +87,18 @@ export function renderQuickButtons(container, profile, {
   let sortableCleanup = null;
 
   if (editing) {
-    const addBtn = createElement('div', { className: 'quick-btn' }, '➕');
+    // Кнопка «+» — WebP add
+    const addBtn = createElement('div', { className: 'quick-btn quick-btn--add' });
+    const addImg = createElement('img', {
+      src: iconUrl('add'),
+      alt: '',
+      className: 'quick-btn__icon',
+      draggable: 'false',
+    });
+    addImg.addEventListener('error', () => {
+      addImg.replaceWith(document.createTextNode('➕'));
+    });
+    addBtn.appendChild(addImg);
     addBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       const newBtn = { id: uid(), text: '', emoji: '', imagePath: null };
@@ -112,7 +123,7 @@ export function renderQuickButtons(container, profile, {
     wrap.appendChild(addBtn);
 
     sortableCleanup = makeSortable(wrap, {
-      itemSelector: '.quick-btn:not(:last-child)',
+      itemSelector: '.quick-btn:not(.quick-btn--add)',
       onReorder: (ids) => {
         const newOrder = ids.map((id) => buttons.find((b) => b.id === id)).filter(Boolean);
         profile.quickButtons = newOrder;
