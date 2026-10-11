@@ -29,7 +29,7 @@ export function createDefaultProfile(name = 'дом', icon = '🏠') {
         text: raw.text,
         emoji: raw.emoji,
         wordType: raw.wordType || cat.wordType,
-        animate: raw.animate || false,
+        animate: raw.animate,
         imageId: null,
         imagePath: raw.imagePath || null, // ← стоковая WebP-картинка
         forms: null,

@@ -4,6 +4,7 @@ import { savePersistentState } from '@state/actions';
 import { toast } from '@utils/toast';
 import { confirm } from '@utils/dialog';
 import { saveProfile } from '@storage/appStorage';
+import { markForReset } from '@storage/db';
 import { renderModeBar } from '@components/ModeBar/ModeBar';
 import { openExportDialog } from './components/ExportDialog';
 import { exportToZip } from '@services/backup/export';
@@ -144,13 +145,15 @@ export async function resetAllData() {
     'Сброс данных'
   );
   if (!ok) return;
-  const dbName = 'RASGovorilkaDB';
-  const request = indexedDB.deleteDatabase(dbName);
-  request.onsuccess = () => {
-    toast('Данные сброшены. Приложение будет перезагружено.');
-    setTimeout(() => location.reload(), 1000);
-  };
-  request.onerror = () => toast('Ошибка при сбросе данных', 'error');
+
+  try {
+    markForReset();
+    toast('Данные будут сброшены. Перезагрузка…');
+    setTimeout(() => location.reload(), 600);
+  } catch (e) {
+    logger.error('resetAllData error:', e);
+    toast('Ошибка при сбросе данных', 'error');
+  }
 }
 
 export function exportData() {
