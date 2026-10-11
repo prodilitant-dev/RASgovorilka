@@ -26,6 +26,22 @@
   margin-bottom: var(--spacing-xs);
   cursor: grab;
   transition: opacity 0.2s, background 0.2s;
+  cursor: grab;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.mode-order-chip:active {
+  cursor: grabbing;
+}
+
+.mode-order-chip__icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
 .mode-order-chip .mode-name {
   flex: 1;

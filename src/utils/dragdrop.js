@@ -2,15 +2,6 @@
 /**
  * Универсальный сортируемый список.
  * Работает на тач-устройствах и мыши.
- *
- * Логика:
- * - touchstart / mousedown — запускаем таймер long-press.
- * - Если палец сдвинулся > moveTolerance до срабатывания таймера — отменяем
- *   (обычный скролл / клик работает как всегда).
- * - Если таймер сработал — начинаем drag: с этого момента touchmove
- *   вызывает preventDefault, скролл заблокирован до конца жеста.
- * - Если пользователь не двигал палец и отпустил — браузер сам
- *   генерирует click, наш обработчик onClick срабатывает как обычно.
  */
 export function makeSortable(container, options = {}) {
   const {
@@ -18,9 +9,10 @@ export function makeSortable(container, options = {}) {
     onReorder = null,
     longPressDelay = 200,
     moveTolerance = 8,
+    // Элементы внутри item, тап по которым НЕ запускает drag
+    ignoreSelector = 'input, button, label, .toggle-switch, .cat-action-btn',
   } = options;
 
-  // Состояние
   let draggedEl = null;
   let ghostEl = null;
   let placeholderEl = null;
@@ -30,9 +22,7 @@ export function makeSortable(container, options = {}) {
   let startY = 0;
   let offsetX = 0;
   let offsetY = 0;
-  let currentInputType = null; // 'touch' | 'mouse'
 
-  // === Утилиты ===
   const getItems = () =>
     Array.from(container.querySelectorAll(itemSelector)).filter(
       (el) => el.dataset.id !== 'add'
@@ -56,6 +46,11 @@ export function makeSortable(container, options = {}) {
     }
   };
 
+  const isInteractive = (target) => {
+    if (!ignoreSelector) return false;
+    return !!target.closest(ignoreSelector);
+  };
+
   const beginDrag = (initX, initY) => {
     isDragging = true;
 
@@ -63,7 +58,6 @@ export function makeSortable(container, options = {}) {
     offsetX = initX - rect.left;
     offsetY = initY - rect.top;
 
-    // Ghost — визуальная копия под пальцем
     ghostEl = draggedEl.cloneNode(true);
     ghostEl.classList.add('dragging-ghost');
     Object.assign(ghostEl.style, {
@@ -77,7 +71,6 @@ export function makeSortable(container, options = {}) {
     });
     document.body.appendChild(ghostEl);
 
-    // Placeholder — куда встанет
     placeholderEl = document.createElement('div');
     placeholderEl.className = 'sort-placeholder';
     Object.assign(placeholderEl.style, {
@@ -86,7 +79,6 @@ export function makeSortable(container, options = {}) {
     });
     draggedEl.parentNode.insertBefore(placeholderEl, draggedEl);
 
-    // Прячем оригинал
     draggedEl.style.display = 'none';
     draggedEl.classList.add('dragging');
   };
@@ -105,7 +97,6 @@ export function makeSortable(container, options = {}) {
     const ghostMidX = ghostRect.left + ghostRect.width / 2;
     const ghostMidY = ghostRect.top + ghostRect.height / 2;
 
-    // Определяем, многоколоночная ли сетка
     const parentStyle = getComputedStyle(target.parentNode);
     const cols = (parentStyle.gridTemplateColumns || '').split(' ').filter(Boolean);
     const isMultiColumn = parentStyle.display === 'grid' && cols.length > 1;
@@ -145,7 +136,11 @@ export function makeSortable(container, options = {}) {
       ghostEl = null;
     }
 
-    // Собираем новый порядок
+    // Снимаем .dragging со всех на всякий случай
+    container.querySelectorAll('.dragging').forEach((el) => {
+      el.classList.remove('dragging');
+    });
+
     const ids = getItems()
       .map((el) => el.dataset.id)
       .filter(Boolean);
@@ -155,15 +150,15 @@ export function makeSortable(container, options = {}) {
     draggedEl = null;
   };
 
-  // === Touch ===
+  // ===== Touch =====
   const onTouchStart = (e) => {
     if (e.touches.length !== 1) return;
 
     const item = e.target.closest(itemSelector);
     if (!item) return;
     if (item.dataset.id === 'add') return;
+    if (isInteractive(e.target)) return; // тап по toggle/label/button — игнор
 
-    currentInputType = 'touch';
     draggedEl = item;
     const t = e.touches[0];
     startX = t.clientX;
@@ -175,8 +170,6 @@ export function makeSortable(container, options = {}) {
       if (draggedEl) beginDrag(startX, startY);
     }, longPressDelay);
 
-    // Слушаем touchmove на document — чтобы работало, даже если палец
-    // ушёл за пределы контейнера
     document.addEventListener('touchmove', onTouchMove, { passive: false });
     document.addEventListener('touchend', onTouchEnd);
     document.addEventListener('touchcancel', onTouchCancel);
@@ -185,7 +178,6 @@ export function makeSortable(container, options = {}) {
   const onTouchMove = (e) => {
     if (!draggedEl) return;
 
-    // Фаза long-press — если палец сдвинулся, отменяем
     if (longPressTimer) {
       const t = e.touches[0];
       const dx = t.clientX - startX;
@@ -194,12 +186,10 @@ export function makeSortable(container, options = {}) {
         clearTimer();
         cleanupTouchListeners();
         draggedEl = null;
-        currentInputType = null;
       }
       return;
     }
 
-    // Фаза drag — блокируем скролл и двигаем ghost
     if (isDragging) {
       e.preventDefault();
       const t = e.touches[0];
@@ -212,7 +202,6 @@ export function makeSortable(container, options = {}) {
     if (isDragging) endDrag();
     cleanupTouchListeners();
     draggedEl = null;
-    currentInputType = null;
   };
 
   const onTouchCancel = () => {
@@ -220,7 +209,6 @@ export function makeSortable(container, options = {}) {
     if (isDragging) endDrag();
     cleanupTouchListeners();
     draggedEl = null;
-    currentInputType = null;
   };
 
   const cleanupTouchListeners = () => {
@@ -229,15 +217,15 @@ export function makeSortable(container, options = {}) {
     document.removeEventListener('touchcancel', onTouchCancel);
   };
 
-  // === Mouse ===
+  // ===== Mouse =====
   const onMouseDown = (e) => {
     if (e.button !== 0) return;
 
     const item = e.target.closest(itemSelector);
     if (!item) return;
     if (item.dataset.id === 'add') return;
+    if (isInteractive(e.target)) return; // тап по toggle/label/button — игнор
 
-    currentInputType = 'mouse';
     draggedEl = item;
     startX = e.clientX;
     startY = e.clientY;
@@ -262,7 +250,6 @@ export function makeSortable(container, options = {}) {
         clearTimer();
         cleanupMouseListeners();
         draggedEl = null;
-        currentInputType = null;
       }
       return;
     }
@@ -278,7 +265,6 @@ export function makeSortable(container, options = {}) {
     if (isDragging) endDrag();
     cleanupMouseListeners();
     draggedEl = null;
-    currentInputType = null;
   };
 
   const cleanupMouseListeners = () => {
@@ -286,11 +272,9 @@ export function makeSortable(container, options = {}) {
     document.removeEventListener('mouseup', onMouseUp);
   };
 
-  // === Подписка ===
   container.addEventListener('touchstart', onTouchStart, { passive: true });
   container.addEventListener('mousedown', onMouseDown);
 
-  // === Cleanup ===
   return () => {
     container.removeEventListener('touchstart', onTouchStart);
     container.removeEventListener('mousedown', onMouseDown);
