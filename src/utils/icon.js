@@ -32,13 +32,29 @@ export function createIcon(name, { fallback = '', size = 24, className = '', alt
   if (fallback) {
     img.addEventListener('error', () => {
       // Если WebP не найден — показываем эмодзи текстом
-      const span = createElement('span', {
-        className: ['ui-icon', 'ui-icon--fallback', className].filter(Boolean).join(' '),
-        style: `font-size:${Math.round(size * 0.85)}px;line-height:1;`,
-      }, fallback);
+      const span = createElement(
+        'span',
+        {
+          className: ['ui-icon', 'ui-icon--fallback', className].filter(Boolean).join(' '),
+          style: `font-size:${Math.round(size * 0.85)}px;line-height:1;`,
+        },
+        fallback
+      );
       img.replaceWith(span);
     });
   }
 
   return img;
+}
+
+/**
+ * Проверяет, является ли значение именем иконки (для iconUrl).
+ * Имена — только латиница, цифры, дефис. Эмодзи и слова с пробелами — нет.
+ *
+ * @param {string} value
+ * @returns {boolean}
+ */
+export function isIconName(value) {
+  if (typeof value !== 'string') return false;
+  return /^[a-z0-9-]+$/.test(value) && value.length > 0;
 }
