@@ -22,6 +22,22 @@
   flex-shrink: 0;
   margin-left: auto;
 }
+
+.profile-fab__icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.profile-fab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .mode-bar {
   display: flex;
   gap: var(--spacing-xs);

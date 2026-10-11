@@ -1,6 +1,7 @@
 // src/components/Header/Header.js
 import { createElement } from '@utils/dom';
 import { onLongPress } from '@utils/interaction';
+import { iconUrl, isIconName } from '@utils/icon';
 import { logger } from '@utils/logger';
 
 export function createHeader({
@@ -16,10 +17,27 @@ export function createHeader({
   const modeBarSlot = createElement('div', { className: 'mode-bar' });
   header.appendChild(modeBarSlot);
 
-  const profileBtn = createElement('button', { 
+  const profileBtn = createElement('button', {
     className: 'profile-fab',
     'data-log': 'profile-button',
-  }, profileIcon);
+  });
+
+  // Если profileIcon — имя иконки (например, 'profile-default'),
+  // рендерим WebP. Иначе — эмодзи.
+  if (isIconName(profileIcon)) {
+    const img = createElement('img', {
+      src: iconUrl(profileIcon),
+      alt: '',
+      className: 'profile-fab__icon',
+      draggable: 'false',
+    });
+    img.addEventListener('error', () => {
+      img.replaceWith(document.createTextNode('👤'));
+    });
+    profileBtn.appendChild(img);
+  } else {
+    profileBtn.textContent = profileIcon;
+  }
 
   profileBtn.addEventListener('click', (e) => {
     e.stopPropagation();
