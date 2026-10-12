@@ -55,4 +55,17 @@ export const CARDS_BY_CATEGORY = {
     { text: 'Кубики',     emoji: '🎲', wordType: 'other', imagePath: 'cards/blocks.webp' },
     { text: 'Машинка',    emoji: '🚗', wordType: 'other', imagePath: 'cards/car.webp' },
   ], 
+
+    // ----- Цвета (прилагательные) -----
+  colors: [
+    { text: 'Красный',    emoji: '🔴', wordType: 'adjective', imagePath: 'cards/red.webp' },
+    { text: 'Оранжевый',  emoji: '🟠', wordType: 'adjective', imagePath: 'cards/orange.webp' },
+    { text: 'Жёлтый',     emoji: '🟡', wordType: 'adjective', imagePath: 'cards/yellow.webp' },
+    { text: 'Зелёный',    emoji: '🟢', wordType: 'adjective', imagePath: 'cards/green.webp' },
+    { text: 'Синий',      emoji: '🔵', wordType: 'adjective', imagePath: 'cards/blue.webp' },
+    { text: 'Фиолетовый', emoji: '🟣', wordType: 'adjective', imagePath: 'cards/purple.webp' },
+    { text: 'Коричневый', emoji: '🟤', wordType: 'adjective', imagePath: 'cards/brown.webp' },
+    { text: 'Белый',      emoji: '⚪', wordType: 'adjective', imagePath: 'cards/white.webp' },
+    { text: 'Чёрный',     emoji: '⚫', wordType: 'adjective', imagePath: 'cards/black.webp' },
+  ],
 };
