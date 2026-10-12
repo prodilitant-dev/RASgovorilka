@@ -12,6 +12,14 @@
   "lang": "ru",
   "dir": "ltr",
   "categories": ["education", "medical", "utilities"],
+  "file_handlers": [
+    {
+      "action": "/RASgovorilka/",
+      "accept": {
+        "application/octet-stream": [".rasbackup"]
+      }
+    }
+  ],
   "icons": [
     {
       "src": "icon-192.png",

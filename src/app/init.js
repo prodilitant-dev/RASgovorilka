@@ -7,10 +7,49 @@ import { maybeEnableFullscreenOnFirstInteraction } from '@utils/fullscreen';
 import { resetDatabaseIfPending } from '@storage/db';
 import { logger } from '@utils/logger';
 
+/**
+ * Обработка открытия файла .rasbackup через файловый менеджер.
+ * Работает только в установленной PWA (Chrome/Edge, Android/Desktop).
+ */
+async function handleLaunchFile(file) {
+  try {
+    const { importFromZip } = await import('@services/backup/import');
+    await importFromZip(file);
+    logger.info('File handler: импорт из .rasbackup завершён');
+  } catch (e) {
+    logger.error('File handler error:', e);
+    const { toast } = await import('@utils/toast');
+    toast('Не удалось импортировать файл', 'error');
+  }
+}
+
+/**
+ * Регистрирует обработчик launchQueue — срабатывает, когда
+ * пользователь открывает .rasbackup через файловый менеджер.
+ */
+function setupFileHandler() {
+  if (!('launchQueue' in window)) {
+    logger.debug('File Handling API не поддерживается');
+    return;
+  }
+
+  window.launchQueue.setConsumer(async (launchParams) => {
+    if (!launchParams.files || launchParams.files.length === 0) return;
+    const fileHandle = launchParams.files[0];
+    try {
+      const file = await fileHandle.getFile();
+      await handleLaunchFile(file);
+    } catch (e) {
+      logger.error('launchQueue: не удалось получить файл', e);
+    }
+  });
+
+  logger.debug('File handler инициализирован');
+}
+
 export async function initApp() {
   logger.debug('Initializing app');
 
-  // Проверяем флаг сброса ДО первого getDB() — иначе будет blocked
   try {
     await resetDatabaseIfPending();
   } catch (e) {
@@ -18,10 +57,10 @@ export async function initApp() {
   }
 
   initKeyboardHandler();
+  setupFileHandler();   // ← до renderApp
 
   await loadInitialState();
 
-  // Если в настройках включён fullscreen — ждём первого касания
   maybeEnableFullscreenOnFirstInteraction();
 
   const { modeBarSlot, mainArea } = renderApp();
