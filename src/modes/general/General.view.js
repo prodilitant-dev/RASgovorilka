@@ -85,7 +85,7 @@ export function renderGeneral(container) {
       id: 'about',
       iconName: 'about',
       emoji: 'ℹ️',
-      text: 'Об авторе',
+      text: 'Инфо',
       type: 'click',
       onClick: () => {
         openAboutModal();

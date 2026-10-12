@@ -1,0 +1,139 @@
+/* src/styles/components/about-modal.css */
+
+.about-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  text-align: left;
+}
+
+/* ===== Маскот по центру ===== */
+.about-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4px;
+  min-height: 100px;
+}
+
+.about-logo__mascot {
+  width: 112px;
+  height: 112px;
+  object-fit: contain;
+  -webkit-user-drag: none;
+}
+
+.about-version {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+/* ===== Основной текст ===== */
+.about-lead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+/* ===== Блоки ===== */
+.about-block {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.about-block__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.about-block__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* ===== Ссылки ===== */
+.about-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.about-link {
+  color: var(--primary-dark);
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.4;
+  transition: color 0.15s;
+  word-break: break-word;
+}
+
+.about-link:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* ===== Спойлеры ===== */
+.about-details {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.about-details__summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.about-details__summary::-webkit-details-marker {
+  display: none;
+}
+
+.about-details__summary::after {
+  content: '▸';
+  font-size: 16px;
+  color: var(--text-muted);
+  transition: transform 0.2s;
+}
+
+.about-details[open] .about-details__summary::after {
+  transform: rotate(90deg);
+}
+
+.about-details__body {
+  padding-top: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.about-details__body p {
+  margin: 0 0 10px;
+}
+
+.about-details__body p:last-child {
+  margin-bottom: 0;
+}
+
+.about-signature {
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.about-placeholder {
+  font-style: italic;
+  color: var(--text-muted);
+}

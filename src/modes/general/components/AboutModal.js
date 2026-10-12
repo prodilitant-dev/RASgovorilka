@@ -1,77 +1,92 @@
 // src/modes/general/components/AboutModal.js
 import { Modal } from '@components/common/Modal/Modal';
+import { createElement } from '@utils/dom';
+import { getRandomMascotUrl } from '@config/mascotPool';
 
 const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '0.0.0';
-const ICON_URL = `${import.meta.env.BASE_URL}icon-192.png`;
 
 export function openAboutModal() {
-  const body = `
-    <div style="padding: 4px 0; line-height: 1.5;">
-      <div style="text-align: center; margin-bottom: 16px;">
-        <img src="${ICON_URL}" alt="РАСговорилка" style="width: 80px; height: 80px; border-radius: 18px; box-shadow: var(--shadow);">
-        <h2 style="margin: 12px 0 4px; font-size: 22px;">РАСговорилка</h2>
-        <div style="font-size: 13px; color: var(--text-muted);">версия ${APP_VERSION}</div>
-      </div>
-
-      <p style="margin: 0 0 12px;">Привет! Я — Виталий, разработчик «РАСговорилки».</p>
-
-      <p style="margin: 0 0 12px;">
-        Это приложение я создал с помощью ИИ и своей упёртости.
-        Я не программист, но я знаю, что значит особенный ребёнок.
-      </p>
-
-      <p style="margin: 0 0 12px;">
-        «РАСговорилка» задумана как инструмент, который помогает детям с РАС
-        общаться, а родителям — лучше понимать своего ребёнка.
-      </p>
-
-      <p style="margin: 0 0 12px;">
-        Здесь нет рекламы, нет нужды в интернете — только желание помочь.
-      </p>
-
-      <p style="margin: 0 0 12px;">
-        Приложение будет всегда бесплатным и открытым.
-        Оно распространяется по лицензии
-        <strong>GNU GPL v3.0 или более поздней</strong> —
-        исходный код можно посмотреть, изучить и изменить.
-      </p>
-
-      <p style="margin: 0 0 12px;">
-        Это уже третья попытка, и я продолжаю его развивать.
-        Надеюсь, он станет полезным помощником для вашей семьи.
-      </p>
-
-      <p style="margin: 0 0 12px;">
-        Если приложение оказалось полезным — расскажите о нём другим.
-      </p>
-
-      <p style="margin: 0 0 12px; font-style: italic;">Ваш ПроДилИтант</p>
-
-      <hr style="border: none; border-top: 1px solid var(--border); margin: 16px 0;">
-
-      <div style="font-size: 14px;">
-        <div style="margin-bottom: 6px;">
-          <span style="opacity: 0.7;">Автор:</span> <strong>Виталий (ProdilItant)</strong>
-        </div>
-        <div style="margin-bottom: 6px;">
-          📢 <a href="https://t.me/RASgovorilka" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">Канал проекта — @RASgovorilka</a>
-        </div>
-        <div style="margin-bottom: 6px;">
-          📧 <a href="mailto:prodilitant@gmail.com" style="color: var(--primary); text-decoration: none;">prodilitant@gmail.com</a>
-        </div>
-        <div style="margin-bottom: 6px;">
-          💬 <a href="https://t.me/akvariumist2gr" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">@akvariumist2gr</a>
-        </div>
-        <div>
-          🐙 <a href="https://github.com/prodilitant-dev/RASgovorilka" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none;">github.com/prodilitant-dev/RASgovorilka</a>
-        </div>
-      </div>
-  `;
-
   const modal = new Modal({
-    title: 'Об авторе',
-    body,
+    title: 'О приложении',
+    body: () => {
+      const wrap = createElement('div', { className: 'about-wrap' });
+
+      // ===== Маскот по центру =====
+      const logoRow = createElement('div', { className: 'about-logo' });
+      const mascotImg = createElement('img', {
+        src: getRandomMascotUrl(),
+        alt: '',
+        className: 'about-logo__mascot',
+        draggable: 'false',
+      });
+      mascotImg.addEventListener('error', () => mascotImg.remove());
+      logoRow.appendChild(mascotImg);
+      wrap.appendChild(logoRow);
+
+      // ===== Версия =====
+      wrap.appendChild(createElement('div', { className: 'about-version' }, `версия ${APP_VERSION}`));
+
+      // ===== Суть =====
+      wrap.appendChild(createElement('p', { className: 'about-lead' },
+        'РАСговорилка — бесплатный коммуникатор для детей с РАС. Помогает собирать фразы из карточек и озвучивать их. Работает офлайн, без рекламы, без сбора данных.'
+      ));
+
+      // ===== Свободное ПО =====
+      const license = createElement('div', { className: 'about-block' });
+      license.appendChild(createElement('div', { className: 'about-block__title' }, 'Свободное ПО'));
+      license.appendChild(createElement('p', { className: 'about-block__text' },
+        'Приложение распространяется по лицензии GNU GPL v3. Исходный код открыт — можно изучать, изменять и распространять.'
+      ));
+      wrap.appendChild(license);
+
+      // ===== Ссылки =====
+      const links = createElement('div', { className: 'about-block' });
+      links.appendChild(createElement('div', { className: 'about-block__title' }, 'Ссылки'));
+
+      const linkList = createElement('div', { className: 'about-links' });
+      const addLink = (href, text) => {
+        linkList.appendChild(createElement('a', {
+          href,
+          target: '_blank',
+          rel: 'noopener',
+          className: 'about-link',
+        }, text));
+      };
+
+      addLink('https://github.com/prodilitant-dev/RASgovorilka', '🐙 GitHub — исходный код');
+      addLink('https://t.me/RASgovorilka', '📢 Канал в Telegram');
+      addLink('https://max.ru/channel_RASgovorilka', '📢 Канал в MAX');
+      addLink('mailto:prodilitant@gmail.com', '📧 prodilitant@gmail.com');
+
+      links.appendChild(linkList);
+      wrap.appendChild(links);
+
+      // ===== Автор (спойлер) =====
+      const author = createElement('details', { className: 'about-details' });
+      author.appendChild(createElement('summary', { className: 'about-details__summary' }, 'Об авторе'));
+      const authorBody = createElement('div', { className: 'about-details__body' });
+      authorBody.appendChild(createElement('p', {}, 'Привет! Я — Виталий, разработчик «РАСговорилки».'));
+      authorBody.appendChild(createElement('p', {}, 'Это приложение я создал с помощью ИИ и своей упёртости. Я не программист, но я знаю, что значит особенный ребёнок.'));
+      authorBody.appendChild(createElement('p', {}, '«РАСговорилка» задумана как инструмент, который помогает детям с РАС общаться, а родителям — лучше понимать своего ребёнка.'));
+      authorBody.appendChild(createElement('p', {}, 'Здесь нет рекламы, нет нужды в интернете — только желание помочь.'));
+      authorBody.appendChild(createElement('p', { className: 'about-signature' }, 'Ваш ПроДилИтант'));
+      author.appendChild(authorBody);
+      wrap.appendChild(author);
+
+      // ===== Особая благодарность (спойлер) =====
+      const thanks = createElement('details', { className: 'about-details' });
+      thanks.appendChild(createElement('summary', { className: 'about-details__summary' }, 'Особая благодарность'));
+      const thanksBody = createElement('div', { className: 'about-details__body' });
+      thanksBody.appendChild(createElement('p', { className: 'about-placeholder' },
+        'Список будет дополнен. Здесь появятся люди, которые помогли проекту — советами, тестированием, поддержкой.'
+      ));
+      thanks.appendChild(thanksBody);
+      wrap.appendChild(thanks);
+
+      return wrap;
+    },
     buttons: [],
   });
+
   modal.open();
 }
