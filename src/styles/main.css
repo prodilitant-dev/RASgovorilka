@@ -30,6 +30,7 @@
 @import './components/icon.css';
 @import './components/voice-settings.css';
 @import './components/about-modal.css';
+@import './components/data-manager.css';
 
 .main-area {
   flex: 1;
