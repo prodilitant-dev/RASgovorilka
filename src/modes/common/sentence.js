@@ -5,7 +5,7 @@ import { speakFromState } from '@utils/speech';
 import { toast } from '@utils/toast';
 import { getInflectedWords, getInflectedSentence } from '@utils/inflect';
 
-let lastCallbacks = {};
+const lastCallbacks = {};
 
 export function getWords() {
   return getState().sentenceWords || [];

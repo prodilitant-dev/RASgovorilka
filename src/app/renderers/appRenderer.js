@@ -3,7 +3,6 @@ import { createHeader } from '@components/Header/Header';
 import { renderModeBar } from '@components/ModeBar/ModeBar';
 import { createMainArea } from '@components/MainArea/MainArea';
 import { getState, setState } from '@state/store';
-import { getActiveProfile } from '@state/actions';
 import { renderContent } from './contentRenderer';
 import { getProfileIcon, ensureActiveProfile } from '@app/helpers/profileHelpers';
 import { createProfileClickHandler, createProfileLongPressHandler } from '@app/handlers/profileHandlers';

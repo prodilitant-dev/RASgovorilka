@@ -15,7 +15,7 @@ export function renderModeBar(
   logger.debug('🔄 Rendering ModeBar', { activeModeId, editingMode, hiddenModes, modeOrder });
   clear(container);
 
-  let modes = [];
+  const modes = [];
 
   if (editingMode) {
     modes.push({ id: 'profiles', label: 'Профили', icon: 'profiles', emoji: '👤' });

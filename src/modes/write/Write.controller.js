@@ -4,8 +4,7 @@ import { createElement } from '@utils/dom';
 import { getState, setState } from '@state/store';
 import { renderQuickButtons } from '@modes/common/quickButtons';
 import { renderSentence, addWord, removeWord, clearSentence, speakSentence, getWords } from '@modes/common/sentence';
-import { saveProfile } from '@storage/appStorage';
-import { uid, toast, debounce } from '@utils';
+import { debounce } from '@utils';
 import { logger } from '@utils/logger';
 
 let currentProfile = null;

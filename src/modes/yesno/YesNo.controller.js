@@ -44,7 +44,7 @@ export function renderYesNo(containerEl, profile) {
 function renderTiles() {
   const state = getState();
   const editing = state.editingMode || false;
-  let items = currentProfile.yesnoButtons.map(btn => ({ ...btn }));
+  const items = currentProfile.yesnoButtons.map(btn => ({ ...btn }));
   if (editing) {
     items.push({ id: 'add', text: 'Добавить', emoji: '➕', isAdd: true });
   }

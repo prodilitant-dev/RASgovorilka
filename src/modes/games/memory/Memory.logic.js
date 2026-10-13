@@ -29,7 +29,7 @@ export function generateMemoryPairs(profile, categoryIds, gridSize) {
   }
 
   // Создаём пары
-  let pairs = [];
+  const pairs = [];
   selected.forEach((card, index) => {
     const pairId = index;
     pairs.push({

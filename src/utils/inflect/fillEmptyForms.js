@@ -1,6 +1,5 @@
 // src/utils/inflect/fillEmptyForms.js
 import { autoDetectCard } from './autoDetectCard';
-import { inflectNoun } from './inflectNoun';
 import { inflectAdjective } from './inflectAdjective';
 
 /**

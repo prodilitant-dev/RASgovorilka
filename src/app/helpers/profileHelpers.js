@@ -1,5 +1,5 @@
 // src/app/helpers/profileHelpers.js
-import { getState, setState } from '@state/store';
+import { setState } from '@state/store';
 import { getActiveProfile } from '@state/actions';
 import { logger } from '@utils/logger';
 

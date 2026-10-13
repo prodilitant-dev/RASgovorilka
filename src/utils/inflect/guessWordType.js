@@ -13,10 +13,10 @@ export function guessWordType(word) {
   if (pronouns.includes(w)) return 'pronoun';
   if (prepMap[w] !== undefined) return 'preposition';
   if (nounExceptions[w]) return nounExceptions[w].type;
-  for (let ending of adjEndings) {
+  for (const ending of adjEndings) {
     if (w.endsWith(ending)) return 'adjective';
   }
-  for (let ending of verbEndings) {
+  for (const ending of verbEndings) {
     if (w.endsWith(ending)) return 'verb';
   }
   // Если не подошло — возвращаем noun (по умолчанию)

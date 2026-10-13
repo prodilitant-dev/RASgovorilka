@@ -1,4 +1,4 @@
-let state = {
+const state = {
   currentProfileId: null,
   currentMode: 'say',
   previousMode: null,

@@ -2,7 +2,7 @@
 import { renderFifteenBoard } from './Fifteen.view';
 import { generateFifteenBoard } from './Fifteen.logic';
 import { showResultsModal } from '@modes/common/activities/ResultsModal';
-import { getState, setState } from '@state/store';
+import { setState } from '@state/store';
 import { toast } from '@utils/toast';
 import { stopSpeech, speakFromState } from '@utils/speech';
 

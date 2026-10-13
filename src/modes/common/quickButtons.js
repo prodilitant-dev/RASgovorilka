@@ -1,5 +1,5 @@
 // src/modes/common/quickButtons.js
-import { createElement, clear, on } from '@utils/dom';
+import { createElement, clear } from '@utils/dom';
 import { makeSortable } from '@utils/dragdrop';
 import { getState } from '@state/store';
 import { uid, toast } from '@utils';

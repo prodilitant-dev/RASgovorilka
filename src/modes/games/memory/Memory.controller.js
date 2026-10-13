@@ -2,7 +2,7 @@
 import { renderMemoryBoard } from './Memory.view';
 import { generateMemoryPairs } from './Memory.logic';
 import { showResultsModal } from '@modes/common/activities/ResultsModal';
-import { getState, setState } from '@state/store';
+import { setState } from '@state/store';
 import { toast } from '@utils/toast';
 import { getCardsFromCategories } from '@utils/game/pickCards';
 import { stopSpeech, speakFromState } from '@utils/speech';

@@ -1,7 +1,7 @@
 // src/modes/common/activities/ActivityController.js
-import { getState, setState } from '@state/store';
+import { setState } from '@state/store';
 import { logger } from '@utils/logger';
-import { speak, stopSpeech, speakFromState } from '@utils/speech';
+import { stopSpeech, speakFromState } from '@utils/speech';
 import { showResultsModal } from './ResultsModal';
 
 export function startActivity({

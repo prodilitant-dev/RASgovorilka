@@ -1,6 +1,5 @@
 // src/components/common/DeclensionModal/DeclensionModal.js
 import { Modal } from '../Modal/Modal';
-import { createElement, on } from '@utils/dom';
 import { toast } from '@utils/toast';
 import { autoDetectCard } from '@utils/inflect';
 

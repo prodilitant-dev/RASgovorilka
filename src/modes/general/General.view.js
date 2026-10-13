@@ -10,8 +10,6 @@ import { getState } from '@state/store';
 import {
   toggleFullscreen,
   saveVoiceSettings,
-  resetAllData,
-  saveSetting,
   toggleAutoInflect,
 } from './General.controller';
 import { logger } from '@utils/logger';

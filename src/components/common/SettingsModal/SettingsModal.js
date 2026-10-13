@@ -1,7 +1,6 @@
 // src/components/common/SettingsModal/SettingsModal.js
 import { Modal } from '../Modal/Modal';
 import { createElement } from '@utils/dom';
-import { logger } from '@utils/logger';
 
 export function renderSettingsModal({
   profile,

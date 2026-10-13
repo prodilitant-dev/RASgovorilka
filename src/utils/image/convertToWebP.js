@@ -1,5 +1,4 @@
 
-import { loadImageFromFile } from './loadImageFromFile';
 
 /**
  * Конвертирует Blob в WebP с заданным качеством.

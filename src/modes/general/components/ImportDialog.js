@@ -3,7 +3,6 @@ import { Modal } from '@components/common/Modal/Modal';
 import { createElement, on } from '@utils/dom';
 import { EXPORT_COMPONENTS } from '@services/backup/registry';
 import { toast } from '@utils/toast';
-import { logger } from '@utils/logger';
 
 /**
  * Открывает диалог выбора компонентов и стратегии для импорта
