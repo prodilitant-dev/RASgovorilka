@@ -28,7 +28,6 @@ jobs:
 
       - name: Format check
         run: npm run format:check
-        continue-on-error: true
 
       - name: Build
         run: npm run build
