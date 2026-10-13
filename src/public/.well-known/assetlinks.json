@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "io.github.prodilitant_dev.rasgovorilka",
+    "sha256_cert_fingerprints": [
+      "51:4F:47:B8:08:58:BD:01:A4:07:EC:47:90:0C:4D:8F:13:BC:1E:0F:F6:5A:6A:76:39:9C:2C:38:56:5C:80:E0"
+    ]
+  }
+}]
