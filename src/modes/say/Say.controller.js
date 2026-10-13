@@ -19,7 +19,6 @@ import { saveProfile } from '@storage/appStorage';
 import { toast } from '@utils';
 import { openCategoryEditor } from './Say.categoryEditor';
 
-let containerRef = null;
 let currentProfile = null;
 let categoriesContainer = null;
 let cardsContainer = null;
@@ -28,7 +27,6 @@ let sentenceContainer = null;
 
 export function renderSay(container, profile) {
   logger.debug('🔄 Rendering Say mode', { profileId: profile?.id });
-  containerRef = container;
   currentProfile = profile;
 
   // Снимаем предыдущий общий cleanup, если режим рендерится повторно
@@ -117,7 +115,6 @@ export function renderSay(container, profile) {
   container._modeCleanup = () => {
     collector.run();
     // Сброс ссылок модуля
-    containerRef = null;
     currentProfile = null;
     categoriesContainer = null;
     cardsContainer = null;

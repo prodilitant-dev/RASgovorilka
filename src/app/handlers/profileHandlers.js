@@ -36,7 +36,7 @@ export function createProfileClickHandler(onSwitchComplete = renderApp) {
     }
 
     // Открываем модалку выбора профиля
-    openProfileSwitchModal((newProfileId) => {
+    openProfileSwitchModal((_newProfileId) => {
       // После переключения профиля перерендериваем
       renderApp();
       if (onSwitchComplete) onSwitchComplete();

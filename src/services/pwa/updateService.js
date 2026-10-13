@@ -27,7 +27,7 @@ export function initSW() {
     onOfflineReady() {
       logger.info('[SW] Готово к офлайн-работе');
     },
-    onRegistered(registration) {
+    onRegistered(_registration) {
       logger.info('[SW] Registered');
     },
     onRegisterError(error) {

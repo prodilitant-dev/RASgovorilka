@@ -152,7 +152,7 @@ function openActivitySettings(activityId, profile, container) {
     openSettingsFn: config.openSettingsFn,
     renderMenuFn: renderLearning,
     container,
-    onComplete: (id) => handleLearning(container, profile),
+    onComplete: () => handleLearning(container, profile),
     successMessage: config.successMessage
   });
 }

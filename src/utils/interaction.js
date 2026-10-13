@@ -8,17 +8,14 @@
  */
 export function onLongPress(element, handler, delay = 800, threshold = 10) {
   let timer = null;
-  let isLongPressTriggered = false;
   let startX = 0, startY = 0;
 
   const start = (e) => {
     // Сохраняем начальные координаты
     startX = e.clientX;
     startY = e.clientY;
-    isLongPressTriggered = false;
 
     timer = setTimeout(() => {
-      isLongPressTriggered = true;
       handler(e);
       timer = null;
     }, delay);

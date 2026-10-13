@@ -87,7 +87,7 @@ export function openCardEditor(cardData, onSave, onDelete) {
           const type = entity.wordType || 'noun';
           return type === 'noun' || type === 'pronoun' || type === 'adjective';
         },
-        onClick: (entity, closeModal) => {
+        onClick: (entity, _closeModal) => {
           openDeclensionModal(entity, (updatedEntity) => {
             Object.assign(entity, updatedEntity);
             toast('Падежи обновлены');

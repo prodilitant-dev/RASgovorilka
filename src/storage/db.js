@@ -1,5 +1,6 @@
 // src/storage/db.js
 import { openDB } from 'idb';
+import { logger } from '@utils/logger';
 
 let dbPromise = null;
 
@@ -61,13 +62,13 @@ export function resetDatabaseIfPending() {
 
     req.onsuccess = () => {
       localStorage.removeItem(RESET_FLAG);
-      console.log('[DB] Database reset completed');
+      logger.info('[DB] Database reset completed');
       resolve(true);
     };
 
     req.onerror = () => {
       localStorage.removeItem(RESET_FLAG);
-      console.error('[DB] Database reset error:', req.error);
+      logger.error('[DB] Database reset error:', req.error);
       resolve(false);
     };
 

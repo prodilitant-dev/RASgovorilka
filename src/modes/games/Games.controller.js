@@ -108,7 +108,7 @@ function openGameSettings(gameId, profile, container) {
     openSettingsFn: config.openSettingsFn,
     renderMenuFn: renderGames,
     container,
-    onComplete: (id) => handleGames(container, profile),
+    onComplete: () => handleGames(container, profile),
     successMessage: config.successMessage
   });
 }

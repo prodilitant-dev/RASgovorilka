@@ -164,6 +164,6 @@ function handleSaveTemplate() {
     toast('Нет событий для сохранения', 'error');
     return;
   }
-  const rawEvents = events.map(({ done, ...rest }) => rest);
+  const rawEvents = events.map(({ _done, ...rest }) => rest);
   openSaveTemplateModal(currentProfile, rawEvents, () => render());
 }

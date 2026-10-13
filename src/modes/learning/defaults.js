@@ -23,7 +23,7 @@ export function getDefaultSortingSettings(profile) {
   };
 }
 
-export function getDefaultMathSettings(profile) {
+export function getDefaultMathSettings(_profile) {
   return {
     operations: ['add', 'sub'],
     maxNumber: 20,

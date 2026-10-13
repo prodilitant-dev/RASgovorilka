@@ -7,7 +7,7 @@ export function getDefaultMemorySettings(profile) {
   };
 }
 
-export function getDefaultFifteenSettings(profile) {
+export function getDefaultFifteenSettings(_profile) {
   return {
     size: 4,
   };
