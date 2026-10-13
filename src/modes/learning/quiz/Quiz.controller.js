@@ -10,7 +10,16 @@ export function startQuiz(container, profile, settings, onBack, savedState) {
     settings,
     activityType: 'quiz',
     generateData: (prof, set) => generateQuizQuestions(prof, set),
-    renderItem: (container, question, current, total, onAnswer, feedback, isCorrect, userAnswer) => {
+    renderItem: (
+      container,
+      question,
+      current,
+      total,
+      onAnswer,
+      feedback,
+      isCorrect,
+      userAnswer
+    ) => {
       renderQuizQuestion(container, {
         question,
         current,
@@ -24,7 +33,7 @@ export function startQuiz(container, profile, settings, onBack, savedState) {
     },
     handleAnswer: (answer, question) => {
       const correct = answer === question.correctId;
-      const userAnswerText = question.options.find(o => o.id === answer)?.text || '—';
+      const userAnswerText = question.options.find((o) => o.id === answer)?.text || '—';
       return {
         correct,
         feedback: correct ? 'Верно!' : `Не верно, это: ${question.correctAnswerText}`,

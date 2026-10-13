@@ -47,9 +47,14 @@ export function handleGames(container, profile) {
     const saved = state.activityState;
     switch (gameId) {
       case 'memory': {
-        const settings = { ...getDefaultMemorySettings(profile), ...(profile.gamesSettings?.memory || {}) };
+        const settings = {
+          ...getDefaultMemorySettings(profile),
+          ...(profile.gamesSettings?.memory || {}),
+        };
         container._activeGame = startMemory(
-          container, profile, settings,
+          container,
+          profile,
+          settings,
           () => {
             setState({ activityState: null });
             container._activeGame = null;
@@ -60,9 +65,14 @@ export function handleGames(container, profile) {
         break;
       }
       case 'fifteen': {
-        const settings = { ...getDefaultFifteenSettings(profile), ...(profile.gamesSettings?.fifteen || {}) };
+        const settings = {
+          ...getDefaultFifteenSettings(profile),
+          ...(profile.gamesSettings?.fifteen || {}),
+        };
         container._activeGame = startFifteen(
-          container, profile, settings,
+          container,
+          profile,
+          settings,
           () => {
             setState({ activityState: null });
             container._activeGame = null;
@@ -92,7 +102,10 @@ export function handleGames(container, profile) {
 function openGameSettings(gameId, profile, container) {
   const settingsMap = {
     memory: { openSettingsFn: openMemorySettings, successMessage: 'Настройки Мемори сохранены' },
-    fifteen: { openSettingsFn: openFifteenSettings, successMessage: 'Настройки Пятнашек сохранены' },
+    fifteen: {
+      openSettingsFn: openFifteenSettings,
+      successMessage: 'Настройки Пятнашек сохранены',
+    },
   };
 
   const config = settingsMap[gameId];
@@ -109,6 +122,6 @@ function openGameSettings(gameId, profile, container) {
     renderMenuFn: renderGames,
     container,
     onComplete: () => handleGames(container, profile),
-    successMessage: config.successMessage
+    successMessage: config.successMessage,
   });
 }

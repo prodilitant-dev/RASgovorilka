@@ -3,14 +3,18 @@ import { renderScheduleView } from './Schedule.view';
 import { openEventEditor } from './Schedule.editor';
 import { openTemplateManager } from './Schedule.templates';
 import { openSaveTemplateModal } from './Schedule.saveTemplate';
-import { getDateByOffset, getEventsForDate, getTemplateForDay, formatDateKey } from './Schedule.utils';
+import {
+  getDateByOffset,
+  getEventsForDate,
+  getTemplateForDay,
+  formatDateKey,
+} from './Schedule.utils';
 import { getState } from '@state/store';
 import { toast } from '@utils/toast';
 import { saveProfile } from '@storage/appStorage';
 import { uid } from '@utils/id';
 import { logger } from '@utils/logger';
 import { speakFromState } from '@utils/speech';
-
 
 let container = null;
 let currentProfile = null;
@@ -74,7 +78,7 @@ function handleEventClick(eventId) {
   const selectedDate = getDateByOffset(0);
   const dateKey = formatDateKey(selectedDate);
   const events = getEventsForDate(currentProfile, selectedDate);
-  const event = events.find(e => e.id === eventId);
+  const event = events.find((e) => e.id === eventId);
   if (!event) return;
 
   if (!currentProfile.scheduleDailyState) currentProfile.scheduleDailyState = {};
@@ -126,19 +130,23 @@ function openEventEditorForId(eventId) {
     toast('Шаблон не найден', 'error');
     return;
   }
-  const event = template.events.find(e => e.id === eventId);
+  const event = template.events.find((e) => e.id === eventId);
   if (!event) return;
-  openEventEditor(event, (updatedData) => {
-    Object.assign(event, updatedData);
-    saveProfile(currentProfile);
-    toast('Событие обновлено');
-    render();
-  }, (id) => {
-    template.events = template.events.filter(e => e.id !== id);
-    saveProfile(currentProfile);
-    toast('Событие удалено');
-    render();
-  });
+  openEventEditor(
+    event,
+    (updatedData) => {
+      Object.assign(event, updatedData);
+      saveProfile(currentProfile);
+      toast('Событие обновлено');
+      render();
+    },
+    (id) => {
+      template.events = template.events.filter((e) => e.id !== id);
+      saveProfile(currentProfile);
+      toast('Событие удалено');
+      render();
+    }
+  );
 }
 
 function handleManageTemplates() {
@@ -150,7 +158,9 @@ function handleReorderEvents(newOrder) {
   const dayOfWeek = selectedDate.getDay();
   const template = getTemplateForDay(currentProfile, dayOfWeek);
   if (!template) return;
-  const sortedEvents = newOrder.map(id => template.events.find(e => e.id === id)).filter(Boolean);
+  const sortedEvents = newOrder
+    .map((id) => template.events.find((e) => e.id === id))
+    .filter(Boolean);
   template.events = sortedEvents;
   saveProfile(currentProfile);
   toast('Порядок событий обновлён');

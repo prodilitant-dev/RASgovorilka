@@ -68,9 +68,7 @@ export async function toggleAutoInflect(newValue) {
         const { totalFilled, cardsProcessed } = applyAutoInflectToAllCards(profile);
 
         if (totalFilled > 0) {
-          const updatedProfiles = state.profiles.map((p) =>
-            p.id === profile.id ? profile : p
-          );
+          const updatedProfiles = state.profiles.map((p) => (p.id === profile.id ? profile : p));
           setState({ profiles: updatedProfiles });
           await saveProfile(profile);
           toast(

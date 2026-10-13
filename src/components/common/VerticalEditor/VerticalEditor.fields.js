@@ -16,7 +16,11 @@ export function renderFields(entity, fields, callbacks) {
 
     const fieldWrap = createElement('div', { className: `ve-field ve-field-${field.type}` });
     const fieldId = generateId();
-    const label = createElement('label', { className: 've-field-label', for: fieldId }, field.label);
+    const label = createElement(
+      'label',
+      { className: 've-field-label', for: fieldId },
+      field.label
+    );
     fieldWrap.appendChild(label);
 
     let inputEl = null;

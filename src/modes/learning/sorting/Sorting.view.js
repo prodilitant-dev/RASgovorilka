@@ -14,12 +14,16 @@ export function renderSortingGame(container, state, onDrop) {
   const cardsWrap = createElement('div', { className: 'sorting-cards-horizontal' });
 
   if (state.remainingCards.length === 0) {
-    const emptyMsg = createElement('div', {
-      style: 'text-align:center; padding:20px; color: var(--text-muted); width:100%;',
-    }, '✅ Все карточки отсортированы!');
+    const emptyMsg = createElement(
+      'div',
+      {
+        style: 'text-align:center; padding:20px; color: var(--text-muted); width:100%;',
+      },
+      '✅ Все карточки отсортированы!'
+    );
     cardsWrap.appendChild(emptyMsg);
   } else {
-    state.remainingCards.forEach(card => {
+    state.remainingCards.forEach((card) => {
       const cardEl = createCard({
         id: card.id,
         text: card.text,
@@ -31,10 +35,13 @@ export function renderSortingGame(container, state, onDrop) {
       });
 
       cardEl.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('text/plain', JSON.stringify({
-          type: 'sorting-card',
-          id: card.id,
-        }));
+        e.dataTransfer.setData(
+          'text/plain',
+          JSON.stringify({
+            type: 'sorting-card',
+            id: card.id,
+          })
+        );
         e.dataTransfer.effectAllowed = 'move';
         cardEl.classList.add('dragging');
       });
@@ -51,7 +58,7 @@ export function renderSortingGame(container, state, onDrop) {
 
   // --- Нижняя часть: зоны ---
   const zonesWrap = createElement('div', { className: 'sorting-zones' });
-  state.zones.forEach(zone => {
+  state.zones.forEach((zone) => {
     const zoneEl = createElement('div', {
       className: 'sorting-zone',
       'data-category-id': zone.categoryId,
@@ -61,11 +68,15 @@ export function renderSortingGame(container, state, onDrop) {
     zoneEl.appendChild(title);
 
     const itemsWrap = createElement('div', { className: 'zone-items' });
-    zone.items.forEach(item => {
+    zone.items.forEach((item) => {
       // ✅ Только текст, без эмодзи
-      const itemEl = createElement('span', {
-        className: `placed-item ${item.isCorrect ? 'correct' : 'wrong'}`,
-      }, item.text);
+      const itemEl = createElement(
+        'span',
+        {
+          className: `placed-item ${item.isCorrect ? 'correct' : 'wrong'}`,
+        },
+        item.text
+      );
       itemsWrap.appendChild(itemEl);
     });
     zoneEl.appendChild(itemsWrap);

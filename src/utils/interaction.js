@@ -8,7 +8,8 @@
  */
 export function onLongPress(element, handler, delay = 800, threshold = 10) {
   let timer = null;
-  let startX = 0, startY = 0;
+  let startX = 0,
+    startY = 0;
 
   const start = (e) => {
     // Сохраняем начальные координаты

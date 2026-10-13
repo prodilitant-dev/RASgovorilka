@@ -15,24 +15,24 @@ function collectUsedImageIds(profile) {
   // 1. Карточки во всех категориях
   for (const categoryId in profile.cards) {
     const cards = profile.cards[categoryId] || [];
-    cards.forEach(card => {
+    cards.forEach((card) => {
       if (card.imageId) used.add(card.imageId);
     });
   }
 
   // 2. Быстрые кнопки
-  (profile.quickButtons || []).forEach(btn => {
+  (profile.quickButtons || []).forEach((btn) => {
     if (btn.imageId) used.add(btn.imageId);
   });
 
   // 3. Кнопки Да/Нет
-  (profile.yesnoButtons || []).forEach(btn => {
+  (profile.yesnoButtons || []).forEach((btn) => {
     if (btn.imageId) used.add(btn.imageId);
   });
 
   // 4. События расписания
-  (profile.scheduleTemplates || []).forEach(template => {
-    (template.events || []).forEach(event => {
+  (profile.scheduleTemplates || []).forEach((template) => {
+    (template.events || []).forEach((event) => {
       if (event.imageId) used.add(event.imageId);
     });
   });
@@ -58,7 +58,7 @@ export async function deleteUnusedImages(profile) {
   const usedIds = collectUsedImageIds(profile);
 
   // Находим неиспользуемые
-  const unused = allIds.filter(id => !usedIds.has(id));
+  const unused = allIds.filter((id) => !usedIds.has(id));
 
   if (unused.length === 0) {
     logger.debug('Нет неиспользуемых изображений');

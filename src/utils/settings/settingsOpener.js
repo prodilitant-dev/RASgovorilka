@@ -12,7 +12,7 @@ export function openSettings({
   renderMenuFn,
   container,
   onComplete,
-  successMessage
+  successMessage,
 }) {
   if (!profile || !profile.id) {
     logger.error('openSettings: profile is invalid', profile);
@@ -31,9 +31,7 @@ export function openSettings({
         logger.debug('Settings saved successfully');
         // Обновляем только нужный профиль в массиве
         const state = getState();
-        const updatedProfiles = state.profiles.map(p =>
-          p.id === profile.id ? profile : p
-        );
+        const updatedProfiles = state.profiles.map((p) => (p.id === profile.id ? profile : p));
         setState({ profiles: updatedProfiles });
         renderMenuFn(container, onComplete);
       } else {

@@ -31,7 +31,7 @@ export function generateFifteenBoard(size) {
  * @returns {boolean}
  */
 function isSolvable(board, size) {
-  const flat = board.filter(v => v !== null);
+  const flat = board.filter((v) => v !== null);
 
   let inversions = 0;
   for (let i = 0; i < flat.length; i++) {

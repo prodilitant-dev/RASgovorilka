@@ -52,13 +52,17 @@ export function renderVerticalEditorContent({
   // Дополнительные действия (например, «Падежи»)
   if (extraActions && extraActions.length > 0) {
     const actionsBlock = createElement('div', { className: 've-extra-actions' });
-    extraActions.forEach(action => {
+    extraActions.forEach((action) => {
       const isVisible = typeof action.visible === 'function' ? action.visible(entity) : true;
       if (!isVisible) return;
-      const btn = createElement('button', {
-        className: 've-extra-action-btn',
-        'data-action-id': action.id,
-      }, action.label);
+      const btn = createElement(
+        'button',
+        {
+          className: 've-extra-action-btn',
+          'data-action-id': action.id,
+        },
+        action.label
+      );
       btn.addEventListener('click', () => callbacks.onExtraActionClick(action.id));
       actionsBlock.appendChild(btn);
     });

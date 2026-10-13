@@ -12,8 +12,8 @@ export function generateSortingGame(profile, settings) {
 
   // Группируем карточки по категориям
   const cardsByCategory = {};
-  categoryIds.forEach(catId => {
-    cardsByCategory[catId] = allCards.filter(c => c.categoryId === catId);
+  categoryIds.forEach((catId) => {
+    cardsByCategory[catId] = allCards.filter((c) => c.categoryId === catId);
   });
 
   // Проверяем, что в каждой категории есть хотя бы одна карточка
@@ -23,7 +23,7 @@ export function generateSortingGame(profile, settings) {
 
   // Выбираем по одной карточке из каждой категории
   let selectedCards = [];
-  categoryIds.forEach(catId => {
+  categoryIds.forEach((catId) => {
     const catCards = cardsByCategory[catId];
     const card = catCards[Math.floor(Math.random() * catCards.length)];
     selectedCards.push({ ...card, id: uid() });
@@ -32,16 +32,16 @@ export function generateSortingGame(profile, settings) {
   // Добираем остальные карточки случайно
   const remainingSlots = numCards - selectedCards.length;
   if (remainingSlots > 0) {
-    const usedIds = new Set(selectedCards.map(c => c.id));
-    const available = allCards.filter(c => !usedIds.has(c.id));
+    const usedIds = new Set(selectedCards.map((c) => c.id));
+    const available = allCards.filter((c) => !usedIds.has(c.id));
     const shuffledAvailable = shuffle(available);
-    const additional = shuffledAvailable.slice(0, remainingSlots).map(c => ({ ...c, id: uid() }));
+    const additional = shuffledAvailable.slice(0, remainingSlots).map((c) => ({ ...c, id: uid() }));
     selectedCards = selectedCards.concat(additional);
   }
 
   // Создаём зоны для категорий
-  const zones = categoryIds.map(catId => {
-    const cat = profile.categories.find(c => c.id === catId);
+  const zones = categoryIds.map((catId) => {
+    const cat = profile.categories.find((c) => c.id === catId);
     return {
       categoryId: catId,
       name: cat ? cat.name : 'Без названия',

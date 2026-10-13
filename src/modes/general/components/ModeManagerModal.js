@@ -25,7 +25,7 @@ export function openModeManager(onClose) {
       return wrap;
     },
     buttons: [],
-    
+
     onClose: () => {
       if (currentCleanup) {
         currentCleanup();
@@ -113,15 +113,11 @@ export function openModeManager(onClose) {
           setState({ hiddenModes: newHidden });
 
           // Сохраняем в профиль
-          const profile = currentState.profiles.find(
-            (p) => p.id === currentState.currentProfileId
-          );
+          const profile = currentState.profiles.find((p) => p.id === currentState.currentProfileId);
           if (profile) {
             profile.hiddenModes = newHidden;
             await saveProfile(profile);
-            logger.debug(
-              `✅ Profile updated: hiddenModes = ${newHidden.join(', ')}`
-            );
+            logger.debug(`✅ Profile updated: hiddenModes = ${newHidden.join(', ')}`);
           }
 
           await savePersistentState();

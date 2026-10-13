@@ -2,7 +2,7 @@
 
 export function getElementIds(container, selector) {
   const elements = container.querySelectorAll(selector);
-  return Array.from(elements).map(el => el.dataset.id);
+  return Array.from(elements).map((el) => el.dataset.id);
 }
 
 export function reorderArray(array, fromIndex, toIndex) {

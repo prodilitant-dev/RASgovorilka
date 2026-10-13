@@ -1,8 +1,16 @@
 // src/utils/dom.js
 
 const BOOLEAN_ATTRS = new Set([
-  'checked', 'disabled', 'selected', 'readonly', 'required',
-  'multiple', 'autofocus', 'hidden', 'draggable', 'spellcheck',
+  'checked',
+  'disabled',
+  'selected',
+  'readonly',
+  'required',
+  'multiple',
+  'autofocus',
+  'hidden',
+  'draggable',
+  'spellcheck',
 ]);
 
 export function createElement(tag, attrs = {}, children = null) {
@@ -25,7 +33,7 @@ export function createElement(tag, attrs = {}, children = null) {
     if (typeof children === 'string' || typeof children === 'number') {
       el.textContent = String(children);
     } else if (Array.isArray(children)) {
-      children.forEach(c => {
+      children.forEach((c) => {
         if (c instanceof Node) el.appendChild(c);
         else if (c !== null && c !== undefined) el.appendChild(document.createTextNode(String(c)));
       });

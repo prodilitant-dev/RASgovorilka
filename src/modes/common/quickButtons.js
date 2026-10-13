@@ -8,10 +8,7 @@ import { openSimpleEditor } from '@modes/common/editorHelpers';
 import { getImageUrl } from '@services/imageService';
 import { iconUrl } from '@utils/icon';
 
-export function renderQuickButtons(container, profile, {
-  onQuickClick,
-  onReorder,
-}) {
+export function renderQuickButtons(container, profile, { onQuickClick, onReorder }) {
   if (typeof container._quickCleanup === 'function') {
     container._quickCleanup();
     container._quickCleanup = null;

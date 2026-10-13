@@ -5,10 +5,7 @@ import { getNounGender } from './getNounGender';
 import { inflectNoun } from './inflectNoun';
 import { inflectAdjective } from './inflectAdjective';
 
-const CASES = [
-  'nominative', 'genitive', 'dative',
-  'accusative', 'instrumental', 'prepositional',
-];
+const CASES = ['nominative', 'genitive', 'dative', 'accusative', 'instrumental', 'prepositional'];
 
 /**
  * Приводит прилагательное к базовой форме (м.р., Им.).
@@ -68,8 +65,7 @@ export function generateMultiWordForms(text, animateOverride) {
 
   const mainNoun = parts[mainIdx];
   const gender = getNounGender(mainNoun);
-  const animate =
-    animateOverride !== undefined ? animateOverride : guessAnimate(mainNoun);
+  const animate = animateOverride !== undefined ? animateOverride : guessAnimate(mainNoun);
 
   // Нормализуем прилагательные в м.р. Им., чтобы inflectAdjective работал
   const normalized = parts.map((p, i) =>

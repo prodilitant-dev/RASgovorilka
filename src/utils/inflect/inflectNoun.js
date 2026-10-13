@@ -46,7 +46,14 @@ export function inflectNoun(word, animate) {
 
   // 3. Исключения (особые случаи)
   if (nounExceptions[lower]) {
-    const forms = { nominative: w, genitive: w, dative: w, accusative: w, instrumental: w, prepositional: w };
+    const forms = {
+      nominative: w,
+      genitive: w,
+      dative: w,
+      accusative: w,
+      instrumental: w,
+      prepositional: w,
+    };
     if (lower === 'ребёнок') {
       forms.genitive = 'ребёнка';
       forms.dative = 'ребёнку';
@@ -235,7 +242,14 @@ export function inflectNoun(word, animate) {
   }
 
   // Заполняем недостающие формы
-  const caseKeys = ['nominative', 'genitive', 'dative', 'accusative', 'instrumental', 'prepositional'];
+  const caseKeys = [
+    'nominative',
+    'genitive',
+    'dative',
+    'accusative',
+    'instrumental',
+    'prepositional',
+  ];
   for (const k of caseKeys) {
     if (!forms[k]) forms[k] = forms.nominative || w;
   }

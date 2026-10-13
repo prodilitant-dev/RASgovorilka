@@ -38,7 +38,8 @@ export function generateMathQuestions(settings) {
         answer = randInt(1, Math.max(1, Math.floor(maxNumber / b)));
         a = b * answer;
         break;
-      default: continue;
+      default:
+        continue;
     }
 
     let options = [answer];

@@ -6,7 +6,10 @@ import { makeSortable } from '@utils/dragdrop';
 import { logger } from '@utils/logger';
 
 export function renderUniversalList(container, config) {
-  logger.debug('🔄 Rendering UniversalList', { itemsCount: config.items?.length, allowAdd: config.allowAdd });
+  logger.debug('🔄 Rendering UniversalList', {
+    itemsCount: config.items?.length,
+    allowAdd: config.allowAdd,
+  });
   clear(container);
 
   const {
@@ -30,10 +33,10 @@ export function renderUniversalList(container, config) {
   }
 
   const listContainer = createElement('div', {
-    className: layout === 'grid' ? 'tiles-grid' : 'universal-list'
+    className: layout === 'grid' ? 'tiles-grid' : 'universal-list',
   });
 
-  items.forEach(item => {
+  items.forEach((item) => {
     let el;
     if (renderItem) {
       el = renderItem(item);
@@ -43,7 +46,7 @@ export function renderUniversalList(container, config) {
         text: item.text || '',
         emoji: item.emoji || '',
         imageId: item.imageId,
-        imagePath: item.imagePath,   // ← NEW
+        imagePath: item.imagePath, // ← NEW
         isActive: item.active || false,
         isAdd: item.isAdd || false,
         draggable: !!onReorder,

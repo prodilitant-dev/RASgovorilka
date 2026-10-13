@@ -8,7 +8,11 @@ const openModals = new Set();
 export function closeAllModals() {
   const snapshot = [...openModals];
   for (const modal of snapshot) {
-    try { modal.close(); } catch (err) { logger.error('closeAllModals error:', err); }
+    try {
+      modal.close();
+    } catch (err) {
+      logger.error('closeAllModals error:', err);
+    }
   }
   openModals.clear();
 }
@@ -35,7 +39,7 @@ export class Modal {
 
     const content = createElement('div', { className: 'modal-content' });
 
-        // === Шапка ===
+    // === Шапка ===
     const showHeader = !!this.title || this.showCloseButton;
     if (showHeader) {
       const header = createElement('div', { className: 'modal-header' });
@@ -83,11 +87,15 @@ export class Modal {
     // === Футер ===
     if (this.buttons.length) {
       const footer = createElement('div', { className: 'modal-footer' });
-      this.buttons.forEach(btn => {
-        const b = createElement('div', {
-          className: `category ${btn.primary ? 'active' : ''} ${btn.danger ? 'category-danger' : ''}`,
-          'data-log': `modal-button:${btn.label}`,
-        }, btn.label);
+      this.buttons.forEach((btn) => {
+        const b = createElement(
+          'div',
+          {
+            className: `category ${btn.primary ? 'active' : ''} ${btn.danger ? 'category-danger' : ''}`,
+            'data-log': `modal-button:${btn.label}`,
+          },
+          btn.label
+        );
         b.addEventListener('click', () => {
           if (btn.action) btn.action();
         });

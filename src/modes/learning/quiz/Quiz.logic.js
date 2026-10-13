@@ -11,7 +11,7 @@ export function generateQuizQuestions(profile, settings) {
   const selected = shuffled.slice(0, Math.min(numQuestions, shuffled.length));
 
   return selected.map((card) => {
-    const others = allCards.filter(c => c.id !== card.id);
+    const others = allCards.filter((c) => c.id !== card.id);
     const shuffledOthers = shuffle([...others]);
     const options = [card, ...shuffledOthers.slice(0, numOptions - 1)];
     const shuffledOptions = shuffle(options);

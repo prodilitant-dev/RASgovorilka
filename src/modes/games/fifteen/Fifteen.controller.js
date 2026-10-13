@@ -13,7 +13,8 @@ export function startFifteen(container, profile, settings, onBack, savedState) {
   } else {
     const result = generateFifteenBoard(settings.size);
     if (!result) {
-      container.innerHTML = '<div style="padding:20px;text-align:center;">Не удалось создать доску. Проверьте настройки.</div>';
+      container.innerHTML =
+        '<div style="padding:20px;text-align:center;">Не удалось создать доску. Проверьте настройки.</div>';
       toast('Ошибка генерации доски', 'error');
       return null;
     }
@@ -66,7 +67,7 @@ export function startFifteen(container, profile, settings, onBack, savedState) {
     const emptyRow = Math.floor(state.emptyIdx / size);
     const emptyCol = state.emptyIdx % size;
 
-    const isAdjacent = (Math.abs(cellRow - emptyRow) + Math.abs(cellCol - emptyCol)) === 1;
+    const isAdjacent = Math.abs(cellRow - emptyRow) + Math.abs(cellCol - emptyCol) === 1;
     if (!isAdjacent) return;
 
     state.board[state.emptyIdx] = state.board[index];

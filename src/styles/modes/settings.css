@@ -25,7 +25,9 @@
   border-radius: var(--radius-sm);
   margin-bottom: var(--spacing-xs);
   cursor: grab;
-  transition: opacity 0.2s, background 0.2s;
+  transition:
+    opacity 0.2s,
+    background 0.2s;
   cursor: grab;
   user-select: none;
   touch-action: manipulation;

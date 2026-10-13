@@ -22,7 +22,8 @@ export function startGame({
 
   let state = savedState || generateData(profile, settings);
   if (!state) {
-    container.innerHTML = '<div style="padding:20px;text-align:center;">Не удалось инициализировать игру</div>';
+    container.innerHTML =
+      '<div style="padding:20px;text-align:center;">Не удалось инициализировать игру</div>';
     logger.error(`Failed to generate data for ${gameType}`);
     return null;
   }
@@ -86,9 +87,18 @@ export function startGame({
         onRetry: () => {
           clearState();
           startGame({
-            container, profile, settings, gameType,
-            generateData, renderGame, handleAction, checkWin,
-            renderResults, savedState: null, onBack, onGameOver,
+            container,
+            profile,
+            settings,
+            gameType,
+            generateData,
+            renderGame,
+            handleAction,
+            checkWin,
+            renderResults,
+            savedState: null,
+            onBack,
+            onGameOver,
           });
         },
         onBack: () => {
@@ -105,9 +115,18 @@ export function startGame({
         onRetry: () => {
           clearState();
           startGame({
-            container, profile, settings, gameType,
-            generateData, renderGame, handleAction, checkWin,
-            renderResults, savedState: null, onBack, onGameOver,
+            container,
+            profile,
+            settings,
+            gameType,
+            generateData,
+            renderGame,
+            handleAction,
+            checkWin,
+            renderResults,
+            savedState: null,
+            onBack,
+            onGameOver,
           });
         },
         onBack: () => {
@@ -138,9 +157,18 @@ export function startGame({
       stopSpeech();
       clearState();
       startGame({
-        container, profile, settings, gameType,
-        generateData, renderGame, handleAction, checkWin,
-        renderResults, savedState: null, onBack, onGameOver,
+        container,
+        profile,
+        settings,
+        gameType,
+        generateData,
+        renderGame,
+        handleAction,
+        checkWin,
+        renderResults,
+        savedState: null,
+        onBack,
+        onGameOver,
       });
     },
   };

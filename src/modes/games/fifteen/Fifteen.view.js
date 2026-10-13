@@ -9,7 +9,9 @@ import { logger } from '@utils/logger';
  * @param {Function} onCellClick - (index) => void
  */
 export function renderFifteenBoard(container, state, onCellClick) {
-  logger.debug(`🔄 Rendering Fifteen Board, size ${state.size}x${state.size}, moves ${state.moves}`);
+  logger.debug(
+    `🔄 Rendering Fifteen Board, size ${state.size}x${state.size}, moves ${state.moves}`
+  );
   clear(container);
 
   const wrap = createElement('div', { className: 'game-wrapper' });
@@ -25,7 +27,7 @@ export function renderFifteenBoard(container, state, onCellClick) {
   });
 
   state.board.forEach((value, index) => {
-    const isEmpty = (index === state.emptyIdx);
+    const isEmpty = index === state.emptyIdx;
     const cell = createElement('div', {
       className: `game-cell ${isEmpty ? 'empty' : ''}`,
       'data-index': index,

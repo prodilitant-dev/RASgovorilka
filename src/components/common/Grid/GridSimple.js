@@ -8,6 +8,6 @@ import { createElement, clear } from '@utils/dom';
 export function renderElementGrid(container, elements) {
   clear(container);
   const grid = createElement('div', { className: 'tiles-grid' });
-  elements.forEach(el => grid.appendChild(el));
+  elements.forEach((el) => grid.appendChild(el));
   container.appendChild(grid);
 }

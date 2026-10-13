@@ -5,7 +5,4 @@ export { getImageUrl } from './getImageUrl';
 export { revokeImageUrl } from './revokeImageUrl';
 export { deleteImage } from './deleteImage';
 export { deleteUnusedImages } from './deleteUnusedImages';
-export {
-  clearAllImageUrls,
-  getImageCacheSize,
-} from './imageCache';
+export { clearAllImageUrls, getImageCacheSize } from './imageCache';

@@ -33,11 +33,15 @@ export function renderSentenceBar(container, words, onRemove, onSpeak, onClear) 
 
   words.forEach((wordObj, index) => {
     const displayText = wordObj.display || wordObj.text || '';
-    const wordEl = createElement('span', {
-      className: 'sentence-word',
-      'data-index': index,
-      'data-log': `sentence-word:${index}`,
-    }, displayText);
+    const wordEl = createElement(
+      'span',
+      {
+        className: 'sentence-word',
+        'data-index': index,
+        'data-log': `sentence-word:${index}`,
+      },
+      displayText
+    );
 
     on(wordEl, 'click', (e) => {
       e.stopPropagation();

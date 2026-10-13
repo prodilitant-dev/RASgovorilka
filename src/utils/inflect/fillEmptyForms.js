@@ -81,10 +81,7 @@ export function fillEmptyForms(card) {
         filled += Object.values(refGenderForms).filter((v) => !isEmpty(v)).length;
       } else {
         for (const caseKey in refGenderForms) {
-          if (
-            isEmpty(card.forms[gender][caseKey]) &&
-            !isEmpty(refGenderForms[caseKey])
-          ) {
+          if (isEmpty(card.forms[gender][caseKey]) && !isEmpty(refGenderForms[caseKey])) {
             card.forms[gender][caseKey] = refGenderForms[caseKey];
             filled++;
           }

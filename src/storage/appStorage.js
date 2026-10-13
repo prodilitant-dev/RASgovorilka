@@ -35,7 +35,7 @@ export async function saveProfile(profile) {
     logger.error('saveProfile: no app data');
     return false;
   }
-  const idx = data.profiles.findIndex(p => p.id === profile.id);
+  const idx = data.profiles.findIndex((p) => p.id === profile.id);
   if (idx >= 0) {
     data.profiles[idx] = profile;
   } else {
@@ -52,7 +52,7 @@ export async function deleteProfile(id) {
     logger.error('deleteProfile: no app data');
     return false;
   }
-  data.profiles = data.profiles.filter(p => p.id !== id);
+  data.profiles = data.profiles.filter((p) => p.id !== id);
   logger.debug(`Profile ${id} deleted`);
   return saveAppData(data);
 }

@@ -2,7 +2,7 @@
 
 export function getDefaultMemorySettings(profile) {
   return {
-    categoryIds: profile.categories.map(c => c.id),
+    categoryIds: profile.categories.map((c) => c.id),
     gridSize: 4,
   };
 }

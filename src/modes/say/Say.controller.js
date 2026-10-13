@@ -54,8 +54,7 @@ export function renderSay(container, profile) {
   renderMainLayout(container, { content, bottomPanel });
 
   const state = getState();
-  const activeCategoryId =
-    state.currentCategoryId || currentProfile.categories[0]?.id || null;
+  const activeCategoryId = state.currentCategoryId || currentProfile.categories[0]?.id || null;
 
   renderCategories(
     categoriesContainer,
@@ -66,13 +65,7 @@ export function renderSay(container, profile) {
     handleCategoryReorder,
     onCategoryCreated
   );
-  renderCards(
-    cardsContainer,
-    currentProfile,
-    activeCategoryId,
-    onCardClick,
-    handleCardReorder
-  );
+  renderCards(cardsContainer, currentProfile, activeCategoryId, onCardClick, handleCardReorder);
 
   renderQuickButtons(quickContainer, currentProfile, {
     onQuickClick: onQuickButtonClick,
@@ -151,17 +144,9 @@ function onCategorySelect(categoryId) {
     handleCategoryReorder,
     onCategoryCreated
   );
-  renderCards(
-    cardsContainer,
-    currentProfile,
-    categoryId,
-    onCardClick,
-    handleCardReorder
-  );
+  renderCards(cardsContainer, currentProfile, categoryId, onCardClick, handleCardReorder);
 
-  const el = categoriesContainer.querySelector(
-    `[data-category-id="${categoryId}"]`
-  );
+  const el = categoriesContainer.querySelector(`[data-category-id="${categoryId}"]`);
   if (el && el.scrollIntoView) {
     el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }

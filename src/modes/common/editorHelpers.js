@@ -2,12 +2,7 @@
 import { openVerticalEditor } from '@components/common/VerticalEditor';
 import { toast } from '@utils/toast';
 
-export function openSimpleEditor({
-  entity,
-  title,
-  onSave,
-  onDelete,
-}) {
+export function openSimpleEditor({ entity, title, onSave, onDelete }) {
   const isNew = !entity.id;
 
   openVerticalEditor({

@@ -24,8 +24,8 @@
 /* Режимы */
 @import './modes/profiles.css';
 @import './modes/settings.css';
-@import './modes/learning.css';            /* ✅ Добавить */
-@import './modes/games.css';               /* ✅ Добавить */
+@import './modes/learning.css'; /* ✅ Добавить */
+@import './modes/games.css'; /* ✅ Добавить */
 
 @import './components/icon.css';
 @import './components/voice-settings.css';
@@ -41,4 +41,3 @@
   position: relative;
   transition: transform 0.2s ease;
 }
-

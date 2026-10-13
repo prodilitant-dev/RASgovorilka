@@ -21,7 +21,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s, transform 0.1s;
+  transition:
+    background 0.2s,
+    transform 0.1s;
   background: transparent;
   color: #fff;
 }
@@ -70,7 +72,9 @@
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
-  transition: background 0.3s, transform 0.2s;
+  transition:
+    background 0.3s,
+    transform 0.2s;
   flex-shrink: 0;
   white-space: nowrap;
 }

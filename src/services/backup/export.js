@@ -1,7 +1,7 @@
 // src/services/backup/export.js
 import JSZip from 'jszip';
 import { EXPORT_COMPONENTS } from './registry';
-import { loadImage } from '@storage/imageStorage';  // ← было getImage, исправлено на loadImage
+import { loadImage } from '@storage/imageStorage'; // ← было getImage, исправлено на loadImage
 import { toast } from '@utils/toast';
 import { logger } from '@utils/logger';
 import { getActiveProfile } from '@state/actions';
@@ -21,7 +21,7 @@ export async function exportToZip(selectedKeys, selectedCategoryIds = null) {
   const manifest = {
     version: '2.0',
     date: new Date().toISOString(),
-    components: {}
+    components: {},
   };
   const allImageIds = new Set();
   const exportData = {};
@@ -33,19 +33,23 @@ export async function exportToZip(selectedKeys, selectedCategoryIds = null) {
       const result = await comp.export(profile, globalData);
 
       if (key === 'categories' && selectedCategoryIds && selectedCategoryIds.length > 0) {
-        const filteredCats = result.data.categories.filter(c => selectedCategoryIds.includes(c.id));
+        const filteredCats = result.data.categories.filter((c) =>
+          selectedCategoryIds.includes(c.id)
+        );
         const filteredCards = {};
-        filteredCats.forEach(cat => {
+        filteredCats.forEach((cat) => {
           filteredCards[cat.id] = (result.data.cards[cat.id] || []).slice();
         });
         result.data = { categories: filteredCats, cards: filteredCards };
         const ids = new Set();
-        Object.values(filteredCards).forEach(arr => arr.forEach(c => c.imageId && ids.add(c.imageId)));
+        Object.values(filteredCards).forEach((arr) =>
+          arr.forEach((c) => c.imageId && ids.add(c.imageId))
+        );
         result.imageIds = ids;
       }
 
       exportData[key] = result.data;
-      result.imageIds.forEach(id => allImageIds.add(id));
+      result.imageIds.forEach((id) => allImageIds.add(id));
       manifest.components[key] = true;
     } catch (e) {
       logger.error(`Ошибка экспорта компонента ${key}:`, e);
@@ -61,7 +65,7 @@ export async function exportToZip(selectedKeys, selectedCategoryIds = null) {
   const imgFolder = zip.folder('images');
   for (const id of allImageIds) {
     try {
-      const blob = await loadImage(id);  // ← здесь была getImage, исправлено
+      const blob = await loadImage(id); // ← здесь была getImage, исправлено
       if (blob) imgFolder.file(id, blob);
     } catch (e) {
       logger.warn(`Не удалось загрузить изображение ${id} для экспорта`, e);
@@ -71,7 +75,7 @@ export async function exportToZip(selectedKeys, selectedCategoryIds = null) {
   const blob = await zip.generateAsync({ type: 'blob' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `RAS_backup_${new Date().toISOString().slice(0,10)}.rasbackup`;
+  a.download = `RAS_backup_${new Date().toISOString().slice(0, 10)}.rasbackup`;
   a.click();
   toast('Экспорт завершён', 'success');
 }

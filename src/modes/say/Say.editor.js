@@ -29,9 +29,9 @@ export function openCardEditor(cardData, onSave, onDelete) {
       }
 
       const trimmedText = updated.text.trim();
-      const isDuplicate = existingCards.some(card =>
-        card.id !== updated.id &&
-        card.text.trim().toLowerCase() === trimmedText.toLowerCase()
+      const isDuplicate = existingCards.some(
+        (card) =>
+          card.id !== updated.id && card.text.trim().toLowerCase() === trimmedText.toLowerCase()
       );
 
       if (isDuplicate) {

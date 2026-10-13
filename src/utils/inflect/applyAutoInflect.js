@@ -28,9 +28,7 @@ export function applyAutoInflectToAllCards(profile) {
     });
   }
 
-  logger.debug(
-    `Auto-inflect: заполнено ${totalFilled} форм в ${cardsProcessed} карточках`
-  );
+  logger.debug(`Auto-inflect: заполнено ${totalFilled} форм в ${cardsProcessed} карточках`);
 
   return { totalFilled, cardsProcessed };
 }

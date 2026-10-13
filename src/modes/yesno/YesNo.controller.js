@@ -9,14 +9,14 @@ import { uid } from '@utils/id';
 import { logger } from '@utils/logger';
 import { speakFromState } from '@utils/speech';
 
-
 let container = null;
 let currentProfile = null;
 let gridContainer = null;
 let gridCleanup = null;
 
 export function renderYesNo(containerEl, profile) {
-  container = containerEl;``
+  container = containerEl;
+  ``;
   currentProfile = profile;
 
   if (typeof container._modeCleanup === 'function') {
@@ -44,7 +44,7 @@ export function renderYesNo(containerEl, profile) {
 function renderTiles() {
   const state = getState();
   const editing = state.editingMode || false;
-  const items = currentProfile.yesnoButtons.map(btn => ({ ...btn }));
+  const items = currentProfile.yesnoButtons.map((btn) => ({ ...btn }));
   if (editing) {
     items.push({ id: 'add', text: 'Добавить', emoji: '➕', isAdd: true });
   }
@@ -65,7 +65,9 @@ function renderTiles() {
 }
 
 function handleReorder(newOrder) {
-  const sorted = newOrder.map(id => currentProfile.yesnoButtons.find(b => b.id === id)).filter(Boolean);
+  const sorted = newOrder
+    .map((id) => currentProfile.yesnoButtons.find((b) => b.id === id))
+    .filter(Boolean);
   currentProfile.yesnoButtons = sorted;
   saveProfile(currentProfile);
   renderTiles();
@@ -92,7 +94,7 @@ function handleButtonClick(id) {
     return;
   }
 
-  const btn = currentProfile.yesnoButtons.find(b => b.id === id);
+  const btn = currentProfile.yesnoButtons.find((b) => b.id === id);
   if (!btn) return;
 
   const state = getState();
@@ -107,7 +109,7 @@ function handleButtonClick(id) {
         done();
       },
       onDelete: (btnId, close) => {
-        currentProfile.yesnoButtons = currentProfile.yesnoButtons.filter(b => b.id !== btnId);
+        currentProfile.yesnoButtons = currentProfile.yesnoButtons.filter((b) => b.id !== btnId);
         saveProfile(currentProfile);
         renderTiles();
         close();

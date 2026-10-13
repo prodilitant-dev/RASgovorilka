@@ -10,17 +10,25 @@ export function openEventEditor(eventData, onSave, onDelete) {
     title: isNew ? 'Новое событие' : 'Редактировать событие',
     entity,
     onSave: (updated, close) => {
-      if (!updated.time) { toast('Введите время', 'error'); return; }
-      if (!updated.text || !updated.text.trim()) { toast('Введите описание', 'error'); return; }
+      if (!updated.time) {
+        toast('Введите время', 'error');
+        return;
+      }
+      if (!updated.text || !updated.text.trim()) {
+        toast('Введите описание', 'error');
+        return;
+      }
       onSave(updated);
       close();
     },
-    onDelete: isNew ? null : (entity, close) => {
-      if (confirm('Удалить событие?')) {
-        onDelete(entity.id);
-        close();
-      }
-    },
+    onDelete: isNew
+      ? null
+      : (entity, close) => {
+          if (confirm('Удалить событие?')) {
+            onDelete(entity.id);
+            close();
+          }
+        },
     fields: [
       {
         id: 'time',

@@ -60,14 +60,22 @@ export function showResultsModal({
           const item = createElement('div', { className: 'results-detail-item' });
           const index = createElement('span', { className: 'detail-index' }, `${idx + 1}.`);
           const question = createElement('span', { className: 'detail-question' }, detail.question);
-          const answer = createElement('span', {
-            className: `detail-answer ${detail.correct ? 'correct' : 'wrong'}`,
-          }, detail.userAnswer || '—');
+          const answer = createElement(
+            'span',
+            {
+              className: `detail-answer ${detail.correct ? 'correct' : 'wrong'}`,
+            },
+            detail.userAnswer || '—'
+          );
           item.appendChild(index);
           item.appendChild(question);
           item.appendChild(answer);
           if (!detail.correct && detail.correctAnswer) {
-            const correctAns = createElement('span', { className: 'detail-correct-answer' }, ` (${detail.correctAnswer})`);
+            const correctAns = createElement(
+              'span',
+              { className: 'detail-correct-answer' },
+              ` (${detail.correctAnswer})`
+            );
             item.appendChild(correctAns);
           }
           detailsList.appendChild(item);

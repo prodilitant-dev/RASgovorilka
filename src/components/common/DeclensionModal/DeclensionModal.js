@@ -16,7 +16,14 @@ export function openDeclensionModal(card, onSave) {
 
   let bodyHtml = '';
   if (isNoun) {
-    const defaultForms = currentForms || { nominative: '', genitive: '', dative: '', accusative: '', instrumental: '', prepositional: '' };
+    const defaultForms = currentForms || {
+      nominative: '',
+      genitive: '',
+      dative: '',
+      accusative: '',
+      instrumental: '',
+      prepositional: '',
+    };
     bodyHtml = `
       <div style="padding: 8px 0; width: 100%;">
         <p style="font-size:14px; color:var(--text-secondary);">Редактируйте падежные формы для слова «${card.text}».</p>
@@ -30,9 +37,30 @@ export function openDeclensionModal(card, onSave) {
     `;
   } else if (isAdjective) {
     const defaultForms = currentForms || {
-      masculine: { nominative: '', genitive: '', dative: '', accusative: '', instrumental: '', prepositional: '' },
-      feminine:  { nominative: '', genitive: '', dative: '', accusative: '', instrumental: '', prepositional: '' },
-      neuter:    { nominative: '', genitive: '', dative: '', accusative: '', instrumental: '', prepositional: '' }
+      masculine: {
+        nominative: '',
+        genitive: '',
+        dative: '',
+        accusative: '',
+        instrumental: '',
+        prepositional: '',
+      },
+      feminine: {
+        nominative: '',
+        genitive: '',
+        dative: '',
+        accusative: '',
+        instrumental: '',
+        prepositional: '',
+      },
+      neuter: {
+        nominative: '',
+        genitive: '',
+        dative: '',
+        accusative: '',
+        instrumental: '',
+        prepositional: '',
+      },
     };
     bodyHtml = `
       <div style="padding: 8px 0; width: 100%;">
@@ -76,16 +104,21 @@ export function openDeclensionModal(card, onSave) {
             newForms.dative = document.getElementById('declDative')?.value.trim() || '';
             newForms.accusative = document.getElementById('declAccusative')?.value.trim() || '';
             newForms.instrumental = document.getElementById('declInstrumental')?.value.trim() || '';
-            newForms.prepositional = document.getElementById('declPrepositional')?.value.trim() || '';
+            newForms.prepositional =
+              document.getElementById('declPrepositional')?.value.trim() || '';
           } else if (isAdjective) {
-            ['masculine', 'feminine', 'neuter'].forEach(gender => {
+            ['masculine', 'feminine', 'neuter'].forEach((gender) => {
               newForms[gender] = {
-                nominative: document.getElementById(`declAdj_${gender}_nominative`)?.value.trim() || '',
+                nominative:
+                  document.getElementById(`declAdj_${gender}_nominative`)?.value.trim() || '',
                 genitive: document.getElementById(`declAdj_${gender}_genitive`)?.value.trim() || '',
                 dative: document.getElementById(`declAdj_${gender}_dative`)?.value.trim() || '',
-                accusative: document.getElementById(`declAdj_${gender}_accusative`)?.value.trim() || '',
-                instrumental: document.getElementById(`declAdj_${gender}_instrumental`)?.value.trim() || '',
-                prepositional: document.getElementById(`declAdj_${gender}_prepositional`)?.value.trim() || '',
+                accusative:
+                  document.getElementById(`declAdj_${gender}_accusative`)?.value.trim() || '',
+                instrumental:
+                  document.getElementById(`declAdj_${gender}_instrumental`)?.value.trim() || '',
+                prepositional:
+                  document.getElementById(`declAdj_${gender}_prepositional`)?.value.trim() || '',
               };
             });
           }
@@ -107,7 +140,7 @@ function generateAdjectiveFields(gender, forms) {
     dative: 'Дательный',
     accusative: 'Винительный',
     instrumental: 'Творительный',
-    prepositional: 'Предложный'
+    prepositional: 'Предложный',
   };
   let html = '';
   for (const caseKey in caseLabels) {

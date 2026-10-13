@@ -6,16 +6,19 @@ import { logger } from '@utils/logger';
 /**
  * Рендерит математический пример
  */
-export function renderMathGame(container, {
-  question,
-  current,
-  total,
-  onAnswer,
-  feedback = null,
-  isCorrect = false,
-  userAnswer = null,
-  inputMethod = 'drag',
-}) {
+export function renderMathGame(
+  container,
+  {
+    question,
+    current,
+    total,
+    onAnswer,
+    feedback = null,
+    isCorrect = false,
+    userAnswer = null,
+    inputMethod = 'drag',
+  }
+) {
   logger.debug(`🔄 Rendering Math Question ${current}/${total}`);
   clear(container);
 
@@ -37,7 +40,7 @@ export function renderMathGame(container, {
     className: `math-part math-drop-zone ${feedback ? 'filled' : ''} ${feedback && isCorrect ? 'correct' : feedback && !isCorrect ? 'wrong' : ''}`,
   });
 
-  resultZone.textContent = (feedback && userAnswer !== undefined) ? userAnswer : '?';
+  resultZone.textContent = feedback && userAnswer !== undefined ? userAnswer : '?';
 
   equation.appendChild(a);
   equation.appendChild(op);
@@ -48,19 +51,27 @@ export function renderMathGame(container, {
 
   // Варианты ответов или поле ввода
   if (feedback) {
-    const fb = createElement('div', {
-      className: `feedback ${isCorrect ? 'correct' : 'wrong'}`,
-    }, feedback);
+    const fb = createElement(
+      'div',
+      {
+        className: `feedback ${isCorrect ? 'correct' : 'wrong'}`,
+      },
+      feedback
+    );
     card.appendChild(fb);
   } else if (inputMethod === 'drag') {
     // Drag-варианты
     const optionsWrap = createElement('div', { className: 'math-options' });
-    question.options.forEach(opt => {
-      const optEl = createElement('div', {
-        className: 'math-option',
-        draggable: true,
-        'data-value': opt,
-      }, opt);
+    question.options.forEach((opt) => {
+      const optEl = createElement(
+        'div',
+        {
+          className: 'math-option',
+          draggable: true,
+          'data-value': opt,
+        },
+        opt
+      );
       optEl.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('text/plain', String(opt));
         e.dataTransfer.effectAllowed = 'move';
@@ -97,13 +108,16 @@ export function renderMathGame(container, {
       e.preventDefault();
       const touch = e.touches[0];
       dragData.element.style.position = 'fixed';
-      dragData.element.style.left = (touch.clientX - 30) + 'px';
-      dragData.element.style.top = (touch.clientY - 30) + 'px';
+      dragData.element.style.left = touch.clientX - 30 + 'px';
+      dragData.element.style.top = touch.clientY - 30 + 'px';
       dragData.element.style.zIndex = 1000;
       const rect = resultZone.getBoundingClientRect();
-      resultZone.classList.toggle('drag-over',
-        touch.clientX >= rect.left && touch.clientX <= rect.right &&
-        touch.clientY >= rect.top && touch.clientY <= rect.bottom
+      resultZone.classList.toggle(
+        'drag-over',
+        touch.clientX >= rect.left &&
+          touch.clientX <= rect.right &&
+          touch.clientY >= rect.top &&
+          touch.clientY <= rect.bottom
       );
     }
     function handleTouchEnd(e) {
@@ -115,9 +129,13 @@ export function renderMathGame(container, {
       dragData.element.style.top = '';
       dragData.element.style.zIndex = '';
       resultZone.classList.remove('drag-over');
-      if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
-          touch.clientY >= rect.top && touch.clientY <= rect.bottom &&
-          onAnswer) {
+      if (
+        touch.clientX >= rect.left &&
+        touch.clientX <= rect.right &&
+        touch.clientY >= rect.top &&
+        touch.clientY <= rect.bottom &&
+        onAnswer
+      ) {
         onAnswer(parseInt(dragData.val, 10));
       }
       dragData = null;
@@ -125,7 +143,11 @@ export function renderMathGame(container, {
   } else {
     // Ручной ввод
     const inputGroup = createElement('div', { className: 'input-group' });
-    const input = createElement('input', { type: 'number', placeholder: 'Введите ответ', autofocus: true });
+    const input = createElement('input', {
+      type: 'number',
+      placeholder: 'Введите ответ',
+      autofocus: true,
+    });
     const submitBtn = createElement('div', { className: 'category active' }, 'Проверить');
     on(submitBtn, 'click', () => {
       const val = parseInt(input.value, 10);

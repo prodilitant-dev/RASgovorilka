@@ -20,7 +20,7 @@
   color: var(--text);
 }
 
-.voice-slider-row input[type="range"] {
+.voice-slider-row input[type='range'] {
   flex: 1;
   min-width: 0;
 }

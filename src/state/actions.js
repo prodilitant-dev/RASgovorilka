@@ -6,7 +6,7 @@ import { logger } from '@utils/logger';
 export async function loadInitialState() {
   logger.debug('Loading initial state');
   const data = await loadAppData();
-  
+
   if (data) {
     setState({
       currentProfileId: data.activeProfileId || null,

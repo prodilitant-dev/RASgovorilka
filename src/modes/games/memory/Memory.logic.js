@@ -20,7 +20,7 @@ export function generateMemoryPairs(profile, categoryIds, gridSize) {
       const randomCard = allCards[Math.floor(Math.random() * allCards.length)];
       selected.push({
         ...randomCard,
-        id: randomCard.id + '_dup_' + Date.now() + Math.random()
+        id: randomCard.id + '_dup_' + Date.now() + Math.random(),
       });
     }
   } else {
@@ -37,7 +37,7 @@ export function generateMemoryPairs(profile, categoryIds, gridSize) {
       pairId: pairId,
       emoji: card.emoji,
       imageId: card.imageId,
-      imagePath: card.imagePath,   // ← NEW
+      imagePath: card.imagePath, // ← NEW
       text: card.text,
       isFlipped: false,
       isMatched: false,
@@ -47,7 +47,7 @@ export function generateMemoryPairs(profile, categoryIds, gridSize) {
       pairId: pairId,
       emoji: card.emoji,
       imageId: card.imageId,
-      imagePath: card.imagePath,   // ← NEW
+      imagePath: card.imagePath, // ← NEW
       text: card.text,
       isFlipped: false,
       isMatched: false,

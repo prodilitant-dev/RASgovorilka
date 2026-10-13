@@ -1,5 +1,3 @@
-
-
 /**
  * Конвертирует Blob в WebP с заданным качеством.
  * @param {Blob} blob
@@ -17,10 +15,14 @@ export function convertToWebP(blob, quality = 0.8) {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       URL.revokeObjectURL(url);
-      canvas.toBlob((blobResult) => {
-        if (blobResult) resolve(blobResult);
-        else reject(new Error('Не удалось создать WebP'));
-      }, 'image/webp', quality);
+      canvas.toBlob(
+        (blobResult) => {
+          if (blobResult) resolve(blobResult);
+          else reject(new Error('Не удалось создать WebP'));
+        },
+        'image/webp',
+        quality
+      );
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);

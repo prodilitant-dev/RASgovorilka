@@ -4,15 +4,10 @@ import { renderProgressBar } from '@components/common/ProgressBar';
 import { showCardImage } from '@utils/image/showCardImage';
 import { logger } from '@utils/logger';
 
-export function renderGuessQuestion(container, {
-  question,
-  current,
-  total,
-  onAnswer,
-  feedback = null,
-  isCorrect = false,
-  userAnswer = null,
-}) {
+export function renderGuessQuestion(
+  container,
+  { question, current, total, onAnswer, feedback = null, isCorrect = false, userAnswer = null }
+) {
   logger.debug(`🔄 Rendering Guess Question ${current}/${total}`);
   clear(container);
 
@@ -47,9 +42,13 @@ export function renderGuessQuestion(container, {
     input.disabled = true;
     submitBtn.disabled = true;
     if (userAnswer) input.value = userAnswer;
-    const fb = createElement('div', {
-      className: `feedback ${isCorrect ? 'correct' : 'wrong'}`,
-    }, feedback);
+    const fb = createElement(
+      'div',
+      {
+        className: `feedback ${isCorrect ? 'correct' : 'wrong'}`,
+      },
+      feedback
+    );
     card.appendChild(fb);
   } else {
     on(submitBtn, 'click', () => {

@@ -24,9 +24,7 @@ export function makeSortable(container, options = {}) {
   let offsetY = 0;
 
   const getItems = () =>
-    Array.from(container.querySelectorAll(itemSelector)).filter(
-      (el) => el.dataset.id !== 'add'
-    );
+    Array.from(container.querySelectorAll(itemSelector)).filter((el) => el.dataset.id !== 'add');
 
   const findItemAt = (x, y) => {
     for (const el of getItems()) {

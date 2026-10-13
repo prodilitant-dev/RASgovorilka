@@ -12,7 +12,7 @@ import {
   getDefaultQuizSettings,
   getDefaultGuessSettings,
   getDefaultSortingSettings,
-  getDefaultMathSettings
+  getDefaultMathSettings,
 } from './defaults';
 import { getState, setState } from '@state/store';
 import { toast } from '@utils/toast';
@@ -63,9 +63,14 @@ export function handleLearning(container, profile) {
     const saved = state.activityState;
     switch (activityId) {
       case 'quiz': {
-        const settings = { ...getDefaultQuizSettings(profile), ...(profile.learningSettings?.quiz || {}) };
+        const settings = {
+          ...getDefaultQuizSettings(profile),
+          ...(profile.learningSettings?.quiz || {}),
+        };
         container._activeActivity = startQuiz(
-          container, profile, settings,
+          container,
+          profile,
+          settings,
           () => {
             setState({ activityState: null });
             container._activeActivity = null;
@@ -76,9 +81,14 @@ export function handleLearning(container, profile) {
         break;
       }
       case 'guess': {
-        const settings = { ...getDefaultGuessSettings(profile), ...(profile.learningSettings?.guess || {}) };
+        const settings = {
+          ...getDefaultGuessSettings(profile),
+          ...(profile.learningSettings?.guess || {}),
+        };
         container._activeActivity = startGuess(
-          container, profile, settings,
+          container,
+          profile,
+          settings,
           () => {
             setState({ activityState: null });
             container._activeActivity = null;
@@ -89,9 +99,14 @@ export function handleLearning(container, profile) {
         break;
       }
       case 'sorting': {
-        const settings = { ...getDefaultSortingSettings(profile), ...(profile.learningSettings?.sorting || {}) };
+        const settings = {
+          ...getDefaultSortingSettings(profile),
+          ...(profile.learningSettings?.sorting || {}),
+        };
         container._activeActivity = startSorting(
-          container, profile, settings,
+          container,
+          profile,
+          settings,
           () => {
             setState({ activityState: null });
             container._activeActivity = null;
@@ -102,9 +117,14 @@ export function handleLearning(container, profile) {
         break;
       }
       case 'math': {
-        const settings = { ...getDefaultMathSettings(profile), ...(profile.learningSettings?.math || {}) };
+        const settings = {
+          ...getDefaultMathSettings(profile),
+          ...(profile.learningSettings?.math || {}),
+        };
         container._activeActivity = startMath(
-          container, profile, settings,
+          container,
+          profile,
+          settings,
           () => {
             setState({ activityState: null });
             container._activeActivity = null;
@@ -135,7 +155,10 @@ function openActivitySettings(activityId, profile, container) {
   const settingsMap = {
     quiz: { openSettingsFn: openQuizSettings, successMessage: 'Настройки викторины сохранены' },
     guess: { openSettingsFn: openGuessSettings, successMessage: 'Настройки угадайки сохранены' },
-    sorting: { openSettingsFn: openSortingSettings, successMessage: 'Настройки сортировки сохранены' },
+    sorting: {
+      openSettingsFn: openSortingSettings,
+      successMessage: 'Настройки сортировки сохранены',
+    },
     math: { openSettingsFn: openMathSettings, successMessage: 'Настройки математики сохранены' },
   };
 
@@ -153,6 +176,6 @@ function openActivitySettings(activityId, profile, container) {
     renderMenuFn: renderLearning,
     container,
     onComplete: () => handleLearning(container, profile),
-    successMessage: config.successMessage
+    successMessage: config.successMessage,
   });
 }

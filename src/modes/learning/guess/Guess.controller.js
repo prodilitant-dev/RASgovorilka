@@ -10,7 +10,16 @@ export function startGuess(container, profile, settings, onBack, savedState) {
     settings,
     activityType: 'guess',
     generateData: (prof, set) => generateGuessQuestions(prof, set),
-    renderItem: (container, question, current, total, onAnswer, feedback, isCorrect, userAnswer) => {
+    renderItem: (
+      container,
+      question,
+      current,
+      total,
+      onAnswer,
+      feedback,
+      isCorrect,
+      userAnswer
+    ) => {
       renderGuessQuestion(container, {
         question,
         current,

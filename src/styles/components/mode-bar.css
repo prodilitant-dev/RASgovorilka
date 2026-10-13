@@ -21,7 +21,9 @@
   font-size: 14px;
   white-space: nowrap;
   cursor: pointer;
-  transition: background var(--transition), color var(--transition);
+  transition:
+    background var(--transition),
+    color var(--transition);
   color: var(--text-secondary);
   display: inline-flex;
   align-items: center;
@@ -42,7 +44,7 @@
 .mode-btn__label {
   display: inline-block;
 }
-  
+
 .mode-btn.active {
   background: var(--primary);
   color: #000;

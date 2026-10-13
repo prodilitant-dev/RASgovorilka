@@ -5,11 +5,16 @@
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
-input, textarea, select { user-select: text; }
+input,
+textarea,
+select {
+  user-select: text;
+}
 
-html, body {
-  height: 100%;                /* fallback */
-  height: 100dvh;              /* динамическая высота (современные браузеры) */
+html,
+body {
+  height: 100%; /* fallback */
+  height: 100dvh; /* динамическая высота (современные браузеры) */
   font-family: var(--font);
   background: var(--bg);
   color: var(--text);

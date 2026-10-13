@@ -3,7 +3,14 @@ import { renderMainLayout } from '@components/common/Layout/MainLayout';
 import { createElement } from '@utils/dom';
 import { setState } from '@state/store';
 import { renderQuickButtons } from '@modes/common/quickButtons';
-import { renderSentence, addWord, removeWord, clearSentence, speakSentence, getWords } from '@modes/common/sentence';
+import {
+  renderSentence,
+  addWord,
+  removeWord,
+  clearSentence,
+  speakSentence,
+  getWords,
+} from '@modes/common/sentence';
 import { debounce } from '@utils';
 import { logger } from '@utils/logger';
 
@@ -63,7 +70,7 @@ export function renderWrite(container, profile) {
   });
 
   if (words.length) {
-    const text = words.map(w => w.original || w.text).join(' ');
+    const text = words.map((w) => w.original || w.text).join(' ');
     textarea.value = text;
   }
 
@@ -71,7 +78,7 @@ export function renderWrite(container, profile) {
 
   function handleTextInput() {
     const raw = textarea.value;
-    const words = raw.split(/\s+/).filter(w => w.length > 0);
+    const words = raw.split(/\s+/).filter((w) => w.length > 0);
 
     if (words.length === 0) {
       setState({ sentenceWords: [] });
@@ -79,7 +86,7 @@ export function renderWrite(container, profile) {
       return;
     }
 
-    const wordObjects = words.map(w => ({
+    const wordObjects = words.map((w) => ({
       text: w,
       display: w,
       original: w,
@@ -93,7 +100,7 @@ export function renderWrite(container, profile) {
 
   function updateTextareaFromWords() {
     const words = getWords();
-    const text = words.map(w => w.original || w.text).join(' ');
+    const text = words.map((w) => w.original || w.text).join(' ');
     if (textarea.value !== text) {
       textarea.value = text;
     }

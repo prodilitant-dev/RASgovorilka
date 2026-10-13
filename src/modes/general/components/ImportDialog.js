@@ -11,7 +11,7 @@ import { toast } from '@utils/toast';
  * @param {Function} onConfirm - (selectedKeys, strategy, selectedCategoryIds) => void
  */
 export function openImportDialog(importedData, manifest, onConfirm) {
-  const components = Object.keys(manifest.components).map(key => ({
+  const components = Object.keys(manifest.components).map((key) => ({
     key,
     label: EXPORT_COMPONENTS[key]?.label || key,
   }));
@@ -28,16 +28,21 @@ export function openImportDialog(importedData, manifest, onConfirm) {
     body: () => {
       const wrap = createElement('div', { style: 'padding: 8px 0;' });
 
-      const desc = createElement('p', {
-        style: 'font-size:14px; color:#555; margin:0 0 12px 0;',
-      }, 'Выберите, что импортировать:');
+      const desc = createElement(
+        'p',
+        {
+          style: 'font-size:14px; color:#555; margin:0 0 12px 0;',
+        },
+        'Выберите, что импортировать:'
+      );
       wrap.appendChild(desc);
 
       // --- Список компонентов ---
-      components.forEach(comp => {
+      components.forEach((comp) => {
         const chip = createElement('div', {
           className: 'mode-order-chip',
-          style: 'display:flex; justify-content:space-between; align-items:center; padding:8px 12px;',
+          style:
+            'display:flex; justify-content:space-between; align-items:center; padding:8px 12px;',
         });
         const label = createElement('span', { style: 'flex:1;' }, comp.label);
 
@@ -62,10 +67,11 @@ export function openImportDialog(importedData, manifest, onConfirm) {
             const container = createElement('div', {
               style: 'margin-left:24px; padding-left:12px; border-left:2px solid #e0e0e0;',
             });
-            cats.forEach(cat => {
+            cats.forEach((cat) => {
               const row = createElement('div', {
                 className: 'mode-order-chip',
-                style: 'display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:none;',
+                style:
+                  'display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:none;',
               });
               const catLabel = createElement('span', { style: 'flex:1;' }, cat.name);
               const catToggle = createElement('label', { className: 'toggle-switch' });
@@ -91,9 +97,13 @@ export function openImportDialog(importedData, manifest, onConfirm) {
       });
 
       // --- Стратегия импорта ---
-      const strategyLabel = createElement('p', {
-        style: 'font-size:14px; color:#555; margin:16px 0 8px 0;',
-      }, 'Стратегия импорта:');
+      const strategyLabel = createElement(
+        'p',
+        {
+          style: 'font-size:14px; color:#555; margin:16px 0 8px 0;',
+        },
+        'Стратегия импорта:'
+      );
       wrap.appendChild(strategyLabel);
 
       const strategyRow = createElement('div', {
@@ -101,7 +111,11 @@ export function openImportDialog(importedData, manifest, onConfirm) {
       });
       const addBtn = createElement('div', { className: 'category active' }, '➕ Добавить');
       const updateBtn = createElement('div', { className: 'category' }, '🔄 Обновить');
-      const overwriteBtn = createElement('div', { className: 'category category-danger' }, '⚠️ Перезаписать');
+      const overwriteBtn = createElement(
+        'div',
+        { className: 'category category-danger' },
+        '⚠️ Перезаписать'
+      );
       strategyRow.appendChild(addBtn);
       strategyRow.appendChild(updateBtn);
       strategyRow.appendChild(overwriteBtn);
@@ -131,7 +145,8 @@ export function openImportDialog(importedData, manifest, onConfirm) {
 
       // --- Кнопки действий ---
       const btnRow = createElement('div', {
-        style: 'display:flex; gap:8px; justify-content:flex-end; margin-top:16px; padding-top:12px; border-top:1px solid #e0e0e0;',
+        style:
+          'display:flex; gap:8px; justify-content:flex-end; margin-top:16px; padding-top:12px; border-top:1px solid #e0e0e0;',
       });
       const cancelBtn = createElement('div', { className: 'category' }, 'Отмена');
       const importBtn = createElement('div', { className: 'category active' }, '📥 Импортировать');
@@ -142,7 +157,7 @@ export function openImportDialog(importedData, manifest, onConfirm) {
         // Собираем выбранные компоненты
         const checkedComponents = wrap.querySelectorAll('.toggle-switch input[type="checkbox"]');
         const keys = [];
-        checkedComponents.forEach(inp => {
+        checkedComponents.forEach((inp) => {
           if (inp.checked && inp.dataset.key) keys.push(inp.dataset.key);
         });
         if (keys.length === 0) {
@@ -155,7 +170,7 @@ export function openImportDialog(importedData, manifest, onConfirm) {
         if (keys.includes('categories')) {
           const checkedCats = wrap.querySelectorAll('.toggle-switch input[data-catid]');
           const ids = [];
-          checkedCats.forEach(inp => {
+          checkedCats.forEach((inp) => {
             if (inp.checked && inp.dataset.catid) ids.push(inp.dataset.catid);
           });
           if (ids.length === 0) {

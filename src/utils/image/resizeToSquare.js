@@ -28,10 +28,14 @@ export function resizeToSquare(blob, size = 512, format = 'image/png', quality =
 
       // Конвертируем в нужный формат
       if (format === 'image/webp') {
-        canvas.toBlob((blobResult) => {
-          if (blobResult) resolve(blobResult);
-          else reject(new Error('Не удалось создать WebP'));
-        }, 'image/webp', quality);
+        canvas.toBlob(
+          (blobResult) => {
+            if (blobResult) resolve(blobResult);
+            else reject(new Error('Не удалось создать WebP'));
+          },
+          'image/webp',
+          quality
+        );
       } else {
         canvas.toBlob((blobResult) => {
           if (blobResult) resolve(blobResult);

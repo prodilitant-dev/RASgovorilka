@@ -55,9 +55,7 @@ export function renderSentence(container, options = {}) {
   const state = getState();
   const words = state.sentenceWords || [];
   const autoInflect = state.globalSettings?.autoInflect === true;
-  const displayWords = autoInflect
-    ? getInflectedWords(words, true)
-    : words.map((w) => w.text);
+  const displayWords = autoInflect ? getInflectedWords(words, true) : words.map((w) => w.text);
 
   if (options.onRemove) lastCallbacks.onRemove = options.onRemove;
   if (options.onClear) lastCallbacks.onClear = options.onClear;

@@ -1,7 +1,7 @@
 // src/services/backup/import.js
 import JSZip from 'jszip';
 import { EXPORT_COMPONENTS } from './registry';
-import { saveImage } from '@storage/imageStorage';  // ← есть, правильно
+import { saveImage } from '@storage/imageStorage'; // ← есть, правильно
 import { toast } from '@utils/toast';
 import { logger } from '@utils/logger';
 import { getActiveProfile } from '@state/actions';
@@ -39,7 +39,7 @@ export async function importFromZip(file) {
     if (imgFolder) {
       const promises = [];
       imgFolder.forEach((relativePath, file) => {
-        promises.push(file.async('blob').then(blob => saveImage(relativePath, blob)));
+        promises.push(file.async('blob').then((blob) => saveImage(relativePath, blob)));
       });
       await Promise.all(promises);
     }
@@ -47,7 +47,6 @@ export async function importFromZip(file) {
     openImportDialog(importedData, manifest, (selectedKeys, strategy, selectedCategories) => {
       applyImport(importedData, selectedKeys, strategy, selectedCategories);
     });
-
   } catch (err) {
     toast('Ошибка импорта: ' + err.message, 'error');
     logger.error('Импорт не удался', err);
@@ -69,9 +68,9 @@ async function applyImport(importedData, selectedKeys, strategy, selectedCategor
     }
     try {
       if (key === 'categories' && selectedCategoryIds) {
-        const filteredCats = data.categories.filter(c => selectedCategoryIds.includes(c.id));
+        const filteredCats = data.categories.filter((c) => selectedCategoryIds.includes(c.id));
         const filteredCards = {};
-        filteredCats.forEach(cat => {
+        filteredCats.forEach((cat) => {
           filteredCards[cat.id] = data.cards[cat.id] || [];
         });
         await comp.import(profile, { categories: filteredCats, cards: filteredCards }, strategy);

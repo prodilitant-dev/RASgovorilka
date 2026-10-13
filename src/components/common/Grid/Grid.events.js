@@ -26,5 +26,5 @@ export function attachGridEvents(gridElement, { onClick, onLongPress: longPressH
     cleanups.push(cleanupLongPress);
   }
 
-  return () => cleanups.forEach(fn => fn());
+  return () => cleanups.forEach((fn) => fn());
 }

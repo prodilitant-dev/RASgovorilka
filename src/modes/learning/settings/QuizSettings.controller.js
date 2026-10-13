@@ -3,10 +3,10 @@ import { renderSettingsModal } from '@components/common/SettingsModal/SettingsMo
 
 export function openQuizSettings(profile, onSave) {
   const currentSettings = profile.learningSettings?.quiz || {
-    categoryIds: profile.categories.map(c => c.id),
+    categoryIds: profile.categories.map((c) => c.id),
     numQuestions: 5,
     numOptions: 4,
-    mode: 'image_to_word'
+    mode: 'image_to_word',
   };
 
   renderSettingsModal({
@@ -17,7 +17,7 @@ export function openQuizSettings(profile, onSave) {
         key: 'categoryIds',
         type: 'checkbox',
         label: 'Категории:',
-        options: (profile) => profile.categories.map(c => ({ value: c.id, label: c.name })),
+        options: (profile) => profile.categories.map((c) => ({ value: c.id, label: c.name })),
       },
       {
         key: 'numQuestions',

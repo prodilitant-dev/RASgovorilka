@@ -1,10 +1,13 @@
 // src/components/common/Layout/MainLayout.js
 import { createElement, clear } from '@utils/dom';
 
-export function renderMainLayout(container, {
-  content,              // DOM-элемент с основным содержимым
-  bottomPanel = null,   // DOM-элемент нижней панели (или null)
-}) {
+export function renderMainLayout(
+  container,
+  {
+    content, // DOM-элемент с основным содержимым
+    bottomPanel = null, // DOM-элемент нижней панели (или null)
+  }
+) {
   clear(container);
   container.classList.add('main-area');
 

@@ -24,19 +24,31 @@ export function openAboutModal() {
       wrap.appendChild(logoRow);
 
       // ===== Версия =====
-      wrap.appendChild(createElement('div', { className: 'about-version' }, `версия ${APP_VERSION}`));
+      wrap.appendChild(
+        createElement('div', { className: 'about-version' }, `версия ${APP_VERSION}`)
+      );
 
       // ===== Суть =====
-      wrap.appendChild(createElement('p', { className: 'about-lead' },
-        'РАСговорилка — бесплатный коммуникатор для детей с РАС. Помогает собирать фразы из карточек и озвучивать их. Работает офлайн, без рекламы, без сбора данных.'
-      ));
+      wrap.appendChild(
+        createElement(
+          'p',
+          { className: 'about-lead' },
+          'РАСговорилка — бесплатный коммуникатор для детей с РАС. Помогает собирать фразы из карточек и озвучивать их. Работает офлайн, без рекламы, без сбора данных.'
+        )
+      );
 
       // ===== Свободное ПО =====
       const license = createElement('div', { className: 'about-block' });
-      license.appendChild(createElement('div', { className: 'about-block__title' }, 'Свободное ПО'));
-      license.appendChild(createElement('p', { className: 'about-block__text' },
-        'Приложение распространяется по лицензии GNU GPL v3. Исходный код открыт — можно изучать, изменять и распространять.'
-      ));
+      license.appendChild(
+        createElement('div', { className: 'about-block__title' }, 'Свободное ПО')
+      );
+      license.appendChild(
+        createElement(
+          'p',
+          { className: 'about-block__text' },
+          'Приложение распространяется по лицензии GNU GPL v3. Исходный код открыт — можно изучать, изменять и распространять.'
+        )
+      );
       wrap.appendChild(license);
 
       // ===== Ссылки =====
@@ -45,12 +57,18 @@ export function openAboutModal() {
 
       const linkList = createElement('div', { className: 'about-links' });
       const addLink = (href, text) => {
-        linkList.appendChild(createElement('a', {
-          href,
-          target: '_blank',
-          rel: 'noopener',
-          className: 'about-link',
-        }, text));
+        linkList.appendChild(
+          createElement(
+            'a',
+            {
+              href,
+              target: '_blank',
+              rel: 'noopener',
+              className: 'about-link',
+            },
+            text
+          )
+        );
       };
 
       addLink('https://github.com/prodilitant-dev/RASgovorilka', '🐙 GitHub — исходный код');
@@ -63,23 +81,49 @@ export function openAboutModal() {
 
       // ===== Автор (спойлер) =====
       const author = createElement('details', { className: 'about-details' });
-      author.appendChild(createElement('summary', { className: 'about-details__summary' }, 'Об авторе'));
+      author.appendChild(
+        createElement('summary', { className: 'about-details__summary' }, 'Об авторе')
+      );
       const authorBody = createElement('div', { className: 'about-details__body' });
-      authorBody.appendChild(createElement('p', {}, 'Привет! Я — Виталий, разработчик «РАСговорилки».'));
-      authorBody.appendChild(createElement('p', {}, 'Это приложение я создал с помощью ИИ и своей упёртости. Я не программист, но я знаю, что значит особенный ребёнок.'));
-      authorBody.appendChild(createElement('p', {}, '«РАСговорилка» задумана как инструмент, который помогает детям с РАС общаться, а родителям — лучше понимать своего ребёнка.'));
-      authorBody.appendChild(createElement('p', {}, 'Здесь нет рекламы, нет нужды в интернете — только желание помочь.'));
-      authorBody.appendChild(createElement('p', { className: 'about-signature' }, 'Ваш ПроДилИтант'));
+      authorBody.appendChild(
+        createElement('p', {}, 'Привет! Я — Виталий, разработчик «РАСговорилки».')
+      );
+      authorBody.appendChild(
+        createElement(
+          'p',
+          {},
+          'Это приложение я создал с помощью ИИ и своей упёртости. Я не программист, но я знаю, что значит особенный ребёнок.'
+        )
+      );
+      authorBody.appendChild(
+        createElement(
+          'p',
+          {},
+          '«РАСговорилка» задумана как инструмент, который помогает детям с РАС общаться, а родителям — лучше понимать своего ребёнка.'
+        )
+      );
+      authorBody.appendChild(
+        createElement('p', {}, 'Здесь нет рекламы, нет нужды в интернете — только желание помочь.')
+      );
+      authorBody.appendChild(
+        createElement('p', { className: 'about-signature' }, 'Ваш ПроДилИтант')
+      );
       author.appendChild(authorBody);
       wrap.appendChild(author);
 
       // ===== Особая благодарность (спойлер) =====
       const thanks = createElement('details', { className: 'about-details' });
-      thanks.appendChild(createElement('summary', { className: 'about-details__summary' }, 'Особая благодарность'));
+      thanks.appendChild(
+        createElement('summary', { className: 'about-details__summary' }, 'Особая благодарность')
+      );
       const thanksBody = createElement('div', { className: 'about-details__body' });
-      thanksBody.appendChild(createElement('p', { className: 'about-placeholder' },
-        'Список будет дополнен. Здесь появятся люди, которые помогли проекту — советами, тестированием, поддержкой.'
-      ));
+      thanksBody.appendChild(
+        createElement(
+          'p',
+          { className: 'about-placeholder' },
+          'Список будет дополнен. Здесь появятся люди, которые помогли проекту — советами, тестированием, поддержкой.'
+        )
+      );
       thanks.appendChild(thanksBody);
       wrap.appendChild(thanks);
 

@@ -2,7 +2,7 @@ import { renderSettingsModal } from '@components/common/SettingsModal/SettingsMo
 
 export function openMemorySettings(profile, onSave) {
   const currentSettings = profile.gamesSettings?.memory || {
-    categoryIds: profile.categories.map(c => c.id),
+    categoryIds: profile.categories.map((c) => c.id),
     gridSize: 4,
   };
 
@@ -14,7 +14,7 @@ export function openMemorySettings(profile, onSave) {
         key: 'categoryIds',
         type: 'checkbox',
         label: 'Категории:',
-        options: (profile) => profile.categories.map(c => ({ value: c.id, label: c.name })),
+        options: (profile) => profile.categories.map((c) => ({ value: c.id, label: c.name })),
       },
       {
         key: 'gridSize',

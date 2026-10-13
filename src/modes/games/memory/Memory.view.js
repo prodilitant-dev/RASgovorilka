@@ -7,14 +7,16 @@ import { logger } from '@utils/logger';
  * Рендерит игровое поле Мемори
  */
 export function renderMemoryBoard(container, state, onCardClick) {
-  logger.debug(`🔄 Rendering Memory Board, ${state.cards.filter(c => c.isMatched).length / 2} pairs found`);
+  logger.debug(
+    `🔄 Rendering Memory Board, ${state.cards.filter((c) => c.isMatched).length / 2} pairs found`
+  );
   clear(container);
 
   const wrap = createElement('div', { className: 'game-wrapper' });
 
   // Информация о ходе
   const info = createElement('div', { className: 'game-info' });
-  const matched = state.cards.filter(c => c.isMatched).length / 2;
+  const matched = state.cards.filter((c) => c.isMatched).length / 2;
   const total = state.cards.length / 2;
   info.textContent = `Ходы: ${state.moves || 0}  |  Найдено пар: ${matched} / ${total}`;
   wrap.appendChild(info);
@@ -26,9 +28,9 @@ export function renderMemoryBoard(container, state, onCardClick) {
     'data-size': state.gridSize,
   });
 
-  state.cards.forEach(card => {
+  state.cards.forEach((card) => {
     const cell = createElement('div', {
-      className: `game-cell ${card.isMatched ? 'matched' : (card.isFlipped ? 'revealed' : 'hidden')}`,
+      className: `game-cell ${card.isMatched ? 'matched' : card.isFlipped ? 'revealed' : 'hidden'}`,
       'data-card-id': card.id,
     });
 

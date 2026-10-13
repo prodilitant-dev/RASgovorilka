@@ -7,7 +7,10 @@ import { logger } from '@utils/logger';
 export function ModeOrderList({ modes, onReorder, onToggleVisibility }) {
   const container = createElement('div', { className: 'mode-order-list' });
 
-  logger.debug('🔧 ModeOrderList received modes:', modes.map((m) => ({ id: m.id, visible: m.visible })));
+  logger.debug(
+    '🔧 ModeOrderList received modes:',
+    modes.map((m) => ({ id: m.id, visible: m.visible }))
+  );
 
   modes.forEach((mode) => {
     const chip = createElement('div', {
@@ -57,9 +60,7 @@ export function ModeOrderList({ modes, onReorder, onToggleVisibility }) {
     itemSelector: '.mode-order-chip',
     ignoreSelector: 'input, button, label, .toggle-switch',
     onReorder: (ids) => {
-      const newOrder = ids
-        .map((id) => modes.find((m) => m.id === id))
-        .filter(Boolean);
+      const newOrder = ids.map((id) => modes.find((m) => m.id === id)).filter(Boolean);
       onReorder(newOrder);
     },
   });

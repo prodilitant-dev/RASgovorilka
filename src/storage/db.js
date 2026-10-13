@@ -85,9 +85,7 @@ export function resetDatabaseIfPending() {
 function showBlockedScreen() {
   const app = document.getElementById('app') || document.body;
   const base = import.meta.env.BASE_URL || '/';
-  const iconUrl = base.endsWith('/')
-    ? `${base}icons/blocked.svg`
-    : `${base}/icons/blocked.svg`;
+  const iconUrl = base.endsWith('/') ? `${base}icons/blocked.svg` : `${base}/icons/blocked.svg`;
 
   app.innerHTML = `
     <div style="

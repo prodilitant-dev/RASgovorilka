@@ -6,8 +6,15 @@ import { getState } from '@state/store';
 import { logger } from '@utils/logger';
 import { iconUrl } from '@utils/icon';
 
-
-export function renderCategories(container, profile, activeId, onSelect, onEdit, onReorder, onCreated) {
+export function renderCategories(
+  container,
+  profile,
+  activeId,
+  onSelect,
+  onEdit,
+  onReorder,
+  onCreated
+) {
   logger.debug('🔄 Rendering Categories');
 
   // Снимаем предыдущий cleanup категорий
@@ -20,9 +27,7 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
   const state = getState();
   const editing = state.editingMode || false;
 
-  const categories = editing
-    ? profile.categories
-    : profile.categories.filter((c) => !c.hidden);
+  const categories = editing ? profile.categories : profile.categories.filter((c) => !c.hidden);
 
   categories.forEach((cat) => {
     const classes = ['category'];
@@ -76,24 +81,32 @@ export function renderCategories(container, profile, activeId, onSelect, onEdit,
     container.appendChild(el);
   });
 
-      if (editing) {
-        const addBtn = createElement('div', { className: 'category category-add' });
-        const addImg = createElement('img', {
-          src: iconUrl('add'),
-          alt: '',
-          className: 'cat-action-btn__icon',
-          draggable: 'false',
-        });
-        addImg.addEventListener('error', () => {
-          addImg.replaceWith(document.createTextNode('+'));
-        });
-        addBtn.appendChild(addImg);
-        addBtn.addEventListener('click', () => {
+  if (editing) {
+    const addBtn = createElement('div', { className: 'category category-add' });
+    const addImg = createElement('img', {
+      src: iconUrl('add'),
+      alt: '',
+      className: 'cat-action-btn__icon',
+      draggable: 'false',
+    });
+    addImg.addEventListener('error', () => {
+      addImg.replaceWith(document.createTextNode('+'));
+    });
+    addBtn.appendChild(addImg);
+    addBtn.addEventListener('click', () => {
       openCategoryCreateModal(profile, (newCategoryId) => {
         if (onCreated) {
           onCreated(newCategoryId);
         } else {
-          renderCategories(container, profile, newCategoryId, onSelect, onEdit, onReorder, onCreated);
+          renderCategories(
+            container,
+            profile,
+            newCategoryId,
+            onSelect,
+            onEdit,
+            onReorder,
+            onCreated
+          );
         }
       });
     });

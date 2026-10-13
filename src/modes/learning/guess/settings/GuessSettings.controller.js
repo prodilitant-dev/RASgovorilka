@@ -2,7 +2,7 @@ import { renderSettingsModal } from '@components/common/SettingsModal/SettingsMo
 
 export function openGuessSettings(profile, onSave) {
   const currentSettings = profile.learningSettings?.guess || {
-    categoryIds: profile.categories.map(c => c.id),
+    categoryIds: profile.categories.map((c) => c.id),
     numQuestions: 5,
   };
 
@@ -14,7 +14,7 @@ export function openGuessSettings(profile, onSave) {
         key: 'categoryIds',
         type: 'checkbox',
         label: 'Категории:',
-        options: (profile) => profile.categories.map(c => ({ value: c.id, label: c.name })),
+        options: (profile) => profile.categories.map((c) => ({ value: c.id, label: c.name })),
       },
       {
         key: 'numQuestions',

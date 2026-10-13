@@ -21,7 +21,9 @@
   font-size: 14px;
   font-family: var(--font);
   cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   min-height: 36px;
   appearance: none;
   -webkit-appearance: none;

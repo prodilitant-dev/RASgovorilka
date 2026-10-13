@@ -5,7 +5,10 @@ import { createMainArea } from '@components/MainArea/MainArea';
 import { getState, setState } from '@state/store';
 import { renderContent } from './contentRenderer';
 import { getProfileIcon, ensureActiveProfile } from '@app/helpers/profileHelpers';
-import { createProfileClickHandler, createProfileLongPressHandler } from '@app/handlers/profileHandlers';
+import {
+  createProfileClickHandler,
+  createProfileLongPressHandler,
+} from '@app/handlers/profileHandlers';
 import { logger } from '@utils/logger';
 
 /**
@@ -24,7 +27,8 @@ export function renderApp() {
   if (!activeProfile) {
     // Если профилей нет – выходим (это не должно произойти, т.к. loadInitialState создаёт дефолтный)
     logger.error('Нет ни одного профиля! Приложение не может работать.');
-    app.innerHTML = '<div style="padding:20px;text-align:center;">Ошибка: нет профилей. Перезагрузите приложение.</div>';
+    app.innerHTML =
+      '<div style="padding:20px;text-align:center;">Ошибка: нет профилей. Перезагрузите приложение.</div>';
     return;
   }
 

@@ -57,7 +57,7 @@ export async function initApp() {
   }
 
   initKeyboardHandler();
-  setupFileHandler();   // ← до renderApp
+  setupFileHandler(); // ← до renderApp
 
   await loadInitialState();
 

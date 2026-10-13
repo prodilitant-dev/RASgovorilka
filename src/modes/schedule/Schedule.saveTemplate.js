@@ -28,7 +28,9 @@ export function openSaveTemplateModal(profile, events, onUpdate) {
       wrap.appendChild(newNameRow);
 
       // Разделитель
-      const sep = createElement('hr', { style: 'margin: 12px 0; border: none; border-top: 1px solid var(--border);' });
+      const sep = createElement('hr', {
+        style: 'margin: 12px 0; border: none; border-top: 1px solid var(--border);',
+      });
       wrap.appendChild(sep);
 
       // Выбор существующего шаблона для замены
@@ -37,7 +39,7 @@ export function openSaveTemplateModal(profile, events, onUpdate) {
       const replaceSelect = createElement('select', {});
       const defaultOpt = createElement('option', { value: '' }, '— выбрать —');
       replaceSelect.appendChild(defaultOpt);
-      profile.scheduleTemplates.forEach(tmpl => {
+      profile.scheduleTemplates.forEach((tmpl) => {
         const opt = createElement('option', { value: tmpl.id }, tmpl.name);
         replaceSelect.appendChild(opt);
       });
@@ -67,14 +69,14 @@ export function openSaveTemplateModal(profile, events, onUpdate) {
           toast('Введите имя нового шаблона', 'error');
           return;
         }
-        if (profile.scheduleTemplates.some(t => t.name === name)) {
+        if (profile.scheduleTemplates.some((t) => t.name === name)) {
           toast('Шаблон с таким именем уже существует', 'error');
           return;
         }
         const newTemplate = {
           id: uid(),
           name: name,
-          events: events.map(ev => ({
+          events: events.map((ev) => ({
             id: uid(),
             time: ev.time || '',
             text: ev.text || '',
@@ -96,12 +98,12 @@ export function openSaveTemplateModal(profile, events, onUpdate) {
           toast('Выберите шаблон для замены', 'error');
           return;
         }
-        const target = profile.scheduleTemplates.find(t => t.id === selectedId);
+        const target = profile.scheduleTemplates.find((t) => t.id === selectedId);
         if (!target) {
           toast('Шаблон не найден', 'error');
           return;
         }
-        target.events = events.map(ev => ({
+        target.events = events.map((ev) => ({
           id: uid(),
           time: ev.time || '',
           text: ev.text || '',

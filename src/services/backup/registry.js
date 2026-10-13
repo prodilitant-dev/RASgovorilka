@@ -8,78 +8,92 @@ export const EXPORT_COMPONENTS = {
       const categories = profile.categories || [];
       const cards = profile.cards || {};
       const imageIds = new Set();
-      Object.values(cards).forEach(arr => arr.forEach(c => c.imageId && imageIds.add(c.imageId)));
+      Object.values(cards).forEach((arr) =>
+        arr.forEach((c) => c.imageId && imageIds.add(c.imageId))
+      );
       return { data: { categories, cards }, imageIds };
     },
     import: async (profile, data, strategy) => {
       const importedCats = data.categories || [];
       const importedCards = data.cards || {};
       if (strategy === 'overwrite') {
-        profile.categories = importedCats.map(c => ({ ...c, id: uid() }));
+        profile.categories = importedCats.map((c) => ({ ...c, id: uid() }));
         profile.cards = {};
-        importedCats.forEach(cat => {
+        importedCats.forEach((cat) => {
           const oldId = cat.id;
-          const newCat = profile.categories.find(c => c.name === cat.name);
+          const newCat = profile.categories.find((c) => c.name === cat.name);
           if (newCat) {
-            profile.cards[newCat.id] = (importedCards[oldId] || []).map(c => ({ ...c, id: uid() }));
+            profile.cards[newCat.id] = (importedCards[oldId] || []).map((c) => ({
+              ...c,
+              id: uid(),
+            }));
           }
         });
       } else if (strategy === 'add') {
-        importedCats.forEach(impCat => {
-          const existing = profile.categories.find(c => c.name === impCat.name);
+        importedCats.forEach((impCat) => {
+          const existing = profile.categories.find((c) => c.name === impCat.name);
           if (!existing) {
             const newCat = { ...impCat, id: uid() };
             profile.categories.push(newCat);
-            profile.cards[newCat.id] = (importedCards[impCat.id] || []).map(c => ({ ...c, id: uid() }));
+            profile.cards[newCat.id] = (importedCards[impCat.id] || []).map((c) => ({
+              ...c,
+              id: uid(),
+            }));
           }
         });
       } else if (strategy === 'update') {
-        importedCats.forEach(impCat => {
-          const existing = profile.categories.find(c => c.name === impCat.name);
+        importedCats.forEach((impCat) => {
+          const existing = profile.categories.find((c) => c.name === impCat.name);
           if (existing) {
-            profile.cards[existing.id] = (importedCards[impCat.id] || []).map(c => ({ ...c, id: uid() }));
+            profile.cards[existing.id] = (importedCards[impCat.id] || []).map((c) => ({
+              ...c,
+              id: uid(),
+            }));
           } else {
             const newCat = { ...impCat, id: uid() };
             profile.categories.push(newCat);
-            profile.cards[newCat.id] = (importedCards[impCat.id] || []).map(c => ({ ...c, id: uid() }));
+            profile.cards[newCat.id] = (importedCards[impCat.id] || []).map((c) => ({
+              ...c,
+              id: uid(),
+            }));
           }
         });
       }
-    }
+    },
   },
 
   quick: {
     label: 'Быстрые кнопки',
     export: async (profile) => {
       const data = profile.quickButtons || [];
-      const imageIds = new Set(data.filter(b => b.imageId).map(b => b.imageId));
+      const imageIds = new Set(data.filter((b) => b.imageId).map((b) => b.imageId));
       return { data, imageIds };
     },
     import: async (profile, data, strategy) => {
       const imported = data || [];
       if (strategy === 'overwrite' || strategy === 'update') {
-        profile.quickButtons = imported.map(b => ({ ...b, id: uid() }));
+        profile.quickButtons = imported.map((b) => ({ ...b, id: uid() }));
       } else if (strategy === 'add') {
-        profile.quickButtons.push(...imported.map(b => ({ ...b, id: uid() })));
+        profile.quickButtons.push(...imported.map((b) => ({ ...b, id: uid() })));
       }
-    }
+    },
   },
 
   yesno: {
     label: 'Да / Нет',
     export: async (profile) => {
       const data = profile.yesnoButtons || [];
-      const imageIds = new Set(data.filter(b => b.imageId).map(b => b.imageId));
+      const imageIds = new Set(data.filter((b) => b.imageId).map((b) => b.imageId));
       return { data, imageIds };
     },
     import: async (profile, data, strategy) => {
       const imported = data || [];
       if (strategy === 'overwrite' || strategy === 'update') {
-        profile.yesnoButtons = imported.map(b => ({ ...b, id: uid() }));
+        profile.yesnoButtons = imported.map((b) => ({ ...b, id: uid() }));
       } else if (strategy === 'add') {
-        profile.yesnoButtons.push(...imported.map(b => ({ ...b, id: uid() })));
+        profile.yesnoButtons.push(...imported.map((b) => ({ ...b, id: uid() })));
       }
-    }
+    },
   },
 
   schedule: {
@@ -88,30 +102,30 @@ export const EXPORT_COMPONENTS = {
       const data = {
         templates: profile.scheduleTemplates || [],
         dayMapping: profile.scheduleDayMapping || {},
-        dailyState: profile.scheduleDailyState || {}
+        dailyState: profile.scheduleDailyState || {},
       };
       const imageIds = new Set();
-      data.templates.forEach(t => t.events.forEach(e => e.imageId && imageIds.add(e.imageId)));
+      data.templates.forEach((t) => t.events.forEach((e) => e.imageId && imageIds.add(e.imageId)));
       return { data, imageIds };
     },
     import: async (profile, data, strategy) => {
       const { templates, dayMapping, dailyState } = data;
       if (strategy === 'overwrite') {
-        profile.scheduleTemplates = templates.map(t => ({
+        profile.scheduleTemplates = templates.map((t) => ({
           ...t,
           id: uid(),
-          events: t.events.map(e => ({ ...e, id: uid() }))
+          events: t.events.map((e) => ({ ...e, id: uid() })),
         }));
         profile.scheduleDayMapping = dayMapping;
         profile.scheduleDailyState = dailyState;
       } else if (strategy === 'add') {
-        templates.forEach(t => {
-          const exists = profile.scheduleTemplates.some(ex => ex.name === t.name);
+        templates.forEach((t) => {
+          const exists = profile.scheduleTemplates.some((ex) => ex.name === t.name);
           if (!exists) {
             profile.scheduleTemplates.push({
               ...t,
               id: uid(),
-              events: t.events.map(e => ({ ...e, id: uid() }))
+              events: t.events.map((e) => ({ ...e, id: uid() })),
             });
           }
         });
@@ -126,22 +140,22 @@ export const EXPORT_COMPONENTS = {
           }
         }
       } else if (strategy === 'update') {
-        templates.forEach(t => {
-          const existing = profile.scheduleTemplates.find(ex => ex.name === t.name);
+        templates.forEach((t) => {
+          const existing = profile.scheduleTemplates.find((ex) => ex.name === t.name);
           if (existing) {
-            existing.events = t.events.map(e => ({ ...e, id: uid() }));
+            existing.events = t.events.map((e) => ({ ...e, id: uid() }));
           } else {
             profile.scheduleTemplates.push({
               ...t,
               id: uid(),
-              events: t.events.map(e => ({ ...e, id: uid() }))
+              events: t.events.map((e) => ({ ...e, id: uid() })),
             });
           }
         });
         profile.scheduleDayMapping = dayMapping;
         profile.scheduleDailyState = dailyState;
       }
-    }
+    },
   },
 
   settings: {
@@ -151,16 +165,16 @@ export const EXPORT_COMPONENTS = {
         data: {
           fullscreen: globalData.fullscreen || false,
           autoInflect: globalData.autoInflect !== undefined ? globalData.autoInflect : false,
-          hiddenModes: profile.hiddenModes || []   // ← теперь берём из профиля
+          hiddenModes: profile.hiddenModes || [], // ← теперь берём из профиля
         },
-        imageIds: new Set()
+        imageIds: new Set(),
       };
     },
     import: async (profile, data, strategy, globalData) => {
       if (data.fullscreen !== undefined) globalData.fullscreen = data.fullscreen;
       if (data.autoInflect !== undefined) globalData.autoInflect = data.autoInflect;
       if (data.hiddenModes !== undefined) profile.hiddenModes = data.hiddenModes;
-    }
+    },
   },
 
   gameSettings: {
@@ -179,7 +193,7 @@ export const EXPORT_COMPONENTS = {
         }
         profile.gamesSettings = current;
       }
-    }
+    },
   },
 
   learningSettings: {
@@ -198,6 +212,6 @@ export const EXPORT_COMPONENTS = {
         }
         profile.learningSettings = current;
       }
-    }
-  }
+    },
+  },
 };

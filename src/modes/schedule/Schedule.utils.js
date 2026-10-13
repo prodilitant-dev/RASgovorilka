@@ -14,10 +14,10 @@ export function getEventsForDate(profile, date) {
   const dateKey = formatDateKey(date);
   const templateId = profile.scheduleDayMapping?.[dayOfWeek];
   if (!templateId) return [];
-  const template = profile.scheduleTemplates.find(t => t.id === templateId);
+  const template = profile.scheduleTemplates.find((t) => t.id === templateId);
   if (!template) return [];
   const completed = profile.scheduleDailyState?.[dateKey]?.completed || [];
-  return template.events.map(event => ({
+  return template.events.map((event) => ({
     ...event,
     done: completed.includes(event.id),
   }));
@@ -26,5 +26,5 @@ export function getEventsForDate(profile, date) {
 export function getTemplateForDay(profile, dayOfWeek) {
   const templateId = profile.scheduleDayMapping?.[dayOfWeek];
   if (!templateId) return null;
-  return profile.scheduleTemplates.find(t => t.id === templateId) || null;
+  return profile.scheduleTemplates.find((t) => t.id === templateId) || null;
 }

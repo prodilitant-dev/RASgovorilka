@@ -8,21 +8,22 @@ export function renderSettingsModal({
   fields,
   onSave,
   onCancel,
-  title = 'Настройки'
+  title = 'Настройки',
 }) {
   const modal = new Modal({
     title,
     body: () => {
       const wrap = createElement('div', { className: 'settings-form' });
-      fields.forEach(field => {
+      fields.forEach((field) => {
         const row = createElement('div', { className: 'form-row' });
         const label = createElement('label', { for: `setting-${field.key}` }, field.label);
         let input;
 
         if (field.type === 'checkbox') {
           const container = createElement('div', { className: 'checkbox-group' });
-          const options = typeof field.options === 'function' ? field.options(profile) : field.options;
-          options.forEach(opt => {
+          const options =
+            typeof field.options === 'function' ? field.options(profile) : field.options;
+          options.forEach((opt) => {
             const cbWrap = createElement('label', { className: 'toggle-switch' });
             const cb = createElement('input', {
               type: 'checkbox',
@@ -57,8 +58,9 @@ export function renderSettingsModal({
           row.appendChild(valueDisplay);
         } else if (field.type === 'select') {
           input = createElement('select', { name: field.key });
-          const options = typeof field.options === 'function' ? field.options(profile) : field.options;
-          options.forEach(opt => {
+          const options =
+            typeof field.options === 'function' ? field.options(profile) : field.options;
+          options.forEach((opt) => {
             const option = createElement('option', { value: opt.value }, opt.label);
             if (opt.value === currentSettings[field.key]) option.selected = true;
             input.appendChild(option);
@@ -71,18 +73,24 @@ export function renderSettingsModal({
       return wrap;
     },
     buttons: [
-      { label: 'Отмена', action: () => { modal.close(); if (onCancel) onCancel(); } },
+      {
+        label: 'Отмена',
+        action: () => {
+          modal.close();
+          if (onCancel) onCancel();
+        },
+      },
       {
         label: 'Сохранить',
         primary: true,
         action: () => {
           const body = modal.element.querySelector('.modal-body');
           const newSettings = { ...currentSettings };
-          fields.forEach(field => {
+          fields.forEach((field) => {
             if (field.type === 'checkbox') {
               const checkboxes = body.querySelectorAll(`input[name="${field.key}"]`);
               const values = [];
-              checkboxes.forEach(cb => cb.checked && values.push(cb.value));
+              checkboxes.forEach((cb) => cb.checked && values.push(cb.value));
               newSettings[field.key] = values;
             } else if (field.type === 'range') {
               const input = body.querySelector(`input[name="${field.key}"]`);
@@ -94,9 +102,9 @@ export function renderSettingsModal({
           });
           modal.close();
           onSave(newSettings);
-        }
-      }
-    ]
+        },
+      },
+    ],
   });
   modal.open();
 }

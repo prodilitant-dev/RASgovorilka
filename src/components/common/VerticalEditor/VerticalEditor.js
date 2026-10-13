@@ -37,7 +37,7 @@ export function openVerticalEditor(config) {
       callbacks: {
         onFieldChange: (key, value) => {
           workingEntity[key] = value;
-          const field = fields.find(f => f.id === key);
+          const field = fields.find((f) => f.id === key);
           if (field && field.onChange) {
             field.onChange(value, workingEntity);
           }
@@ -59,7 +59,7 @@ export function openVerticalEditor(config) {
           renderContent();
         },
         onExtraActionClick: (actionId) => {
-          const action = extraActions.find(a => a.id === actionId);
+          const action = extraActions.find((a) => a.id === actionId);
           if (action && action.onClick) {
             action.onClick(workingEntity, () => modalInstance.close());
           }
@@ -110,11 +110,11 @@ export function openVerticalEditor(config) {
     }
     contentContainer._cleanup = cleanup;
   }
-  
-    modalInstance = new Modal({
-      title: '',
-      showCloseButton: false,
-      body: () => {
+
+  modalInstance = new Modal({
+    title: '',
+    showCloseButton: false,
+    body: () => {
       const wrap = document.createElement('div');
       wrap.className = 'vertical-editor-wrapper';
       contentContainer = wrap;

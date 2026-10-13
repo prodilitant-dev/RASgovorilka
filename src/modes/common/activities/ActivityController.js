@@ -144,9 +144,16 @@ export function startActivity({
         onRetry: () => {
           clearState();
           startActivity({
-            container, profile, settings, activityType,
-            generateData, renderItem, handleAnswer, renderResults,
-            savedState: null, onBack,
+            container,
+            profile,
+            settings,
+            activityType,
+            generateData,
+            renderItem,
+            handleAnswer,
+            renderResults,
+            savedState: null,
+            onBack,
           });
         },
         onBack: () => {
@@ -163,9 +170,16 @@ export function startActivity({
         onRetry: () => {
           clearState();
           startActivity({
-            container, profile, settings, activityType,
-            generateData, renderItem, handleAnswer, renderResults,
-            savedState: null, onBack,
+            container,
+            profile,
+            settings,
+            activityType,
+            generateData,
+            renderItem,
+            handleAnswer,
+            renderResults,
+            savedState: null,
+            onBack,
           });
         },
         onBack: () => {
@@ -193,9 +207,16 @@ export function startActivity({
       stopSpeech();
       clearState();
       startActivity({
-        container, profile, settings, activityType,
-        generateData, renderItem, handleAnswer, renderResults,
-        savedState: null, onBack,
+        container,
+        profile,
+        settings,
+        activityType,
+        generateData,
+        renderItem,
+        handleAnswer,
+        renderResults,
+        savedState: null,
+        onBack,
       });
     },
   };

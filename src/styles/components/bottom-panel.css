@@ -28,7 +28,9 @@
   scrollbar-width: none;
   padding-bottom: 2px;
 }
-.quick-buttons::-webkit-scrollbar { display: none; }
+.quick-buttons::-webkit-scrollbar {
+  display: none;
+}
 
 .quick-btn {
   background: var(--surface);
@@ -44,8 +46,14 @@
   flex-shrink: 0;
   transition: background var(--transition);
 }
-.quick-btn:active { background: #e9ecef; }
-.quick-btn img { width: 24px; height: 24px; object-fit: contain; }
+.quick-btn:active {
+  background: #e9ecef;
+}
+.quick-btn img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
 
 .quick-btn__icon {
   width: 24px;

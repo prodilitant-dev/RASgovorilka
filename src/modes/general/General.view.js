@@ -7,11 +7,7 @@ import { openModeManager } from './components/ModeManagerModal';
 import { openDataManager } from './components/DataManagerModal';
 import { openAboutModal } from './components/AboutModal';
 import { getState } from '@state/store';
-import {
-  toggleFullscreen,
-  saveVoiceSettings,
-  toggleAutoInflect,
-} from './General.controller';
+import { toggleFullscreen, saveVoiceSettings, toggleAutoInflect } from './General.controller';
 import { logger } from '@utils/logger';
 import { createElement } from '@utils/dom';
 import { createIcon } from '@utils/icon';

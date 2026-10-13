@@ -10,7 +10,16 @@ export function startMath(container, profile, settings, onBack, savedState) {
     settings,
     activityType: 'math',
     generateData: (prof, set) => generateMathQuestions(set),
-    renderItem: (container, question, current, total, onAnswer, feedback, isCorrect, userAnswer) => {
+    renderItem: (
+      container,
+      question,
+      current,
+      total,
+      onAnswer,
+      feedback,
+      isCorrect,
+      userAnswer
+    ) => {
       renderMathGame(container, {
         question,
         current,

@@ -2,10 +2,10 @@
    ПОЛЯ ВВОДА, SELECT, TEXTAREA
    ============================================================ */
 
-input[type="text"],
-input[type="number"],
-input[type="time"],
-input[type="password"],
+input[type='text'],
+input[type='number'],
+input[type='time'],
+input[type='password'],
 textarea,
 select {
   padding: 8px 12px;
@@ -17,7 +17,9 @@ select {
   font-family: var(--font);
   background: var(--surface);
   color: var(--text);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   min-height: 36px;
   width: 100%;
   box-sizing: border-box;
@@ -47,23 +49,23 @@ textarea {
    ============================================================ */
 
 /* Общий контейнер для строки с ползунком */
-.form-row:has(input[type="range"]) {
+.form-row:has(input[type='range']) {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
 }
 
-.form-row:has(input[type="range"]) label {
+.form-row:has(input[type='range']) label {
   min-width: 80px;
   flex-shrink: 0;
 }
 
-.form-row:has(input[type="range"]) input[type="range"] {
+.form-row:has(input[type='range']) input[type='range'] {
   flex: 1;
   min-width: 0;
 }
 
-.form-row:has(input[type="range"]) span {
+.form-row:has(input[type='range']) span {
   min-width: 32px;
   text-align: right;
   font-weight: 500;
@@ -71,7 +73,7 @@ textarea {
   flex-shrink: 0;
 }
 
-input[type="range"] {
+input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
@@ -86,14 +88,14 @@ input[type="range"] {
 }
 
 /* Трек в Chrome/Safari/Edge */
-input[type="range"]::-webkit-slider-runnable-track {
+input[type='range']::-webkit-slider-runnable-track {
   height: 6px;
   background: var(--border);
   border-radius: 3px;
 }
 
 /* Трек в Firefox */
-input[type="range"]::-moz-range-track {
+input[type='range']::-moz-range-track {
   height: 6px;
   background: var(--border);
   border-radius: 3px;
@@ -101,7 +103,7 @@ input[type="range"]::-moz-range-track {
 }
 
 /* Ползунок (thumb) в Chrome/Safari/Edge */
-input[type="range"]::-webkit-slider-thumb {
+input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 20px;
@@ -112,11 +114,13 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: -7px;
   border: 2px solid var(--surface);
   box-shadow: var(--shadow);
-  transition: background 0.2s, transform 0.1s;
+  transition:
+    background 0.2s,
+    transform 0.1s;
 }
 
 /* Ползунок (thumb) в Firefox */
-input[type="range"]::-moz-range-thumb {
+input[type='range']::-moz-range-thumb {
   width: 20px;
   height: 20px;
   background: var(--primary);
@@ -127,30 +131,30 @@ input[type="range"]::-moz-range-thumb {
 }
 
 /* Ховер для ползунка */
-input[type="range"]::-webkit-slider-thumb:hover {
+input[type='range']::-webkit-slider-thumb:hover {
   background: var(--primary-dark);
   transform: scale(1.05);
 }
 
-input[type="range"]::-moz-range-thumb:hover {
+input[type='range']::-moz-range-thumb:hover {
   background: var(--primary-dark);
   transform: scale(1.05);
 }
 
 /* Фокус – подсветка трека */
-input[type="range"]:focus::-webkit-slider-runnable-track {
+input[type='range']:focus::-webkit-slider-runnable-track {
   background: var(--primary-light);
 }
 
-input[type="range"]:focus::-moz-range-track {
+input[type='range']:focus::-moz-range-track {
   background: var(--primary-light);
 }
 
 /* Стили для модалок */
 .modal-body select,
-.modal-body input[type="text"],
-.modal-body input[type="number"],
-.modal-body input[type="time"] {
+.modal-body input[type='text'],
+.modal-body input[type='number'],
+.modal-body input[type='time'] {
   background-color: var(--surface);
 }
 

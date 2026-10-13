@@ -1,4 +1,3 @@
-
 import { resizeToSquare } from './resizeToSquare';
 
 /**

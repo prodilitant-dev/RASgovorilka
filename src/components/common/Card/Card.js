@@ -15,12 +15,7 @@ export function createCard({
   children = null,
 }) {
   const card = createElement('div', {
-    className: [
-      'card',
-      isActive && 'card--active',
-      isAdd && 'card--add',
-      className,
-    ]
+    className: ['card', isActive && 'card--active', isAdd && 'card--add', className]
       .filter(Boolean)
       .join(' '),
     'data-id': id,

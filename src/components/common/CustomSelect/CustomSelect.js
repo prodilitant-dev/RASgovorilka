@@ -2,9 +2,9 @@
 import { createElement, clear } from '@utils/dom';
 
 export function createCustomSelect({
-  options,         // массив { value, label }
-  value,           // текущее значение
-  onChange,        // (value) => void
+  options, // массив { value, label }
+  value, // текущее значение
+  onChange, // (value) => void
   placeholder = 'Выберите...',
   className = '',
 }) {
@@ -13,10 +13,14 @@ export function createCustomSelect({
   const container = createElement('div', { className: `custom-select ${className}` });
 
   // Кнопка для отображения выбранного значения
-  const button = createElement('button', {
-    className: 'custom-select-button',
-    'data-log': 'custom-select-toggle',
-  }, getSelectedLabel() || placeholder);
+  const button = createElement(
+    'button',
+    {
+      className: 'custom-select-button',
+      'data-log': 'custom-select-toggle',
+    },
+    getSelectedLabel() || placeholder
+  );
   container.appendChild(button);
 
   // Выпадающий список
@@ -25,11 +29,15 @@ export function createCustomSelect({
 
   function renderDropdown() {
     clear(dropdown);
-    options.forEach(opt => {
-      const item = createElement('div', {
-        className: `custom-select-item ${opt.value === selectedValue ? 'selected' : ''}`,
-        'data-value': opt.value,
-      }, opt.label);
+    options.forEach((opt) => {
+      const item = createElement(
+        'div',
+        {
+          className: `custom-select-item ${opt.value === selectedValue ? 'selected' : ''}`,
+          'data-value': opt.value,
+        },
+        opt.label
+      );
       item.addEventListener('click', () => {
         selectValue(opt.value);
         closeDropdown();
@@ -46,7 +54,7 @@ export function createCustomSelect({
   }
 
   function getSelectedLabel() {
-    const found = options.find(o => o.value === selectedValue);
+    const found = options.find((o) => o.value === selectedValue);
     return found ? found.label : null;
   }
 

@@ -10,11 +10,11 @@ import { iconUrl } from '@utils/icon';
 
 const DAY_ORDER = [
   { name: 'Понедельник', dow: 1 },
-  { name: 'Вторник',     dow: 2 },
-  { name: 'Среда',       dow: 3 },
-  { name: 'Четверг',     dow: 4 },
-  { name: 'Пятница',     dow: 5 },
-  { name: 'Суббота',     dow: 6 },
+  { name: 'Вторник', dow: 2 },
+  { name: 'Среда', dow: 3 },
+  { name: 'Четверг', dow: 4 },
+  { name: 'Пятница', dow: 5 },
+  { name: 'Суббота', dow: 6 },
   { name: 'Воскресенье', dow: 0 },
 ];
 
@@ -45,7 +45,8 @@ export function openTemplateManager(profile, onUpdate) {
       profile.scheduleTemplates.forEach((tmpl) => {
         const row = createElement('div', {
           className: 'template-row',
-          style: 'display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border);',
+          style:
+            'display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border);',
         });
         const nameSpan = createElement(
           'span',
@@ -126,14 +127,19 @@ export function openTemplateManager(profile, onUpdate) {
       return wrap;
     },
     buttons: [],
-    onClose: () => { if (onUpdate) onUpdate(); },
+    onClose: () => {
+      if (onUpdate) onUpdate();
+    },
   });
   modal.open();
 }
 
 function openTemplateEventsEditor(profile, templateId, onUpdate) {
   const template = profile.scheduleTemplates.find((t) => t.id === templateId);
-  if (!template) { toast('Шаблон не найден', 'error'); return; }
+  if (!template) {
+    toast('Шаблон не найден', 'error');
+    return;
+  }
 
   const modal = new Modal({
     title: `События шаблона: ${template.name}`,
@@ -142,15 +148,24 @@ function openTemplateEventsEditor(profile, templateId, onUpdate) {
 
       const list = createElement('div', { className: 'event-list' });
       if (template.events.length === 0) {
-        const empty = createElement('div', { className: 'text-muted text-center p-4' }, 'Нет событий');
+        const empty = createElement(
+          'div',
+          { className: 'text-muted text-center p-4' },
+          'Нет событий'
+        );
         list.appendChild(empty);
       } else {
         template.events.forEach((event) => {
           const row = createElement('div', {
             className: 'event-row',
-            style: 'display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border);',
+            style:
+              'display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border);',
           });
-          const info = createElement('span', {}, `${event.time || ''} ${event.icon || '📌'} ${event.text || ''}`);
+          const info = createElement(
+            'span',
+            {},
+            `${event.time || ''} ${event.icon || '📌'} ${event.text || ''}`
+          );
           const actions = createElement('div', { style: 'display:flex; gap:6px;' });
 
           const editBtn = createIconButton({
@@ -218,7 +233,13 @@ function openTemplateEventsEditor(profile, templateId, onUpdate) {
       return wrap;
     },
     buttons: [
-      { label: 'Назад', action: () => { modal.close(); openTemplateManager(profile, onUpdate); } },
+      {
+        label: 'Назад',
+        action: () => {
+          modal.close();
+          openTemplateManager(profile, onUpdate);
+        },
+      },
     ],
   });
   modal.open();

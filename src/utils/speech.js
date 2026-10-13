@@ -94,11 +94,5 @@ export function speak(text, rate = 1, pitch = 1, volume = 1, voiceURI = '') {
 export function speakFromState(text) {
   const state = getState();
   const vs = state.globalSettings?.voiceSettings || {};
-  return speak(
-    text,
-    vs.rate ?? 1,
-    vs.pitch ?? 1,
-    vs.volume ?? 1,
-    vs.voiceURI ?? ''
-  );
+  return speak(text, vs.rate ?? 1, vs.pitch ?? 1, vs.volume ?? 1, vs.voiceURI ?? '');
 }

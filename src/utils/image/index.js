@@ -1,4 +1,3 @@
-
 export { isValidImageType } from './isValidImageType';
 export { getImageDimensions } from './getImageDimensions';
 export { loadImageFromFile } from './loadImageFromFile';

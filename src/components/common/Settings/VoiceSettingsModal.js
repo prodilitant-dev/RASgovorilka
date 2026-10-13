@@ -17,10 +17,14 @@ export function openVoiceSettings(voiceSettings, onSave) {
 
       const createSliderRow = ({ id, label, min, max, step, value }) => {
         const row = createElement('div', { className: 'voice-slider-row' });
-        const labelEl = createElement('label', {
-          for: id,
-          className: 'voice-slider-label',
-        }, label);
+        const labelEl = createElement(
+          'label',
+          {
+            for: id,
+            className: 'voice-slider-label',
+          },
+          label
+        );
         const input = createElement('input', {
           type: 'range',
           id,
@@ -30,9 +34,13 @@ export function openVoiceSettings(voiceSettings, onSave) {
           step: String(step),
           value: String(value),
         });
-        const valueEl = createElement('span', {
-          className: 'voice-slider-value',
-        }, String(value));
+        const valueEl = createElement(
+          'span',
+          {
+            className: 'voice-slider-value',
+          },
+          String(value)
+        );
         input.addEventListener('input', () => {
           valueEl.textContent = input.value;
         });
@@ -46,7 +54,9 @@ export function openVoiceSettings(voiceSettings, onSave) {
       const rate = createSliderRow({
         id: 'voice-rate',
         label: 'Скорость',
-        min: 0.5, max: 2.0, step: 0.1,
+        min: 0.5,
+        max: 2.0,
+        step: 0.1,
         value: voiceSettings.rate ?? 1,
       });
       rateInput = rate.input;
@@ -56,7 +66,9 @@ export function openVoiceSettings(voiceSettings, onSave) {
       const pitch = createSliderRow({
         id: 'voice-pitch',
         label: 'Тональность',
-        min: 0.5, max: 2.0, step: 0.1,
+        min: 0.5,
+        max: 2.0,
+        step: 0.1,
         value: voiceSettings.pitch ?? 1,
       });
       pitchInput = pitch.input;
@@ -66,7 +78,9 @@ export function openVoiceSettings(voiceSettings, onSave) {
       const volume = createSliderRow({
         id: 'voice-volume',
         label: 'Громкость',
-        min: 0, max: 1, step: 0.05,
+        min: 0,
+        max: 1,
+        step: 0.05,
         value: voiceSettings.volume ?? 1,
       });
       volumeInput = volume.input;

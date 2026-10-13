@@ -35,9 +35,9 @@
   display: grid;
   width: 100%;
   max-width: 500px;
-  aspect-ratio: 1 / 1;          /* квадрат */
+  aspect-ratio: 1 / 1; /* квадрат */
   margin: 0 auto;
-  gap: var(--game-gap, 8px);    /* отступы между ячейками, задаются через data-size */
+  gap: var(--game-gap, 8px); /* отступы между ячейками, задаются через data-size */
 }
 
 /* Ячейка сетки — тоже квадратная */
@@ -56,10 +56,13 @@
   font-size: 32px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.15s, background 0.15s, border-color 0.15s;
+  transition:
+    transform 0.15s,
+    background 0.15s,
+    border-color 0.15s;
   color: var(--text);
   position: relative;
-  min-width: 0;   /* предотвращает переполнение */
+  min-width: 0; /* предотвращает переполнение */
   min-height: 0;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -102,11 +105,21 @@
 }
 
 /* === Адаптивные отступы для разных размеров === */
-.game-board[data-size="4"] { --game-gap: 8px; }
-.game-board[data-size="5"] { --game-gap: 6px; }
-.game-board[data-size="6"] { --game-gap: 6px; }
-.game-board[data-size="7"] { --game-gap: 4px; }
-.game-board[data-size="8"] { --game-gap: 4px; }
+.game-board[data-size='4'] {
+  --game-gap: 8px;
+}
+.game-board[data-size='5'] {
+  --game-gap: 6px;
+}
+.game-board[data-size='6'] {
+  --game-gap: 6px;
+}
+.game-board[data-size='7'] {
+  --game-gap: 4px;
+}
+.game-board[data-size='8'] {
+  --game-gap: 4px;
+}
 
 /* === Мобильная адаптация === */
 @media (max-width: 480px) {
@@ -117,9 +130,15 @@
     font-size: 20px;
     border-width: 1.5px;
   }
-  .game-board[data-size="4"] { --game-gap: 6px; }
-  .game-board[data-size="6"] { --game-gap: 4px; }
-  .game-board[data-size="8"] { --game-gap: 3px; }
+  .game-board[data-size='4'] {
+    --game-gap: 6px;
+  }
+  .game-board[data-size='6'] {
+    --game-gap: 4px;
+  }
+  .game-board[data-size='8'] {
+    --game-gap: 3px;
+  }
   .game-wrapper {
     margin: var(--spacing-xs) var(--spacing-sm) var(--spacing-sm) var(--spacing-sm);
     padding: var(--spacing-xs);

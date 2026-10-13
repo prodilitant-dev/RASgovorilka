@@ -20,7 +20,10 @@ export function startMemory(container, profile, settings, onBack, savedState) {
       if ((s * s) / 2 <= maxPairs) newSize = s;
     }
     if (newSize !== settings.gridSize) {
-      toast(`Недостаточно карточек для сетки ${settings.gridSize}×${settings.gridSize}. Используем ${newSize}×${newSize}.`, 'info');
+      toast(
+        `Недостаточно карточек для сетки ${settings.gridSize}×${settings.gridSize}. Используем ${newSize}×${newSize}.`,
+        'info'
+      );
       adjustedSize = newSize;
     } else {
       toast('Недостаточно карточек для игры. Добавьте карточки в выбранные категории.', 'error');
@@ -35,7 +38,8 @@ export function startMemory(container, profile, settings, onBack, savedState) {
   } else {
     const cards = generateMemoryPairs(profile, settings.categoryIds, adjustedSize);
     if (cards.length === 0) {
-      container.innerHTML = '<div style="padding:20px;text-align:center;">Нет карточек для игры</div>';
+      container.innerHTML =
+        '<div style="padding:20px;text-align:center;">Нет карточек для игры</div>';
       return null;
     }
     state = {
@@ -82,7 +86,7 @@ export function startMemory(container, profile, settings, onBack, savedState) {
 
   function onCardClick(cardId) {
     if (state.lockBoard) return;
-    const card = state.cards.find(c => c.id === cardId);
+    const card = state.cards.find((c) => c.id === cardId);
     if (!card || card.isFlipped || card.isMatched) return;
 
     card.isFlipped = true;
@@ -114,7 +118,7 @@ export function startMemory(container, profile, settings, onBack, savedState) {
         saveState();
         render();
 
-        if (state.cards.every(c => c.isMatched)) {
+        if (state.cards.every((c) => c.isMatched)) {
           clearState();
           clearFlipTimer();
           flipTimer = setTimeout(() => {
@@ -146,8 +150,8 @@ export function startMemory(container, profile, settings, onBack, savedState) {
     await speakFeedback(message);
 
     showResultsModal({
-      correct: state.cards.filter(c => c.isMatched).length / 2,
-      wrong: state.moves - state.cards.filter(c => c.isMatched).length / 2,
+      correct: state.cards.filter((c) => c.isMatched).length / 2,
+      wrong: state.moves - state.cards.filter((c) => c.isMatched).length / 2,
       total: state.moves,
       details: [],
       onRetry: () => {

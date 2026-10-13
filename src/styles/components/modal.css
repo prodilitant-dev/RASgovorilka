@@ -15,7 +15,9 @@
   z-index: 1000;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.25s ease, visibility 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
   backdrop-filter: blur(2px);
   padding: var(--spacing-lg);
 }
@@ -46,7 +48,6 @@
   flex-shrink: 0;
   gap: var(--spacing-md);
 }
-
 
 .modal-title-wrap {
   display: flex;

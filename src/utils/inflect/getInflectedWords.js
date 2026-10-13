@@ -4,10 +4,15 @@ import { getNounGender } from './getNounGender';
 import { inflectNumber } from './inflectNumber';
 
 const DOUBLE_VERBS = [
-  'дай', 'дать', 'давать',
-  'подай', 'подать',
-  'принеси', 'принести',
-  'покажи', 'показать',
+  'дай',
+  'дать',
+  'давать',
+  'подай',
+  'подать',
+  'принеси',
+  'принести',
+  'покажи',
+  'показать',
 ];
 
 /**
@@ -66,9 +71,7 @@ export function getInflectedWords(wordsArray, autoInflect) {
     // ===== Несклоняемые части речи =====
     if (
       !w.wordType ||
-      (w.wordType !== 'noun' &&
-        w.wordType !== 'pronoun' &&
-        w.wordType !== 'adjective')
+      (w.wordType !== 'noun' && w.wordType !== 'pronoun' && w.wordType !== 'adjective')
     ) {
       result.push(w.text || '');
       continue;
@@ -93,11 +96,17 @@ export function getInflectedWords(wordsArray, autoInflect) {
       if (w.wordType === 'adjective') {
         let nounIndex = -1;
         for (let j = i + 1; j < wordsArray.length; j++) {
-          if (wordsArray[j].wordType === 'noun') { nounIndex = j; break; }
+          if (wordsArray[j].wordType === 'noun') {
+            nounIndex = j;
+            break;
+          }
         }
         if (nounIndex === -1) {
           for (let j = i - 1; j >= 0; j--) {
-            if (wordsArray[j].wordType === 'noun') { nounIndex = j; break; }
+            if (wordsArray[j].wordType === 'noun') {
+              nounIndex = j;
+              break;
+            }
           }
         }
         let gender = 'masculine';

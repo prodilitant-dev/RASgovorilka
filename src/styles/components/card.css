@@ -16,9 +16,13 @@
   height: 130px;
   cursor: pointer;
   box-shadow: var(--shadow);
-  transition: transform 0.15s, border-color 0.15s;
+  transition:
+    transform 0.15s,
+    border-color 0.15s;
 }
-.card:active { transform: scale(0.96); }
+.card:active {
+  transform: scale(0.96);
+}
 .card--active {
   border-color: var(--primary);
   box-shadow: 0 0 0 2px var(--primary);
@@ -43,7 +47,7 @@
   font-weight: 600;
   font-size: 14px;
   border-top: 1px solid var(--border);
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .card.done {

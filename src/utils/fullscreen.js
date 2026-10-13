@@ -7,7 +7,7 @@ let handlerAttached = false;
 function requestFs() {
   const el = document.documentElement;
   if (!el.requestFullscreen) return;
-  el.requestFullscreen().catch(err => {
+  el.requestFullscreen().catch((err) => {
     logger.warn('Fullscreen request failed:', err);
   });
 }
@@ -21,7 +21,7 @@ function requestFs() {
 export function maybeEnableFullscreenOnFirstInteraction() {
   const state = getState();
   if (state.globalSettings?.fullscreen !== true) return;
-  if (document.fullscreenElement) return;   // уже вошли
+  if (document.fullscreenElement) return; // уже вошли
   if (handlerAttached) return;
 
   handlerAttached = true;

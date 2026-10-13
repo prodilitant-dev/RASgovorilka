@@ -7,10 +7,10 @@ export function initKeyboardHandler() {
   const handleResize = () => {
     const viewport = window.visualViewport;
     if (!viewport) return;
-    
+
     const heightDiff = window.innerHeight - viewport.height;
     const offset = Math.max(0, heightDiff);
-    
+
     if (offset !== previousOffset) {
       previousOffset = offset;
       document.documentElement.style.setProperty('--keyboard-offset', offset + 'px');

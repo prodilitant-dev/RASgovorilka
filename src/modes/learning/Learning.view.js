@@ -6,10 +6,10 @@ import { attachGridEvents } from '@components/common/Grid/Grid.events';
 import { logger } from '@utils/logger';
 
 const ACTIVITIES = [
-  { id: 'quiz',    label: 'Викторина',   icon: 'quiz',    emoji: '🧠' },
-  { id: 'guess',   label: 'Угадайка',    icon: 'guess',   emoji: '🔍' },
-  { id: 'sorting', label: 'Сортировка',  icon: 'sorting', emoji: '📊' },
-  { id: 'math',    label: 'Математика',  icon: 'math',    emoji: '🔢' },
+  { id: 'quiz', label: 'Викторина', icon: 'quiz', emoji: '🧠' },
+  { id: 'guess', label: 'Угадайка', icon: 'guess', emoji: '🔍' },
+  { id: 'sorting', label: 'Сортировка', icon: 'sorting', emoji: '📊' },
+  { id: 'math', label: 'Математика', icon: 'math', emoji: '🔢' },
 ];
 
 export function renderLearning(container, onSelectActivity) {

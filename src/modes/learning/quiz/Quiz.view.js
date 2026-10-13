@@ -4,16 +4,19 @@ import { renderProgressBar } from '@components/common/ProgressBar';
 import { showCardImage } from '@utils/image/showCardImage';
 import { logger } from '@utils/logger';
 
-export function renderQuizQuestion(container, {
-  question,
-  current,
-  total,
-  onAnswer,
-  feedback = null,
-  isCorrect = false,
-  userAnswer = null,
-  mode = 'image_to_word',
-}) {
+export function renderQuizQuestion(
+  container,
+  {
+    question,
+    current,
+    total,
+    onAnswer,
+    feedback = null,
+    isCorrect = false,
+    userAnswer = null,
+    mode = 'image_to_word',
+  }
+) {
   logger.debug(`🔄 Rendering Quiz Question ${current}/${total} (mode: ${mode})`);
   clear(container);
 
@@ -41,7 +44,7 @@ export function renderQuizQuestion(container, {
   // ---- Варианты ответа ----
   const optionsGrid = createElement('div', { className: 'options-grid' });
   if (question.options && question.options.length > 0) {
-    question.options.forEach(opt => {
+    question.options.forEach((opt) => {
       const isAnswerSelected = feedback && opt.id === userAnswer;
       const btnClass = `category ${isAnswerSelected ? (isCorrect ? 'active' : 'category-danger') : ''}`;
 
@@ -69,9 +72,13 @@ export function renderQuizQuestion(container, {
   card.appendChild(optionsGrid);
 
   if (feedback) {
-    const fb = createElement('div', {
-      className: `feedback ${isCorrect ? 'correct' : 'wrong'}`,
-    }, feedback);
+    const fb = createElement(
+      'div',
+      {
+        className: `feedback ${isCorrect ? 'correct' : 'wrong'}`,
+      },
+      feedback
+    );
     card.appendChild(fb);
   }
 

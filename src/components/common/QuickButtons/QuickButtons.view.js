@@ -3,18 +3,28 @@ import { createElement, clear, on } from '@utils/dom';
 import { getElementIds, reorderArray } from '@utils/array';
 import { logger } from '@utils/logger';
 
-export function renderQuickButtons(container, buttons, onSelect, editingMode = false, onReorder = null) {
+export function renderQuickButtons(
+  container,
+  buttons,
+  onSelect,
+  editingMode = false,
+  onReorder = null
+) {
   logger.debug('🔄 Rendering QuickButtons', { count: buttons.length, editingMode });
   clear(container);
 
   const wrap = createElement('div', { className: 'quick-buttons' });
 
   buttons.forEach((btn) => {
-    const el = createElement('div', {
-      className: 'quick-btn',
-      'data-id': btn.id,
-      'data-log': `quick-btn:${btn.id}`,
-    }, `${btn.emoji || ''} ${btn.text}`);
+    const el = createElement(
+      'div',
+      {
+        className: 'quick-btn',
+        'data-id': btn.id,
+        'data-log': `quick-btn:${btn.id}`,
+      },
+      `${btn.emoji || ''} ${btn.text}`
+    );
     if (editingMode) {
       el.setAttribute('draggable', 'true');
     }

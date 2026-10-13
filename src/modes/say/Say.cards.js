@@ -33,18 +33,22 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
     onClick: (id) => {
       if (id === 'add') {
         const newCard = { id: uid(), text: '', emoji: '', wordType: 'noun', forms: {} };
-        openCardEditor(newCard, (savedCard, done) => {
-          if (!savedCard.text.trim()) {
-            toast('Введите текст', 'error');
+        openCardEditor(
+          newCard,
+          (savedCard, done) => {
+            if (!savedCard.text.trim()) {
+              toast('Введите текст', 'error');
+              done();
+              return;
+            }
+            profile.cards[categoryId].push(savedCard);
+            saveProfile(profile);
+            renderCards(container, profile, categoryId, onCardClick, onReorder);
+            toast('Карточка добавлена');
             done();
-            return;
-          }
-          profile.cards[categoryId].push(savedCard);
-          saveProfile(profile);
-          renderCards(container, profile, categoryId, onCardClick, onReorder);
-          toast('Карточка добавлена');
-          done();
-        }, null);
+          },
+          null
+        );
         return;
       }
 
@@ -60,19 +64,23 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
   });
 
   function editCard(card) {
-    openCardEditor(card, (updatedCard, done) => {
-      Object.assign(card, updatedCard);
-      saveProfile(profile);
-      renderCards(container, profile, categoryId, onCardClick, onReorder);
-      toast('Карточка обновлена');
-      done();
-    }, (cardId, close) => {
-      profile.cards[categoryId] = profile.cards[categoryId].filter((c) => c.id !== cardId);
-      saveProfile(profile);
-      renderCards(container, profile, categoryId, onCardClick, onReorder);
-      toast('Карточка удалена');
-      close();
-    });
+    openCardEditor(
+      card,
+      (updatedCard, done) => {
+        Object.assign(card, updatedCard);
+        saveProfile(profile);
+        renderCards(container, profile, categoryId, onCardClick, onReorder);
+        toast('Карточка обновлена');
+        done();
+      },
+      (cardId, close) => {
+        profile.cards[categoryId] = profile.cards[categoryId].filter((c) => c.id !== cardId);
+        saveProfile(profile);
+        renderCards(container, profile, categoryId, onCardClick, onReorder);
+        toast('Карточка удалена');
+        close();
+      }
+    );
   }
 
   // Единый cleanup карточек

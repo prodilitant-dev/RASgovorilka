@@ -67,58 +67,68 @@ export function openDataManager(onClose) {
       const wrap = createElement('div', { className: 'data-manager' });
       const grid = createElement('div', { className: 'tiles-grid' });
 
-      grid.appendChild(createDataTile({
-        id: 'import',
-        iconName: 'import',
-        fallbackEmoji: '📥',
-        text: 'Импорт',
-        onClick: () => {
-          modal.close();
-          if (onClose) onClose();
-          importData();
-        },
-      }));
+      grid.appendChild(
+        createDataTile({
+          id: 'import',
+          iconName: 'import',
+          fallbackEmoji: '📥',
+          text: 'Импорт',
+          onClick: () => {
+            modal.close();
+            if (onClose) onClose();
+            importData();
+          },
+        })
+      );
 
-      grid.appendChild(createDataTile({
-        id: 'export',
-        iconName: 'export',
-        fallbackEmoji: '📤',
-        text: 'Экспорт',
-        onClick: () => {
-          modal.close();
-          if (onClose) onClose();
-          exportData();
-        },
-      }));
+      grid.appendChild(
+        createDataTile({
+          id: 'export',
+          iconName: 'export',
+          fallbackEmoji: '📤',
+          text: 'Экспорт',
+          onClick: () => {
+            modal.close();
+            if (onClose) onClose();
+            exportData();
+          },
+        })
+      );
 
-      grid.appendChild(createDataTile({
-        id: 'update',
-        iconName: 'refresh',
-        fallbackEmoji: '🔄',
-        text: 'Обновление',
-        onClick: () => {
-          handleUpdateCheck();
-          // не закрываем модалку — пользователь видит результат
-        },
-      }));
+      grid.appendChild(
+        createDataTile({
+          id: 'update',
+          iconName: 'refresh',
+          fallbackEmoji: '🔄',
+          text: 'Обновление',
+          onClick: () => {
+            handleUpdateCheck();
+            // не закрываем модалку — пользователь видит результат
+          },
+        })
+      );
 
-      grid.appendChild(createDataTile({
-        id: 'reset',
-        iconName: 'reset',
-        fallbackEmoji: '⚠️',
-        text: 'Сброс',
-        onClick: () => {
-          modal.close();
-          if (onClose) onClose();
-          resetAllData();
-        },
-      }));
+      grid.appendChild(
+        createDataTile({
+          id: 'reset',
+          iconName: 'reset',
+          fallbackEmoji: '⚠️',
+          text: 'Сброс',
+          onClick: () => {
+            modal.close();
+            if (onClose) onClose();
+            resetAllData();
+          },
+        })
+      );
 
       wrap.appendChild(grid);
       return wrap;
     },
     buttons: [],
-    onClose: () => { if (onClose) onClose(); },
+    onClose: () => {
+      if (onClose) onClose();
+    },
   });
   modal.open();
 }

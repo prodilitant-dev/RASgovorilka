@@ -1,9 +1,9 @@
 // src/utils/game/pickCards.js
 export function getCardsFromCategories(profile, categoryIds) {
   const result = [];
-  categoryIds.forEach(catId => {
+  categoryIds.forEach((catId) => {
     const cards = profile.cards[catId] || [];
-    cards.forEach(card => {
+    cards.forEach((card) => {
       result.push({ ...card, categoryId: catId });
     });
   });

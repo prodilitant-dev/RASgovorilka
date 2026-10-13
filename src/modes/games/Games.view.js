@@ -6,8 +6,8 @@ import { attachGridEvents } from '@components/common/Grid/Grid.events';
 import { logger } from '@utils/logger';
 
 const GAMES = [
-  { id: 'memory',  label: 'Мемори',    icon: 'memory',  emoji: '🃏' },
-  { id: 'fifteen', label: 'Пятнашки',  icon: 'fifteen', emoji: '🧩' },
+  { id: 'memory', label: 'Мемори', icon: 'memory', emoji: '🃏' },
+  { id: 'fifteen', label: 'Пятнашки', icon: 'fifteen', emoji: '🧩' },
 ];
 
 export function renderGames(container, onSelectGame) {

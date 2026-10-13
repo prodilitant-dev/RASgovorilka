@@ -31,14 +31,14 @@ export function openCategoryEditor(category, onSave) {
         id: 'hidden',
         label: 'Скрыть в основном режиме',
         type: 'toggle',
-      }
+      },
     ],
     buttons: [
       {
         id: 'save',
         label: '💾 Сохранить',
         variant: 'primary',
-      }
+      },
     ],
   });
 }

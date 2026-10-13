@@ -2,7 +2,9 @@ import { renderSettingsModal } from '@components/common/SettingsModal/SettingsMo
 
 export function openSortingSettings(profile, onSave) {
   const currentSettings = profile.learningSettings?.sorting || {
-    categoryIds: profile.categories.slice(0, Math.min(profile.categories.length, 4)).map(c => c.id),
+    categoryIds: profile.categories
+      .slice(0, Math.min(profile.categories.length, 4))
+      .map((c) => c.id),
     numCards: 8,
   };
 
@@ -14,7 +16,7 @@ export function openSortingSettings(profile, onSave) {
         key: 'categoryIds',
         type: 'checkbox',
         label: 'Категории (выберите минимум 2):',
-        options: (profile) => profile.categories.map(c => ({ value: c.id, label: c.name })),
+        options: (profile) => profile.categories.map((c) => ({ value: c.id, label: c.name })),
       },
       {
         key: 'numCards',

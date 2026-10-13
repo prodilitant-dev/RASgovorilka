@@ -88,17 +88,22 @@ export function withRenderLogging(fn, name) {
   return function (...args) {
     const start = performance.now();
     // Преобразуем аргументы для читаемости
-    const logArgs = args.map(arg => {
+    const logArgs = args.map((arg) => {
       if (arg instanceof HTMLElement) {
         return `<${arg.tagName.toLowerCase()} id="${arg.id || ''}" class="${arg.className || ''}">`;
       }
       if (typeof arg === 'object' && arg !== null) {
         // Ограничиваем глубину для объектов
         try {
-          return JSON.stringify(arg, (key, value) => {
-            if (key === 'cards' || key === 'profiles' || key === 'data') return `[${Array.isArray(value) ? value.length : 'object'}]`;
-            return value;
-          }, 2);
+          return JSON.stringify(
+            arg,
+            (key, value) => {
+              if (key === 'cards' || key === 'profiles' || key === 'data')
+                return `[${Array.isArray(value) ? value.length : 'object'}]`;
+              return value;
+            },
+            2
+          );
         } catch {
           return '[complex object]';
         }

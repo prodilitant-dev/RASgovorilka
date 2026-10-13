@@ -1,4 +1,3 @@
-
 /**
  * Конвертирует Blob в DataURL.
  * @param {Blob} blob
