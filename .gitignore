@@ -20,3 +20,25 @@ Thumbs.db
 # Логи
 debug.log
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env
+.env
+.env.*
+!.env.example
+
+# PWA generated
+dev-dist/
+
+# lint reports
+lint-baseline.txt
+lint-after-fix.txt
+format-check.txt
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
