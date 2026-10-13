@@ -1,42 +1,11 @@
 // src/modes/general/components/DataManagerModal.js
 import { Modal } from '@components/common/Modal/Modal';
 import { createElement } from '@utils/dom';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 import { toast } from '@utils/toast';
 import { logger } from '@utils/logger';
 import { exportData, importData, resetAllData } from '../General.controller';
 import { checkForUpdate, applyUpdate } from '@services/pwa/updateService';
-
-/**
- * Создаёт плитку с иконкой и названием.
- */
-function createTile({ id, icon, emoji, text, onClick }) {
-  const tile = createElement('div', {
-    className: 'data-tile',
-    'data-id': id,
-    'data-log': `data-tile:${id}`,
-  });
-
-  const bg = createElement('div', { className: 'data-tile__bg' });
-  const img = createElement('img', {
-    src: iconUrl(icon),
-    alt: '',
-    className: 'data-tile__icon',
-    draggable: 'false',
-  });
-  img.addEventListener('error', () => {
-    img.replaceWith(document.createTextNode(emoji));
-  });
-  bg.appendChild(img);
-  tile.appendChild(bg);
-
-  const label = createElement('div', { className: 'data-tile__label' }, text);
-  tile.appendChild(label);
-
-  tile.addEventListener('click', onClick);
-
-  return tile;
-}
 
 /**
  * Обработка кнопки «Проверить обновление».
@@ -68,17 +37,40 @@ async function handleUpdateCheck() {
   }
 }
 
+/**
+ * Создаёт плитку в стиле общих настроек.
+ */
+function createDataTile({ id, iconName, fallbackEmoji, text, onClick }) {
+  // Создаём структуру карточки как в General.view.js
+  const card = createElement('div', {
+    className: 'card settings-card-clickable',
+    'data-id': id,
+    'data-log': `data-tile:${id}`,
+  });
+
+  const bg = createElement('div', { className: 'card__bg' });
+  bg.appendChild(createIcon(iconName, { fallback: fallbackEmoji, size: 96 }));
+  card.appendChild(bg);
+
+  const label = createElement('div', { className: 'card__label' }, text);
+  card.appendChild(label);
+
+  card.addEventListener('click', onClick);
+
+  return card;
+}
+
 export function openDataManager(onClose) {
   const modal = new Modal({
     title: 'Управление данными',
     body: () => {
       const wrap = createElement('div', { className: 'data-manager' });
-      const grid = createElement('div', { className: 'data-tiles-grid' });
+      const grid = createElement('div', { className: 'tiles-grid' });
 
-      grid.appendChild(createTile({
+      grid.appendChild(createDataTile({
         id: 'import',
-        icon: 'import',
-        emoji: '📥',
+        iconName: 'import',
+        fallbackEmoji: '📥',
         text: 'Импорт',
         onClick: () => {
           modal.close();
@@ -87,10 +79,10 @@ export function openDataManager(onClose) {
         },
       }));
 
-      grid.appendChild(createTile({
+      grid.appendChild(createDataTile({
         id: 'export',
-        icon: 'export',
-        emoji: '📤',
+        iconName: 'export',
+        fallbackEmoji: '📤',
         text: 'Экспорт',
         onClick: () => {
           modal.close();
@@ -99,21 +91,21 @@ export function openDataManager(onClose) {
         },
       }));
 
-      grid.appendChild(createTile({
+      grid.appendChild(createDataTile({
         id: 'update',
-        icon: 'refresh',
-        emoji: '🔄',
+        iconName: 'refresh',
+        fallbackEmoji: '🔄',
         text: 'Обновление',
         onClick: () => {
           handleUpdateCheck();
-          // не закрываем модалку — пользователь видит результат и может остаться
+          // не закрываем модалку — пользователь видит результат
         },
       }));
 
-      grid.appendChild(createTile({
+      grid.appendChild(createDataTile({
         id: 'reset',
-        icon: 'reset',
-        emoji: '⚠️',
+        iconName: 'reset',
+        fallbackEmoji: '⚠️',
         text: 'Сброс',
         onClick: () => {
           modal.close();
