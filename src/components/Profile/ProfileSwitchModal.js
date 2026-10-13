@@ -20,7 +20,6 @@ export function openProfileSwitchModal(onProfileSwitched) {
         data = appData;
 
         if (!data || !Array.isArray(data.profiles)) {
-          logger.warn('ProfileSwitchModal: нет данных о профилях');
           const empty = document.createElement('div');
           empty.className = 'text-muted p-4 text-center';
           empty.textContent = 'Нет данных';
@@ -38,9 +37,7 @@ export function openProfileSwitchModal(onProfileSwitched) {
           active: prof.id === activeId,
         }));
 
-        logger.debug(`ProfileSwitchModal: ${items.length} профилей`);
-
-        const result = renderUniversalList(listContainer, {
+        const { cleanup: listCleanup } = renderUniversalList(listContainer, {
           items,
           onClick: (id) => {
             const profile = data.profiles.find((p) => p.id === id);
@@ -63,8 +60,8 @@ export function openProfileSwitchModal(onProfileSwitched) {
           layout: 'grid',
         });
 
-        if (result && result.cleanup) {
-          cleanup = result.cleanup;
+        if (listCleanup) {
+          cleanup = listCleanup;
         }
       });
 

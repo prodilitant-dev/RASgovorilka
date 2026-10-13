@@ -1,7 +1,7 @@
 // src/modes/write/Write.controller.js
 import { renderMainLayout } from '@components/common/Layout/MainLayout';
 import { createElement } from '@utils/dom';
-import { getState, setState } from '@state/store';
+import { setState } from '@state/store';
 import { renderQuickButtons } from '@modes/common/quickButtons';
 import { renderSentence, addWord, removeWord, clearSentence, speakSentence, getWords } from '@modes/common/sentence';
 import { debounce } from '@utils';
@@ -37,7 +37,6 @@ export function renderWrite(container, profile) {
 
   renderMainLayout(container, { content, bottomPanel });
 
-  const state = getState();
   const words = getWords();
 
   renderQuickButtons(quickContainer, currentProfile, {
