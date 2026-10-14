@@ -99,7 +99,11 @@ export function renderPreview(entity, callbacks) {
     showFallback(box, entity);
   }
 
-  // Скрытый инпут для загрузки файла
+  // === Скрытые input'ы: галерея и камера ===
+  const cleanupPopup = () => {
+    document.querySelector('.ve-image-source-popup')?.remove();
+  };
+
   const fileInputId = generateId();
   const fileInput = createElement('input', {
     type: 'file',
@@ -109,6 +113,7 @@ export function renderPreview(entity, callbacks) {
     style: 'display:none;',
   });
   on(fileInput, 'change', async (e) => {
+    cleanupPopup();
     const file = e.target.files[0];
     if (file) {
       await callbacks.onUploadImage(file);
@@ -117,7 +122,39 @@ export function renderPreview(entity, callbacks) {
   });
   box.appendChild(fileInput);
 
-  on(box, 'click', () => fileInput.click());
+  const cameraInputId = generateId();
+  const cameraInput = createElement('input', {
+    type: 'file',
+    accept: 'image/*',
+    capture: 'environment',
+    id: cameraInputId,
+    name: cameraInputId,
+    style: 'display:none;',
+  });
+  on(cameraInput, 'change', async (e) => {
+    cleanupPopup();
+    const file = e.target.files[0];
+    if (file) {
+      await callbacks.onUploadImage(file);
+    }
+    cameraInput.value = '';
+  });
+  box.appendChild(cameraInput);
+
+  // На десктопе камеры нет — открываем файловый диалог сразу.
+  // На мобильных — показываем мини-меню «Камера / Галерея».
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+  on(box, 'click', (e) => {
+    if (e.target.closest('.ve-preview-remove')) return;
+    if (e.target.closest('.ve-image-source-popup')) return;
+
+    if (!isMobile) {
+      fileInput.click();
+      return;
+    }
+    openImageSourcePopup(box, { fileInput, cameraInput });
+  });
 
   if (entity.imageId) {
     const removeBtn = createElement('button', { className: 've-preview-remove' }, '✕');
@@ -132,6 +169,63 @@ export function renderPreview(entity, callbacks) {
   return block;
 }
 
+/** Мини-меню «Камера / Галерея», всплывающее под превью-боксом. */
+function openImageSourcePopup(anchor, { fileInput, cameraInput }) {
+  // Удаляем возможный «зависший» попап от прошлого вызова
+  document.querySelector('.ve-image-source-popup')?.remove();
+
+  const popup = createElement('div', { className: 've-image-source-popup' });
+  const cameraBtn = createElement(
+    'button',
+    { type: 'button', className: 've-image-source-popup__btn' },
+    '📷 Сделать фото'
+  );
+  const galleryBtn = createElement(
+    'button',
+    { type: 'button', className: 've-image-source-popup__btn' },
+    '🖼 Выбрать из галереи'
+  );
+
+  const close = () => {
+    popup.remove();
+    document.removeEventListener('click', onDocClick, true);
+    document.removeEventListener('keydown', onKey, true);
+  };
+  const onDocClick = (e) => {
+    if (!popup.contains(e.target) && !anchor.contains(e.target)) close();
+  };
+  const onKey = (e) => {
+    if (e.key === 'Escape') close();
+  };
+
+  cameraBtn.addEventListener('click', () => {
+    // Сначала прячем попап, потом открываем системную камеру
+    close();
+    cameraInput.click();
+  });
+  galleryBtn.addEventListener('click', () => {
+    close();
+    fileInput.click();
+  });
+
+  popup.appendChild(cameraBtn);
+  popup.appendChild(galleryBtn);
+  document.body.appendChild(popup);
+
+  const rect = anchor.getBoundingClientRect();
+  popup.style.position = 'fixed';
+  popup.style.top = `${rect.bottom + 8}px`;
+  popup.style.left = `${rect.left + rect.width / 2}px`;
+  popup.style.transform = 'translateX(-50%)';
+
+  // Подписываемся на «клик вне» и Escape чуть позже, чтобы текущий клик не закрыл сразу
+  setTimeout(() => {
+    document.addEventListener('click', onDocClick, true);
+    document.addEventListener('keydown', onKey, true);
+  }, 0);
+}
+
+/** Загружает стандартное изображение из /public (cards, icons и т.п.). */
 function loadStockImage(imagePath, box, onLoad, onError) {
   const base = import.meta.env.BASE_URL || '/';
   const url = base.endsWith('/') ? `${base}${imagePath}` : `${base}/${imagePath}`;

@@ -5,6 +5,7 @@ import { uploadImage } from '@services/image';
 import { toast } from '@utils/toast';
 import { logger } from '@utils/logger';
 import { confirm } from '@utils/dialog';
+import { openImageCropper } from '@components/common/ImageCropper';
 
 export function openVerticalEditor(config) {
   const {
@@ -45,7 +46,10 @@ export function openVerticalEditor(config) {
         },
         onUploadImage: async (file) => {
           try {
-            const imageId = await uploadImage(file, { size: 256, showToast: true });
+            const croppedBlob = await openImageCropper(file, { size: 256 });
+            if (!croppedBlob) return;
+
+            const imageId = await uploadImage(croppedBlob, { size: 256, showToast: true });
             workingEntity.imageId = imageId;
             workingEntity.emoji = '';
             toast('Фото загружено', 'success');

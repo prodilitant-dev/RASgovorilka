@@ -20,6 +20,7 @@
 @import './components/layout.css';
 @import './components/progress-bar.css';
 @import './components/vertical-editor.css';
+@import './components/image-cropper.css';
 
 /* Режимы */
 @import './modes/profiles.css';
