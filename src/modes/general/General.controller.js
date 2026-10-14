@@ -7,8 +7,6 @@ import { saveProfile } from '@storage/appStorage';
 import { markForReset } from '@storage/db';
 import { renderModeBar } from '@components/ModeBar/ModeBar';
 import { openExportDialog } from './components/ExportDialog';
-import { exportToZip } from '@services/backup/export';
-import { importFromZip } from '@services/backup/import';
 import { applyAutoInflectToAllCards } from '@utils/inflect';
 import { logger } from '@utils/logger';
 
@@ -58,17 +56,11 @@ export function saveSentenceBarPosition(position) {
   setState({ globalSettings });
   savePersistentState();
   toast('Настройка интерфейса сохранена');
-
-  // Триггерим перерендер — подписчики на state перерисуют текущий режим.
-  // Если перерисовка не срабатывает автоматически, режим сам подхватит новую
-  // позицию при следующем рендере.
   setState({ profiles: [...state.profiles] });
 }
 
 /**
  * Переключает автосклонение.
- * При включении — проходит по всем карточкам и заполняет
- * пустые падежные формы. При выключении — формы не трогает.
  */
 export async function toggleAutoInflect(newValue) {
   const state = getState();
@@ -172,7 +164,8 @@ export async function resetAllData() {
 }
 
 export function exportData() {
-  openExportDialog((selectedKeys, selectedCategoryIds) => {
+  openExportDialog(async (selectedKeys, selectedCategoryIds) => {
+    const { exportToZip } = await import('@services/backup/export');
     exportToZip(selectedKeys, selectedCategoryIds);
   });
 }
@@ -184,6 +177,7 @@ export function importData() {
   input.onchange = async (e) => {
     const file = e.target.files[0];
     if (file) {
+      const { importFromZip } = await import('@services/backup/import');
       await importFromZip(file);
     }
     input.remove();

@@ -1,13 +1,18 @@
 // src/services/backup/export.js
-import JSZip from 'jszip';
 import { EXPORT_COMPONENTS } from './registry';
-import { loadImage } from '@storage/imageStorage'; // ← было getImage, исправлено на loadImage
+import { loadImage } from '@storage/imageStorage';
 import { toast } from '@utils/toast';
 import { logger } from '@utils/logger';
 import { getActiveProfile } from '@state/actions';
 import { getState } from '@state/store';
 
+/**
+ * Экспортирует выбранные компоненты в .rasbackup (zip).
+ * JSZip подгружается лениво — только когда пользователь реально нажал «Экспорт».
+ */
 export async function exportToZip(selectedKeys, selectedCategoryIds = null) {
+  const { default: JSZip } = await import('jszip');
+
   const profile = getActiveProfile();
   const state = getState();
   const globalData = state.globalSettings || {};
@@ -65,7 +70,7 @@ export async function exportToZip(selectedKeys, selectedCategoryIds = null) {
   const imgFolder = zip.folder('images');
   for (const id of allImageIds) {
     try {
-      const blob = await loadImage(id); // ← здесь была getImage, исправлено
+      const blob = await loadImage(id);
       if (blob) imgFolder.file(id, blob);
     } catch (e) {
       logger.warn(`Не удалось загрузить изображение ${id} для экспорта`, e);

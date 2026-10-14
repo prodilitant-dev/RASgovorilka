@@ -6,10 +6,14 @@ import { initKeyboardHandler } from '@utils/keyboardHandler';
 import { maybeEnableFullscreenOnFirstInteraction } from '@utils/fullscreen';
 import { resetDatabaseIfPending } from '@storage/db';
 import { logger } from '@utils/logger';
+import { toast } from '@utils/toast';
 
 /**
  * Обработка открытия файла .rasbackup через файловый менеджер.
  * Работает только в установленной PWA (Chrome/Edge, Android/Desktop).
+ *
+ * JSZip и модуль импорта подгружаются динамически — только когда
+ * реально открыли файл. Это экономит ~30 KB gzip в стартовом бандле.
  */
 async function handleLaunchFile(file) {
   try {
@@ -18,7 +22,6 @@ async function handleLaunchFile(file) {
     logger.info('File handler: импорт из .rasbackup завершён');
   } catch (e) {
     logger.error('File handler error:', e);
-    const { toast } = await import('@utils/toast');
     toast('Не удалось импортировать файл', 'error');
   }
 }
@@ -57,7 +60,7 @@ export async function initApp() {
   }
 
   initKeyboardHandler();
-  setupFileHandler(); // ← до renderApp
+  setupFileHandler();
 
   await loadInitialState();
 

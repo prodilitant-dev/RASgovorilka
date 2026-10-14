@@ -1,15 +1,21 @@
 // src/services/backup/import.js
-import JSZip from 'jszip';
 import { EXPORT_COMPONENTS } from './registry';
-import { saveImage } from '@storage/imageStorage'; // ← есть, правильно
+import { saveImage } from '@storage/imageStorage';
 import { toast } from '@utils/toast';
 import { logger } from '@utils/logger';
 import { getActiveProfile } from '@state/actions';
 import { getState, setState } from '@state/store';
 import { saveProfile, saveAppData } from '@storage/appStorage';
 import { openImportDialog } from '@modes/general/components/ImportDialog';
+import { renderApp } from '@app/render';
 
+/**
+ * Импортирует .rasbackup (zip) в текущий профиль.
+ * JSZip подгружается лениво — только когда пользователь реально импортирует.
+ */
 export async function importFromZip(file) {
+  const { default: JSZip } = await import('jszip');
+
   try {
     const zip = await JSZip.loadAsync(file);
 
@@ -87,6 +93,5 @@ async function applyImport(importedData, selectedKeys, strategy, selectedCategor
   await saveAppData({ ...state, globalSettings: globalData });
   setState({ profiles: state.profiles, globalSettings: globalData });
   toast('Импорт завершён', 'success');
-  // Перерендерим приложение
-  import('@app/render').then(({ renderApp }) => renderApp());
+  renderApp();
 }
