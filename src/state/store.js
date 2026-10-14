@@ -13,6 +13,7 @@ const state = {
     voiceSettings: { rate: 1, pitch: 1, volume: 1, voiceURI: '' },
     fullscreen: false,
     sentenceBarPosition: 'bottom',
+    categoriesShowImages: true,
   },
   activityState: null,
 };

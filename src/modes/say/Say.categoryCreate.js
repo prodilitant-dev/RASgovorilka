@@ -5,6 +5,9 @@ import { toast } from '@utils/toast';
 import { uid } from '@utils/id';
 import { saveProfile } from '@storage/appStorage';
 import { setState } from '@state/store';
+import { openImageCropper } from '@components/common/ImageCropper';
+import { uploadImage, getImageUrl, deleteImage } from '@services/image';
+import { logger } from '@utils/logger';
 
 /**
  * Открывает модалку создания новой категории.
@@ -14,6 +17,9 @@ import { setState } from '@state/store';
 export function openCategoryCreateModal(profile, onCreated) {
   let nameInput = null;
   let wordTypeSelect = null;
+  let imageId = null; // локально, пока не создана категория
+  let previewAvatar = null;
+  let removeBtn = null;
 
   const wordTypeOptions = [
     { value: 'noun', label: 'Существительное' },
@@ -24,12 +30,139 @@ export function openCategoryCreateModal(profile, onCreated) {
     { value: 'other', label: 'Другое' },
   ];
 
+  /**
+   * Обновляет кружок-превью в соответствии с текущим imageId и name.
+   * Также управляет видимостью кнопки удаления.
+   */
+  async function updatePreviewAvatar() {
+    if (!previewAvatar) return;
+
+    const name = nameInput?.value?.trim() || '';
+    const letter = name.charAt(0).toUpperCase() || '?';
+
+    // Сброс содержимого
+    previewAvatar.innerHTML = '';
+    previewAvatar.classList.remove('cat-avatar--fallback');
+
+    if (imageId) {
+      try {
+        const url = await getImageUrl(imageId);
+        if (url) {
+          const img = createElement('img', {
+            src: url,
+            alt: '',
+            className: 'cat-avatar__img',
+            draggable: 'false',
+          });
+          previewAvatar.appendChild(img);
+          if (removeBtn) removeBtn.style.display = 'inline-flex';
+          return;
+        }
+      } catch (err) {
+        logger.warn('categoryCreate: getImageUrl failed', err);
+      }
+    }
+
+    // Фолбек: буква или камера-иконка, если имени ещё нет
+    previewAvatar.classList.add('cat-avatar--fallback');
+    previewAvatar.textContent = name ? letter : '📷';
+    if (removeBtn) removeBtn.style.display = 'none';
+  }
+
+  /**
+   * Обрабатывает выбор файла: кроппер → uploadImage → сохранение imageId.
+   */
+  async function handleFileSelected(file) {
+    try {
+      const croppedBlob = await openImageCropper(file, { size: 256 });
+      if (!croppedBlob) return;
+
+      // Если уже была картинка — удалим прежнюю, чтобы не оставлять мусор
+      if (imageId) {
+        try {
+          await deleteImage(imageId);
+        } catch {
+          /* игнорируем */
+        }
+      }
+
+      imageId = await uploadImage(croppedBlob, { size: 256, showToast: false });
+      await updatePreviewAvatar();
+    } catch (err) {
+      logger.error('categoryCreate: upload failed', err);
+      toast('Не удалось загрузить изображение', 'error');
+    }
+  }
+
   const modal = new Modal({
     title: 'Новая категория',
     body: () => {
       const wrap = createElement('div', { className: 've-fields' });
 
-      // --- Название ---
+      // === Превью-аватарка с загрузкой ===
+      const avatarRow = createElement('div', {
+        className: 've-field',
+        style: 'align-items: center;',
+      });
+      const avatarLabel = createElement('label', { className: 've-field-label' }, 'Изображение');
+
+      previewAvatar = createElement('div', {
+        className: 'cat-avatar cat-avatar--upload',
+        style: 'width: 72px; height: 72px; cursor: pointer; font-size: 24px;',
+        title: 'Нажмите, чтобы выбрать изображение',
+      });
+      previewAvatar.textContent = '📷';
+
+      const fileInput = createElement('input', {
+        type: 'file',
+        accept: 'image/*',
+        style: 'display: none;',
+      });
+      on(fileInput, 'change', async (e) => {
+        const file = e.target.files?.[0];
+        if (file) await handleFileSelected(file);
+        fileInput.value = '';
+      });
+
+      on(previewAvatar, 'click', () => fileInput.click());
+
+      // Удаление картинки (появляется после загрузки)
+      removeBtn = createElement(
+        'button',
+        {
+          type: 'button',
+          className: 'cat-action-btn',
+          style: 'margin-left: 8px; display: none;',
+          'aria-label': 'Удалить изображение',
+          title: 'Удалить',
+        },
+        '✕'
+      );
+      on(removeBtn, 'click', async (e) => {
+        e.stopPropagation();
+        if (imageId) {
+          try {
+            await deleteImage(imageId);
+          } catch {
+            /* игнорируем */
+          }
+          imageId = null;
+        }
+        await updatePreviewAvatar();
+      });
+
+      const avatarRowInner = createElement('div', {
+        style: 'display: flex; align-items: center;',
+      });
+      avatarRowInner.appendChild(previewAvatar);
+      avatarRowInner.appendChild(removeBtn);
+      avatarRowInner.appendChild(fileInput);
+
+      avatarRow.appendChild(avatarLabel);
+      avatarRow.appendChild(avatarRowInner);
+      wrap.appendChild(avatarRow);
+
+      // === Название ===
       const nameRow = createElement('div', { className: 've-field' });
       const nameLabel = createElement('label', { className: 've-field-label' }, 'Название');
       nameInput = createElement('input', {
@@ -37,11 +170,12 @@ export function openCategoryCreateModal(profile, onCreated) {
         placeholder: 'Например: Одежда',
         autofocus: true,
       });
+      on(nameInput, 'input', () => updatePreviewAvatar());
       nameRow.appendChild(nameLabel);
       nameRow.appendChild(nameInput);
       wrap.appendChild(nameRow);
 
-      // --- Тип слова ---
+      // === Тип слова ===
       const typeRow = createElement('div', { className: 've-field' });
       const typeLabel = createElement('label', { className: 've-field-label' }, 'Тип слова');
       wordTypeSelect = createElement('select', {});
@@ -53,10 +187,8 @@ export function openCategoryCreateModal(profile, onCreated) {
       typeRow.appendChild(wordTypeSelect);
       wrap.appendChild(typeRow);
 
-      // Фокус на поле через тик (после появления модалки в DOM)
       setTimeout(() => nameInput && nameInput.focus(), 100);
 
-      // Enter в поле названия = создать
       on(nameInput, 'keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
@@ -77,10 +209,20 @@ export function openCategoryCreateModal(profile, onCreated) {
         action: () => handleCreate(),
       },
     ],
-    onClose: () => {},
+    onClose: async () => {
+      // Если пользователь отменил, а картинка уже загружена — удаляем её,
+      // чтобы не оставлять мусор в IndexedDB.
+      if (imageId) {
+        try {
+          await deleteImage(imageId);
+        } catch {
+          /* игнорируем */
+        }
+      }
+    },
   });
 
-  function handleCreate() {
+  async function handleCreate() {
     if (!nameInput || !wordTypeSelect) return;
 
     const name = nameInput.value.trim();
@@ -90,7 +232,6 @@ export function openCategoryCreateModal(profile, onCreated) {
       return;
     }
 
-    // Проверка на дубликат
     const exists = profile.categories.some(
       (c) => c.name.trim().toLowerCase() === name.toLowerCase()
     );
@@ -106,6 +247,7 @@ export function openCategoryCreateModal(profile, onCreated) {
       name,
       wordType: wordTypeSelect.value,
       hidden: false,
+      imageId: imageId || null,
     };
 
     profile.categories.push(newCategory);
@@ -114,6 +256,10 @@ export function openCategoryCreateModal(profile, onCreated) {
     setState({ currentCategoryId: newCategory.id });
 
     toast('Категория создана');
+
+    // Защищаем imageId от удаления в onClose
+    imageId = null;
+
     modal.close();
     if (onCreated) onCreated(newCategory.id);
   }

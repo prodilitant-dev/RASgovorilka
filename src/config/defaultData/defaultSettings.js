@@ -45,5 +45,6 @@ export const DEFAULT_GLOBAL_SETTINGS = {
   autoInflect: false,
   voiceSettings: { rate: 1, pitch: 1, volume: 1, voiceURI: '' },
   fullscreen: false,
-  sentenceBarPosition: 'bottom', // 'top' | 'bottom'
+  sentenceBarPosition: 'bottom',
+  categoriesShowImages: true,
 };

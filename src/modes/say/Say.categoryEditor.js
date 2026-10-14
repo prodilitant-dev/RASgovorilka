@@ -8,14 +8,14 @@ export function openCategoryEditor(category, onSave) {
   openVerticalEditor({
     title: 'Редактировать категорию',
     entity,
-    preview: false, // <-- отключаем превью
+    editorType: 'category',
+    preview: true,
     onSave: (updated, done) => {
       if (!updated.name || !updated.name.trim()) {
         toast('Введите название', 'error');
         done();
         return;
       }
-      // Применяем изменения к исходной категории
       Object.assign(category, updated);
       onSave(category, done);
     },

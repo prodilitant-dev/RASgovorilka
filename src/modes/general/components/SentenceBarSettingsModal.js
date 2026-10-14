@@ -1,14 +1,14 @@
-// src/modes/general/components/InterfaceSettingsModal.js
+// src/modes/general/components/SentenceBarSettingsModal.js
 import { Modal } from '@components/common/Modal/Modal';
 import { createElement, on } from '@utils/dom';
 
 /**
- * Модалка настроек интерфейса. Сейчас — только положение панели предложения.
+ * Модалка выбора положения панели предложения.
  *
  * @param {Object} currentSettings - текущие globalSettings
  * @param {(patch: Object) => void} onSave - вызывается с новыми значениями
  */
-export function openInterfaceSettings(currentSettings, onSave) {
+export function openSentenceBarSettings(currentSettings, onSave) {
   const working = {
     sentenceBarPosition: currentSettings?.sentenceBarPosition || 'bottom',
   };
@@ -22,9 +22,7 @@ export function openInterfaceSettings(currentSettings, onSave) {
     },
   ];
 
-  // Кнопки создаём один раз и храним ссылки, чтобы переключать active-класс.
   const buttons = [];
-
   const group = createElement('div', { className: 'interface-settings__group' });
 
   options.forEach((opt) => {
@@ -63,7 +61,7 @@ export function openInterfaceSettings(currentSettings, onSave) {
   root.appendChild(group);
 
   const modal = new Modal({
-    title: 'Настройка интерфейса',
+    title: 'Панель предложения',
     body: () => root,
     buttons: [
       {

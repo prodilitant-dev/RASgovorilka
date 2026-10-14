@@ -1,8 +1,8 @@
-// src/modes/say/Say.categories.js
 import { createElement, clear } from '@utils/dom';
 import { makeSortable } from '@utils/dragdrop';
 import { openCategoryCreateModal } from './Say.categoryCreate';
 import { getState } from '@state/store';
+import { getImageUrl } from '@services/image';
 import { logger } from '@utils/logger';
 import { iconUrl } from '@utils/icon';
 
@@ -26,6 +26,7 @@ export function renderCategories(
   clear(container);
   const state = getState();
   const editing = state.editingMode || false;
+  const showImages = getState().globalSettings?.categoriesShowImages !== false;
 
   const categories = editing ? profile.categories : profile.categories.filter((c) => !c.hidden);
 
@@ -40,6 +41,11 @@ export function renderCategories(
       'data-id': cat.id,
       'data-category-id': cat.id,
     });
+
+    // === Аватарка категории ===
+    if (showImages) {
+      el.appendChild(createCategoryAvatar(cat));
+    }
 
     const nameEl = createElement('span', { className: 'cat-name' }, cat.name);
     el.appendChild(nameEl);
@@ -126,4 +132,42 @@ export function renderCategories(
   container._categoriesCleanup = () => {
     if (dragCleanup) dragCleanup();
   };
+}
+
+/**
+ * Кружок-аватарка для категории.
+ * Если есть imageId — подгружает URL асинхронно и подменяет контент.
+ * Если нет — серый круг с первой буквой названия.
+ */
+function createCategoryAvatar(cat) {
+  const avatar = createElement('div', { className: 'cat-avatar' });
+  const letter = (cat.name || '?').trim().charAt(0).toUpperCase();
+
+  if (cat.imageId) {
+    // Пока грузится — показываем букву, после загрузки — картинку
+    avatar.classList.add('cat-avatar--fallback');
+    avatar.textContent = letter;
+
+    getImageUrl(cat.imageId)
+      .then((url) => {
+        if (!url) return;
+        const img = createElement('img', {
+          src: url,
+          alt: '',
+          className: 'cat-avatar__img',
+          draggable: 'false',
+        });
+        avatar.textContent = '';
+        avatar.classList.remove('cat-avatar--fallback');
+        avatar.appendChild(img);
+      })
+      .catch(() => {
+        /* оставляем фолбек */
+      });
+  } else {
+    avatar.classList.add('cat-avatar--fallback');
+    avatar.textContent = letter;
+  }
+
+  return avatar;
 }
