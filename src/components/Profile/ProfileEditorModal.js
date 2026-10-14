@@ -5,7 +5,7 @@ import { uid } from '@utils/id';
 
 export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel }) {
   const isNew = !profile?.id;
-  const entity = profile || { id: uid(), name: '', icon: '🧑' };
+  const entity = profile || { id: uid(), name: '', icon: '' };
   const workingEntity = { ...entity };
 
   const config = {

@@ -1,7 +1,7 @@
 // src/components/Profile/ProfileSwitchModal.js
 import { Modal } from '@components/common/Modal/Modal';
 import { renderUniversalList } from '@components/common/Universal/UniversalList';
-import { getState, setState } from '@state/store';
+import { setState } from '@state/store';
 import { loadAppData, saveAppData } from '@storage/appStorage';
 import { toast } from '@utils/toast';
 import { logger } from '@utils/logger';
@@ -17,29 +17,37 @@ export function openProfileSwitchModal(onProfileSwitched) {
       const listContainer = document.createElement('div');
       wrap.appendChild(listContainer);
 
-      loadAppData().then(appData => {
+      loadAppData().then((appData) => {
         data = appData;
-        if (!data || !data.profiles) {
-          listContainer.innerHTML = '<div class="text-muted p-4 text-center">Нет данных</div>';
+
+        if (!data || !Array.isArray(data.profiles)) {
+          logger.warn('ProfileSwitchModal: нет данных о профилях');
+          const empty = document.createElement('div');
+          empty.className = 'text-muted p-4 text-center';
+          empty.textContent = 'Нет данных';
+          listContainer.appendChild(empty);
           return;
         }
 
         const activeId = data.activeProfileId;
-        const items = data.profiles.map(prof => ({
+
+        const items = data.profiles.map((prof) => ({
           id: prof.id,
           text: prof.name,
-          emoji: prof.icon || '🧑',
+          emoji: prof.icon || '',
+          imageId: prof.imageId || null,
           active: prof.id === activeId,
         }));
 
-        const { element, cleanup: listCleanup } = renderUniversalList(listContainer, {
+        logger.debug(`ProfileSwitchModal: ${items.length} профилей`);
+
+        const result = renderUniversalList(listContainer, {
           items,
           onClick: (id) => {
-            const profile = data.profiles.find(p => p.id === id);
+            const profile = data.profiles.find((p) => p.id === id);
             if (!profile) return;
             data.activeProfileId = id;
             saveAppData(data).then(() => {
-              // ✅ Обновляем состояние: профиль, modeOrder, hiddenModes
               setState({
                 currentProfileId: id,
                 profiles: data.profiles,
@@ -56,7 +64,9 @@ export function openProfileSwitchModal(onProfileSwitched) {
           layout: 'grid',
         });
 
-        cleanup = listCleanup;
+        if (result && result.cleanup) {
+          cleanup = result.cleanup;
+        }
       });
 
       return wrap;
@@ -67,7 +77,7 @@ export function openProfileSwitchModal(onProfileSwitched) {
         cleanup();
         cleanup = null;
       }
-    }
+    },
   });
 
   modal.open();

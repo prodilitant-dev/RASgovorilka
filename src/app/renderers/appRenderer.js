@@ -29,19 +29,15 @@ export function renderApp() {
     return;
   }
 
-  // Получаем иконку для кнопки профиля
-  const profileIcon = getProfileIcon(state);
+const handleProfileClick = createProfileClickHandler();
+const handleProfileLongPress = createProfileLongPressHandler();
 
-  // Создаём обработчики кликов
-  const handleProfileClick = createProfileClickHandler();
-  const handleProfileLongPress = createProfileLongPressHandler();
-
-  // Создаём шапку
-  const { header, modeBarSlot } = createHeader({
-    profileIcon,
-    onProfileClick: handleProfileClick,
-    onProfileLongPress: handleProfileLongPress,
-  });
+const { header, modeBarSlot } = createHeader({
+  profile: getActiveProfile(),
+  isEditing: state.editingMode,
+  onProfileClick: handleProfileClick,
+  onProfileLongPress: handleProfileLongPress,
+});
   app.appendChild(header);
 
   // Создаём основную область

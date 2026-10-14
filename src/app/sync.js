@@ -2,8 +2,7 @@
 import { subscribe, setState } from '@state/store';
 import { renderModeBar } from '@components/ModeBar/ModeBar';
 import { renderContent } from './render';
-import { createElement } from '@utils/dom';
-import { iconUrl, isIconName } from '@utils/icon';
+import { renderProfileIcon } from '@utils/profileIcon';
 import { getActiveProfile } from '@state/actions';
 import { logger } from '@utils/logger';
 
@@ -13,29 +12,6 @@ let mainArea = null;
 export function setContainers(mbs, ma) {
   modeBarSlot = mbs;
   mainArea = ma;
-}
-
-function updateProfileIcon(profileBtn, state) {
-  profileBtn.innerHTML = '';
-
-  const iconValue = state.editingMode
-    ? 'close'
-    : (getActiveProfile()?.icon || '👤');
-
-  if (isIconName(iconValue)) {
-    const img = createElement('img', {
-      src: iconUrl(iconValue),
-      alt: '',
-      className: 'profile-fab__icon',
-      draggable: 'false',
-    });
-    img.addEventListener('error', () => {
-      img.replaceWith(document.createTextNode(state.editingMode ? '✕' : '👤'));
-    });
-    profileBtn.appendChild(img);
-  } else {
-    profileBtn.textContent = iconValue;
-  }
 }
 
 export function subscribeToStore() {
@@ -62,11 +38,18 @@ export function subscribeToStore() {
       }
     }
 
-    if (changed.editingMode !== undefined) {
+    // Обновление иконки профиля в шапке
+    if (
+      changed.editingMode !== undefined ||
+      changed.currentProfileId !== undefined ||
+      changed.profiles !== undefined
+    ) {
       document.body.classList.toggle('editing-mode', newState.editingMode);
       const profileBtn = document.querySelector('.profile-fab');
       if (profileBtn) {
-        updateProfileIcon(profileBtn, newState);
+        renderProfileIcon(profileBtn, getActiveProfile(), {
+          isEditing: newState.editingMode,
+        });
       }
     }
 
