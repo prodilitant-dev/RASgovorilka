@@ -1,3 +1,4 @@
+// vite.config.js
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
@@ -6,8 +7,14 @@ import { VitePWA } from 'vite-plugin-pwa';
 const root = process.cwd();
 const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf-8'));
 
+// Базовый путь для GitHub Pages. Позволяет собирать одно и то же
+// приложение под разные репозитории (RASgovorilka / RASgovorilka-TEST).
+// Переопределяется переменной окружения BASE_PATH при сборке в CI.
+const rawBase = process.env.BASE_PATH || '/RASgovorilka/';
+const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+
 export default defineConfig({
-  base: '/RASgovorilka/',
+  base,
   root: resolve(root, 'src'),
   server: {
     port: 3000,
@@ -24,7 +31,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,webp,webmanifest,ico,woff,woff2}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-        navigateFallback: '/RASgovorilka/index.html',
+        navigateFallback: `${base}index.html`,
         navigateFallbackDenylist: [/^\/api\//],
         cleanupOutdatedCaches: true,
         skipWaiting: false,
