@@ -9,6 +9,9 @@ import { SCHEDULE_TEMPLATES } from './scheduleTemplates';
 import { SCHEDULE_DAY_MAPPING } from './scheduleDayMapping';
 import { DEFAULT_LEARNING_SETTINGS, DEFAULT_GAMES_SETTINGS } from './defaultSettings';
 
+// Реэкспорт глобальных дефолтов — чтобы можно было импортировать из '@config/defaultData'
+export { DEFAULT_GLOBAL_SETTINGS } from './defaultSettings';
+
 /**
  * Создаёт профиль по умолчанию с актуальными стоковыми данными
  * @param {string} name - имя профиля

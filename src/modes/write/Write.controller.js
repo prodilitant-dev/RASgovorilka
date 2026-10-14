@@ -1,7 +1,7 @@
 // src/modes/write/Write.controller.js
 import { renderMainLayout } from '@components/common/Layout/MainLayout';
 import { createElement } from '@utils/dom';
-import { setState } from '@state/store';
+import { getState, setState } from '@state/store';
 import { renderQuickButtons } from '@modes/common/quickButtons';
 import {
   renderSentence,
@@ -36,13 +36,21 @@ export function renderWrite(container, profile) {
   });
   content.appendChild(textarea);
 
-  const bottomPanel = createElement('div', {});
+  // Панель быстрых кнопок + панель предложения.
+  // Позиция задаётся настройкой sentenceBarPosition (top/bottom).
+  const panel = createElement('div', {});
   quickContainer = createElement('div', { className: 'quick-buttons' });
   sentenceContainer = createElement('div', {});
-  bottomPanel.appendChild(quickContainer);
-  bottomPanel.appendChild(sentenceContainer);
+  panel.appendChild(quickContainer);
+  panel.appendChild(sentenceContainer);
 
-  renderMainLayout(container, { content, bottomPanel });
+  const position = getState().globalSettings?.sentenceBarPosition || 'bottom';
+
+  renderMainLayout(container, {
+    content,
+    topPanel: position === 'top' ? panel : null,
+    bottomPanel: position === 'bottom' ? panel : null,
+  });
 
   const words = getWords();
 

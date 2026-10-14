@@ -1,6 +1,8 @@
+// src/state/actions.js
 import { loadAppData, saveAppData } from '@storage/appStorage';
 import { getState, setState } from './store';
 import { createDefaultProfile } from '@config/defaultData';
+import { DEFAULT_GLOBAL_SETTINGS } from '@config/defaultData/defaultSettings';
 import { logger } from '@utils/logger';
 
 export async function loadInitialState() {
@@ -10,10 +12,7 @@ export async function loadInitialState() {
   if (data) {
     setState({
       currentProfileId: data.activeProfileId || null,
-      globalSettings: data.globalSettings || {
-        autoInflect: false,
-        voiceSettings: { rate: 1, pitch: 1, volume: 1, voiceURI: '' },
-      },
+      globalSettings: { ...DEFAULT_GLOBAL_SETTINGS, ...(data.globalSettings || {}) },
       profiles: data.profiles || [],
     });
 
@@ -32,10 +31,7 @@ export async function loadInitialState() {
     const newData = {
       profiles: [defaultProfile],
       activeProfileId: defaultProfile.id,
-      globalSettings: {
-        autoInflect: false,
-        voiceSettings: { rate: 1, pitch: 1, volume: 1, voiceURI: '' },
-      },
+      globalSettings: { ...DEFAULT_GLOBAL_SETTINGS },
       activityStates: {},
     };
     await saveAppData(newData);

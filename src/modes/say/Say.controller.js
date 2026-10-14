@@ -45,15 +45,23 @@ export function renderSay(container, profile) {
   cardsContainer = createElement('div', { className: 'grid-container' });
   content.appendChild(cardsContainer);
 
-  const bottomPanel = createElement('div', {});
+  // Панель быстрых кнопок + панель предложения.
+  // Позиция задаётся настройкой sentenceBarPosition (top/bottom).
+  const panel = createElement('div', {});
   quickContainer = createElement('div', { className: 'quick-buttons' });
   sentenceContainer = createElement('div', {});
-  bottomPanel.appendChild(quickContainer);
-  bottomPanel.appendChild(sentenceContainer);
-
-  renderMainLayout(container, { content, bottomPanel });
+  panel.appendChild(quickContainer);
+  panel.appendChild(sentenceContainer);
 
   const state = getState();
+  const position = state.globalSettings?.sentenceBarPosition || 'bottom';
+
+  renderMainLayout(container, {
+    content,
+    topPanel: position === 'top' ? panel : null,
+    bottomPanel: position === 'bottom' ? panel : null,
+  });
+
   const activeCategoryId = state.currentCategoryId || currentProfile.categories[0]?.id || null;
 
   renderCategories(
@@ -98,7 +106,6 @@ export function renderSay(container, profile) {
   }
 
   // === Единый cleanup режима ===
-  // Собираем все под-cleanups с их контейнеров
   const collector = createCleanupCollector();
   collector.add(categoriesContainer?._categoriesCleanup);
   collector.add(cardsContainer?._cardsCleanup);
@@ -107,7 +114,6 @@ export function renderSay(container, profile) {
 
   container._modeCleanup = () => {
     collector.run();
-    // Сброс ссылок модуля
     currentProfile = null;
     categoriesContainer = null;
     cardsContainer = null;

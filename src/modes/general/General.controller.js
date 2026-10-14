@@ -49,6 +49,23 @@ export function saveSetting(key, value) {
 }
 
 /**
+ * Сохраняет позицию панели предложения ('top' | 'bottom') и триггерит перерисовку.
+ */
+export function saveSentenceBarPosition(position) {
+  if (position !== 'top' && position !== 'bottom') return;
+  const state = getState();
+  const globalSettings = { ...state.globalSettings, sentenceBarPosition: position };
+  setState({ globalSettings });
+  savePersistentState();
+  toast('Настройка интерфейса сохранена');
+
+  // Триггерим перерендер — подписчики на state перерисуют текущий режим.
+  // Если перерисовка не срабатывает автоматически, режим сам подхватит новую
+  // позицию при следующем рендере.
+  setState({ profiles: [...state.profiles] });
+}
+
+/**
  * Переключает автосклонение.
  * При включении — проходит по всем карточкам и заполняет
  * пустые падежные формы. При выключении — формы не трогает.

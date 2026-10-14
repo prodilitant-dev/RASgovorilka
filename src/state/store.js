@@ -1,3 +1,5 @@
+// src/state/store.js
+
 const state = {
   currentProfileId: null,
   currentMode: 'say',
@@ -9,6 +11,8 @@ const state = {
   globalSettings: {
     autoInflect: false,
     voiceSettings: { rate: 1, pitch: 1, volume: 1, voiceURI: '' },
+    fullscreen: false,
+    sentenceBarPosition: 'bottom',
   },
   activityState: null,
 };

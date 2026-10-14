@@ -6,8 +6,14 @@ import { openVoiceSettings } from '@components/common/Settings/VoiceSettingsModa
 import { openModeManager } from './components/ModeManagerModal';
 import { openDataManager } from './components/DataManagerModal';
 import { openAboutModal } from './components/AboutModal';
+import { openInterfaceSettings } from './components/InterfaceSettingsModal';
 import { getState } from '@state/store';
-import { toggleFullscreen, saveVoiceSettings, toggleAutoInflect } from './General.controller';
+import {
+  toggleFullscreen,
+  saveVoiceSettings,
+  toggleAutoInflect,
+  saveSentenceBarPosition,
+} from './General.controller';
 import { logger } from '@utils/logger';
 import { createElement } from '@utils/dom';
 import { createIcon } from '@utils/icon';
@@ -37,6 +43,19 @@ export function renderGeneral(container) {
         const newVal = !globalSettings.fullscreen;
         toggleFullscreen(newVal);
         renderGeneral(container);
+      },
+    },
+    {
+      id: 'interface',
+      iconName: 'modes',
+      emoji: '🎨',
+      text: 'Интерфейс',
+      type: 'click',
+      onClick: () => {
+        openInterfaceSettings(globalSettings, (patch) => {
+          saveSentenceBarPosition(patch.sentenceBarPosition);
+          renderGeneral(container);
+        });
       },
     },
     {

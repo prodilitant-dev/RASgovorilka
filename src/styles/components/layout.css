@@ -14,3 +14,10 @@
   overflow: hidden;
   min-height: 0;
 }
+/* Верхняя панель — зеркало нижней, но с окантовкой снизу */
+.top-panel {
+  flex-shrink: 0;
+  background: var(--bg, #fff);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 8px;
+}

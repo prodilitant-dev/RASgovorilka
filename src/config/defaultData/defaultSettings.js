@@ -39,3 +39,11 @@ export const DEFAULT_GAMES_SETTINGS = {
     gridSize: 4,
   },
 };
+
+// Глобальные настройки приложения (сохраняются в IndexedDB в appData.globalSettings)
+export const DEFAULT_GLOBAL_SETTINGS = {
+  autoInflect: false,
+  voiceSettings: { rate: 1, pitch: 1, volume: 1, voiceURI: '' },
+  fullscreen: false,
+  sentenceBarPosition: 'bottom', // 'top' | 'bottom'
+};
