@@ -40,6 +40,12 @@
   -webkit-user-select: none;
 }
 
+/* Отступ под аватарку — только если аватарка реально есть внутри.
+   Формула: padding-left = left аватарки + ширина аватарки + зазор до текста. */
+.category:has(.cat-avatar) {
+  padding-left: 48px;
+}
+
 .category.active {
   background: var(--primary);
   color: #000;
@@ -100,18 +106,15 @@
 
 /* === Drag & Drop (Pointer Events) === */
 
-/* В режиме редактирования запрещаем скролл страницы по категории */
 body.editing-mode .category:not(.category-add) {
   -webkit-touch-callout: none;
   -webkit-user-drag: none;
 }
 
-/* Оригинал скрыт во время перетаскивания */
 .category.dragging {
   opacity: 0;
 }
 
-/* Ghost — визуальная копия под пальцем */
 .dragging-ghost.category {
   pointer-events: none;
   background: #e9ecef;
@@ -129,7 +132,6 @@ body.editing-mode .category:not(.category-add) {
   gap: var(--spacing-xs);
 }
 
-/* Placeholder — пунктирная плашка на месте, куда встанет */
 .sort-placeholder {
   border: 2px dashed var(--primary);
   border-radius: 20px;
@@ -163,21 +165,39 @@ body.editing-mode .category:not(.category-add) {
   justify-content: center;
 }
 
-/* === Аватарка категории === */
+/* ============================================================
+   АВАТАРКА КАТЕГОРИИ (в списке категорий Say-режима)
+   ============================================================
+   Абсолютно позиционирована: её размер НЕ влияет на высоту таблетки.
+   Меняешь размер — таблетка не двигается, аватарка просто свисает.
+
+   Как настроить:
+   - Размер: width / height ниже (например 32px → 40px)
+   - Сдвиг влево/вправо: left (6px по умолчанию)
+   - Отступ текста от аватарки: padding-left у .category:has(.cat-avatar) выше
+     Формула: padding-left = left + width + gap_до_текста
+
+   .category.active .cat-avatar--fallback — цвет фолбека на активной таблетке
+   ============================================================ */
 
 .cat-avatar {
-  width: 28px;
-  height: 28px;
+  position: absolute;
+  left: 0; /* ← прижата к левому краю */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   overflow: hidden;
-  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #e0e0e0;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #666;
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
 
 .cat-avatar--fallback {
@@ -194,13 +214,15 @@ body.editing-mode .category:not(.category-add) {
   -webkit-user-drag: none;
 }
 
-/* При активной категории фолбек должен смотреться на зелёном фоне */
+/* Фолбек на активной (зелёной) таблетке — чтобы буква не потерялась */
 .category.active .cat-avatar--fallback {
   background: rgba(0, 0, 0, 0.15);
   color: #000;
 }
 
-/* === Стратегии импорта: активное состояние === */
+/* ============================================================
+   СТРАТЕГИИ ИМПОРТА: активное состояние
+   ============================================================ */
 
 .category.is-active-strategy {
   background: var(--primary);
@@ -212,4 +234,8 @@ body.editing-mode .category:not(.category-add) {
   background: var(--danger);
   color: #fff;
   font-weight: 600;
+}
+
+.category.active .cat-avatar {
+  border: 2px solid var(--primary);
 }
