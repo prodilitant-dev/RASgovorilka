@@ -11,7 +11,7 @@ export function generateMemoryPairs(profile, categoryIds, gridSize) {
   if (allCards.length === 0) return [];
 
   const numPairs = (gridSize * gridSize) / 2;
-  let selected = [];
+  let selected;
 
   // Если карточек меньше, чем нужно пар, дублируем их случайным образом
   if (allCards.length < numPairs) {
