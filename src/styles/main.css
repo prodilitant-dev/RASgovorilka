@@ -1,44 +1,46 @@
+/* src/styles/main.css */
+
+/* === Базовое === */
 @import './variables.css';
 @import './reset.css';
 
-/* Компоненты */
-@import './components/header.css';
-@import './components/mode-bar.css';
-@import './components/categories.css';
-@import './components/grid.css';
-@import './components/card.css';
-@import './components/bottom-panel.css';
-@import './components/sentence-bar.css';
-@import './components/modal.css';
-@import './components/editor.css';
-@import './components/toggle.css';
-@import './components/toast.css';
-@import './components/editing.css';
-@import './components/buttons.css';
-@import './components/forms.css';
-@import './components/custom-select.css';
-@import './components/layout.css';
-@import './components/progress-bar.css';
-@import './components/vertical-editor.css';
-@import './components/image-cropper.css';
+/* === Layout: каркас страницы === */
+@import './layout/main-layout.css';
+@import './layout/header.css';
+@import './layout/mode-bar.css';
+@import './layout/bottom-panel.css';
 
-/* Режимы */
+/* === Cards: карточки, сетки, категории === */
+@import './cards/card.css';
+@import './cards/grid.css';
+@import './cards/categories.css';
+
+/* === Forms: кнопки и контролы === */
+@import './forms/buttons.css';
+@import './forms/forms.css';
+@import './forms/custom-select.css';
+@import './forms/toggle.css';
+
+/* === Modals: модальные окна === */
+@import './modals/modal.css';
+@import './modals/about-modal.css';
+@import './modals/editing.css';
+@import './modals/editor.css';
+
+/* === Editors: крупные редакторы === */
+@import './editor/vertical-editor.css';
+@import './editor/image-cropper.css';
+
+/* === Common: общие компоненты === */
+@import './common/sentence-bar.css';
+@import './common/progress-bar.css';
+@import './common/toast.css';
+@import './common/icon.css';
+@import './common/data-manager.css';
+@import './common/voice-settings.css';
+
+/* === Режимы === */
 @import './modes/profiles.css';
 @import './modes/settings.css';
-@import './modes/learning.css'; /* ✅ Добавить */
-@import './modes/games.css'; /* ✅ Добавить */
-
-@import './components/icon.css';
-@import './components/voice-settings.css';
-@import './components/about-modal.css';
-@import './components/data-manager.css';
-
-.main-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  overflow: hidden;
-  position: relative;
-  transition: transform 0.2s ease;
-}
+@import './modes/learning.css';
+@import './modes/games.css';
