@@ -199,3 +199,17 @@ body.editing-mode .category:not(.category-add) {
   background: rgba(0, 0, 0, 0.15);
   color: #000;
 }
+
+/* === Стратегии импорта: активное состояние === */
+
+.category.is-active-strategy {
+  background: var(--primary);
+  color: #000;
+  font-weight: 600;
+}
+
+.category.is-active-strategy-danger {
+  background: var(--danger);
+  color: #fff;
+  font-weight: 600;
+}

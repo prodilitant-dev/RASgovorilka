@@ -25,7 +25,12 @@
 }
 .card--active {
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px var(--primary);
+  background: rgba(76, 175, 80, 0.08);
+}
+
+.card--active .card__label {
+  background: rgba(76, 175, 80, 0.15);
+  color: #2e7d32;
 }
 .card--add {
   background: var(--primary-light);

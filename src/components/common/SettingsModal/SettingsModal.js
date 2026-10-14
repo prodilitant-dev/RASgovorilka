@@ -24,6 +24,14 @@ export function renderSettingsModal({
           const options =
             typeof field.options === 'function' ? field.options(profile) : field.options;
           options.forEach((opt) => {
+            const item = createElement('label', { className: 'checkbox-item' });
+
+            const labelText = createElement(
+              'span',
+              { className: 'checkbox-item__label' },
+              opt.label
+            );
+
             const cbWrap = createElement('label', { className: 'toggle-switch' });
             const cb = createElement('input', {
               type: 'checkbox',
@@ -34,10 +42,9 @@ export function renderSettingsModal({
             const slider = createElement('span', { className: 'slider' });
             cbWrap.appendChild(cb);
             cbWrap.appendChild(slider);
-            const labelText = createElement('span', {}, opt.label);
-            const item = createElement('div', { className: 'checkbox-item' });
-            item.appendChild(cbWrap);
+
             item.appendChild(labelText);
+            item.appendChild(cbWrap);
             container.appendChild(item);
           });
           input = container;

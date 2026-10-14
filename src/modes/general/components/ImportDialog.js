@@ -109,13 +109,9 @@ export function openImportDialog(importedData, manifest, onConfirm) {
       const strategyRow = createElement('div', {
         style: 'display:flex; gap:8px; margin:8px 0 12px 0;',
       });
-      const addBtn = createElement('div', { className: 'category active' }, '➕ Добавить');
+      const addBtn = createElement('div', { className: 'category' }, '➕ Добавить');
       const updateBtn = createElement('div', { className: 'category' }, '🔄 Обновить');
-      const overwriteBtn = createElement(
-        'div',
-        { className: 'category category-danger' },
-        '⚠️ Перезаписать'
-      );
+      const overwriteBtn = createElement('div', { className: 'category' }, '⚠️ Перезаписать');
       strategyRow.appendChild(addBtn);
       strategyRow.appendChild(updateBtn);
       strategyRow.appendChild(overwriteBtn);
@@ -130,10 +126,13 @@ export function openImportDialog(importedData, manifest, onConfirm) {
       function setActiveStrategy(strategy) {
         selectedStrategy = strategy;
         strategyButtons.forEach(({ el, value }) => {
+          el.classList.remove('is-active-strategy', 'is-active-strategy-danger');
           if (value === strategy) {
-            el.style.outline = '2px solid var(--primary)';
-          } else {
-            el.style.outline = 'none';
+            if (value === 'overwrite') {
+              el.classList.add('is-active-strategy-danger');
+            } else {
+              el.classList.add('is-active-strategy');
+            }
           }
         });
       }
