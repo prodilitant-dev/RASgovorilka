@@ -4,7 +4,7 @@ import { renderModeBar } from '@components/ModeBar/ModeBar';
 import { createMainArea } from '@components/MainArea/MainArea';
 import { getState, setState } from '@state/store';
 import { renderContent } from './contentRenderer';
-import { getProfileIcon, ensureActiveProfile } from '@app/helpers/profileHelpers';
+import { ensureActiveProfile } from '@app/helpers/profileHelpers';
 import {
   createProfileClickHandler,
   createProfileLongPressHandler,
@@ -32,15 +32,15 @@ export function renderApp() {
     return;
   }
 
-const handleProfileClick = createProfileClickHandler();
-const handleProfileLongPress = createProfileLongPressHandler();
+  const handleProfileClick = createProfileClickHandler();
+  const handleProfileLongPress = createProfileLongPressHandler();
 
-const { header, modeBarSlot } = createHeader({
-  profile: getActiveProfile(),
-  isEditing: state.editingMode,
-  onProfileClick: handleProfileClick,
-  onProfileLongPress: handleProfileLongPress,
-});
+  const { header, modeBarSlot } = createHeader({
+    profile: activeProfile,
+    isEditing: state.editingMode,
+    onProfileClick: handleProfileClick,
+    onProfileLongPress: handleProfileLongPress,
+  });
   app.appendChild(header);
 
   // Создаём основную область

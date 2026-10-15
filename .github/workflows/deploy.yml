@@ -24,7 +24,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install dependencies
@@ -39,7 +39,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          BASE_PATH: /RASgovorilka-TEST/
+          BASE_PATH: /RASgovorilka/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

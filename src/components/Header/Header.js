@@ -5,7 +5,7 @@ import { renderProfileIcon } from '@utils/profileIcon';
 import { logger } from '@utils/logger';
 
 export function createHeader({
-  profile,           // ← объект профиля или null
+  profile, // ← объект профиля или null
   isEditing = false, // режим редактирования
   onProfileClick,
   onProfileLongPress,

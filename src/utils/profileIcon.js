@@ -2,7 +2,6 @@
 import { createElement, clear } from '@utils/dom';
 import { iconUrl, isIconName } from '@utils/icon';
 import { getImageUrl } from '@services/imageService';
-import { logger } from '@utils/logger';
 
 function firstLetter(name) {
   if (!name) return '';
@@ -39,11 +38,7 @@ function applyImage(container, url, className) {
  * @param {string} [options.fallbackEmoji='👤']
  */
 export function renderProfileIcon(container, profile, options = {}) {
-  const {
-    isEditing = false,
-    iconClassName = 'profile-fab__icon',
-    fallbackEmoji = '👤',
-  } = options;
+  const { isEditing = false, iconClassName = 'profile-fab__icon', fallbackEmoji = '👤' } = options;
 
   // Режим редактирования → крестик close
   if (isEditing) {
