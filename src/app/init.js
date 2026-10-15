@@ -7,6 +7,7 @@ import { maybeEnableFullscreenOnFirstInteraction } from '@utils/fullscreen';
 import { resetDatabaseIfPending } from '@storage/db';
 import { logger } from '@utils/logger';
 import { toast } from '@utils/toast';
+import { initSpeech, warmUpSpeech, ensureVoicesLoaded } from '@utils/speech';
 
 /**
  * Обработка открытия файла .rasbackup через файловый менеджер.
@@ -50,6 +51,31 @@ function setupFileHandler() {
   logger.debug('File handler инициализирован');
 }
 
+/**
+ * Прогрев синтеза речи на первом user gesture.
+ * На Android Chrome speech без user gesture игнорируется, поэтому
+ * прогреваем при первом касании/клике.
+ */
+function setupSpeechWarmUp() {
+  if (!('speechSynthesis' in window)) return;
+
+  let done = false;
+  const handler = () => {
+    if (done) return;
+    done = true;
+    document.removeEventListener('pointerdown', handler, true);
+    document.removeEventListener('touchstart', handler, true);
+    document.removeEventListener('click', handler, true);
+    warmUpSpeech();
+  };
+
+  document.addEventListener('pointerdown', handler, true);
+  document.addEventListener('touchstart', handler, true);
+  document.addEventListener('click', handler, true);
+
+  logger.debug('Speech warm-up: waiting for first user interaction');
+}
+
 export async function initApp() {
   logger.debug('Initializing app');
 
@@ -60,7 +86,13 @@ export async function initApp() {
   }
 
   initKeyboardHandler();
+  initSpeech();
   setupFileHandler();
+  setupSpeechWarmUp();
+
+  // Не блокируем старт — голоса подгрузятся в фоне,
+  // если getVoices() изначально пуст.
+  ensureVoicesLoaded().catch(() => {});
 
   await loadInitialState();
 

@@ -4,30 +4,97 @@ import { getState } from '@state/store';
 
 let currentUtterance = null;
 
+// Кэш голосов и выбранного голоса
+let cachedVoices = [];
+let cachedVoice = null;
+let cachedVoiceURI = '';
+let warmUpDone = false;
+
 export function getVoices() {
-  return window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  if (!window.speechSynthesis) return [];
+  if (cachedVoices.length === 0) {
+    cachedVoices = window.speechSynthesis.getVoices() || [];
+  }
+  return cachedVoices;
 }
 
+/**
+ * Инициализация модуля синтеза речи.
+ * Вызывается один раз при старте приложения.
+ * Слушает voiceschanged, чтобы обновлять кэш при появлении/изменении голосов.
+ */
+export function initSpeech() {
+  if (!window.speechSynthesis) {
+    logger.warn('Speech synthesis not supported');
+    return;
+  }
+
+  cachedVoices = window.speechSynthesis.getVoices() || [];
+  logger.debug(`Speech init: ${cachedVoices.length} голосов`);
+
+  window.speechSynthesis.addEventListener('voiceschanged', () => {
+    cachedVoices = window.speechSynthesis.getVoices() || [];
+    logger.debug(`Speech voices updated: ${cachedVoices.length}`);
+    cachedVoice = null;
+  });
+}
+
+/**
+ * Ждёт загрузку голосов. Не блокирует UI — можно вызывать в фоне.
+ */
 export function ensureVoicesLoaded() {
   return new Promise((resolve) => {
+    if (!window.speechSynthesis) return resolve([]);
+
     const voices = getVoices();
-    if (voices.length > 0) {
-      resolve(voices);
-      return;
-    }
+    if (voices.length > 0) return resolve(voices);
+
     const onVoicesChanged = () => {
-      const newVoices = getVoices();
+      const newVoices = window.speechSynthesis.getVoices() || [];
       if (newVoices.length > 0) {
+        cachedVoices = newVoices;
         window.speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged);
         resolve(newVoices);
       }
     };
+
     window.speechSynthesis.addEventListener('voiceschanged', onVoicesChanged);
     setTimeout(() => {
       window.speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged);
-      resolve(getVoices());
-    }, 1000);
+      cachedVoices = window.speechSynthesis.getVoices() || [];
+      resolve(cachedVoices);
+    }, 1500);
   });
+}
+
+/**
+ * Прогрев движка синтеза. Делает тихий короткий speak, чтобы движок
+ * загрузил сэмплы в память. Без прогрева первый реальный speak тормозит
+ * (особенно на Android).
+ *
+ * ВАЖНО: вызывать только из user gesture (первый touch/click).
+ * На Android Chrome speech без user gesture игнорируется.
+ */
+export function warmUpSpeech() {
+  if (warmUpDone || !window.speechSynthesis) return;
+  warmUpDone = true;
+  try {
+    const u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0;
+    u.rate = 10;
+    u.lang = 'ru-RU';
+    window.speechSynthesis.speak(u);
+    setTimeout(() => {
+      try {
+        window.speechSynthesis.cancel();
+      } catch {
+        /* ignore */
+      }
+    }, 50);
+    logger.debug('Speech warm-up triggered');
+  } catch (err) {
+    logger.warn('Speech warm-up failed', err);
+  }
 }
 
 export function stopSpeech() {
@@ -38,14 +105,26 @@ export function stopSpeech() {
   }
 }
 
-/**
- * Синтез речи.
- * @param {string} text
- * @param {number} rate   — скорость 0.5–2.0
- * @param {number} pitch  — тональность 0.5–2.0
- * @param {number} volume — громкость 0–1
- * @param {string} voiceURI — URI голоса (пусто = системный)
- */
+function resolveVoice(voiceURI) {
+  if (cachedVoice && cachedVoiceURI === voiceURI) return cachedVoice;
+
+  const voices = getVoices();
+  if (voices.length === 0) return null;
+
+  let found = null;
+  if (voiceURI) {
+    found = voices.find((v) => v.voiceURI === voiceURI) || null;
+  }
+
+  if (!found) {
+    found = voices.find((v) => v.lang && v.lang.startsWith('ru')) || voices[0] || null;
+  }
+
+  cachedVoice = found;
+  cachedVoiceURI = voiceURI;
+  return found;
+}
+
 export function speak(text, rate = 1, pitch = 1, volume = 1, voiceURI = '') {
   if (!window.speechSynthesis) {
     logger.warn('Speech synthesis not supported');
@@ -66,11 +145,8 @@ export function speak(text, rate = 1, pitch = 1, volume = 1, voiceURI = '') {
   utterance.pitch = pitch;
   utterance.volume = volume;
 
-  if (voiceURI) {
-    const voices = getVoices();
-    const found = voices.find((v) => v.voiceURI === voiceURI);
-    if (found) utterance.voice = found;
-  }
+  const voice = resolveVoice(voiceURI);
+  if (voice) utterance.voice = voice;
 
   utterance.onend = () => {
     currentUtterance = null;
@@ -85,12 +161,6 @@ export function speak(text, rate = 1, pitch = 1, volume = 1, voiceURI = '') {
   window.speechSynthesis.speak(utterance);
 }
 
-/**
- * Синтез речи с настройками из текущего стейта.
- * Читает `state.globalSettings.voiceSettings`.
- *
- * @param {string} text
- */
 export function speakFromState(text) {
   const state = getState();
   const vs = state.globalSettings?.voiceSettings || {};
