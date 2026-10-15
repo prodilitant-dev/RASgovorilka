@@ -45,7 +45,7 @@ export function openInterfaceHub(onClose) {
       grid.appendChild(
         createTile({
           id: 'modes',
-          iconName: 'modes',
+          iconName: 'modes-set',
           fallbackEmoji: '📋',
           text: 'Режимы',
           onClick: () => {
@@ -59,7 +59,7 @@ export function openInterfaceHub(onClose) {
       grid.appendChild(
         createTile({
           id: 'sentence-bar',
-          iconName: 'edit',
+          iconName: 'panel',
           fallbackEmoji: '📐',
           text: 'Панель предложения',
           onClick: () => {
@@ -90,7 +90,7 @@ export function openInterfaceHub(onClose) {
       grid.appendChild(
         createTile({
           id: 'voice',
-          iconName: 'voice',
+          iconName: 'voice-set',
           fallbackEmoji: '🔊',
           text: 'Голос',
           onClick: () => {
