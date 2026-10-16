@@ -3,7 +3,7 @@ import { loadInitialState } from '@state/actions';
 import { renderApp } from './render';
 import { setContainers, subscribeToStore } from './sync';
 import { initKeyboardHandler } from '@utils/keyboardHandler';
-import { maybeEnableFullscreenOnFirstInteraction } from '@utils/fullscreen';
+import { initFullscreenManager } from '@utils/fullscreen';
 import { resetDatabaseIfPending } from '@storage/db';
 import { logger } from '@utils/logger';
 import { toast } from '@utils/toast';
@@ -96,7 +96,7 @@ export async function initApp() {
 
   await loadInitialState();
 
-  maybeEnableFullscreenOnFirstInteraction();
+  initFullscreenManager();
 
   const { modeBarSlot, mainArea } = renderApp();
   setContainers(modeBarSlot, mainArea);

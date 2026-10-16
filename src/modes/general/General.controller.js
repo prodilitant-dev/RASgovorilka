@@ -29,6 +29,9 @@ function updateModeBar() {
   );
 }
 
+import { syncFullscreenState } from '@utils/fullscreen';
+// (добавь в шапку файла)
+
 export function toggleFullscreen(enabled) {
   if (enabled) {
     document.documentElement.requestFullscreen?.().catch(() => {});
@@ -36,6 +39,9 @@ export function toggleFullscreen(enabled) {
     document.exitFullscreen?.().catch(() => {});
   }
   saveSetting('fullscreen', enabled);
+  // Синхронизируем менеджер fullscreen: если включили — поставит обработчик,
+  // если выключили — снимет.
+  syncFullscreenState();
 }
 
 export function saveSetting(key, value) {
