@@ -12,15 +12,162 @@
     Программа распространяется БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ.
     Подробности — в файле LICENSE.
   -->
+
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <title>РАСговорилка</title>
-    <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
+
+    <title>РАСговорилка — бесплатный офлайн-коммуникатор для детей с РАС</title>
+
+    <meta
+      name="description"
+      content="РАСговорилка — бесплатное веб-приложение и PWA для альтернативной коммуникации (AAC) с детьми с расстройствами аутистического спектра. Работает офлайн, без рекламы и регистрации. Карточки, режимы «Да/Нет», расписание, игры, синтез речи."
+    />
+    <meta
+      name="keywords"
+      content="РАС, аутизм, AAC, коммуникатор, альтернативная коммуникация, PWA, офлайн, дети, РАСговорилка, autism, speech"
+    />
+    <meta name="author" content="Виталий (prodilitant-dev)" />
+    <meta name="robots" content="index, follow" />
+    <meta name="google-site-verification" content="rGpMjjSyGXN2Cj8txdG_RV7CN_gyQYfpXGWjtizoEBs" />
+    <meta name="theme-color" content="#4caf50" />
+
+    <!-- Open Graph (Facebook, VK, Telegram) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="РАСговорилка" />
+    <meta
+      property="og:title"
+      content="РАСговорилка — бесплатный офлайн-коммуникатор для детей с РАС"
+    />
+    <meta
+      property="og:description"
+      content="Бесплатное PWA-приложение для альтернативной коммуникации с детьми с РАС. Работает офлайн, без рекламы и регистрации."
+    />
+    <meta property="og:url" content="%%SITE_URL%%/" />
+    <meta property="og:image" content="%%SITE_URL%%/icon-512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:locale" content="ru_RU" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="РАСговорилка — бесплатный офлайн-коммуникатор для детей с РАС"
+    />
+    <meta
+      name="twitter:description"
+      content="Бесплатное PWA-приложение для альтернативной коммуникации с детьми с РАС. Работает офлайн."
+    />
+    <meta name="twitter:image" content="%%SITE_URL%%/icon-512.png" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="%%SITE_URL%%/" />
+
+    <!-- Иконки и манифест -->
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <link rel="alternate icon" type="image/png" href="%BASE_URL%icon-192.png" />
     <link rel="apple-touch-icon" href="%BASE_URL%icon-192.png" />
+
+    <!-- JSON-LD: Schema.org разметка -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "SoftwareApplication",
+            "@id": "%%SITE_URL%%/#app",
+            "name": "РАСговорилка",
+            "alternateName": "RASgovorilka",
+            "description": "Бесплатное PWA-приложение для альтернативной коммуникации (AAC) с детьми с расстройствами аутистического спектра. Работает офлайн.",
+            "url": "%%SITE_URL%%/",
+            "applicationCategory": "EducationalApplication",
+            "applicationSubCategory": "AAC",
+            "operatingSystem": "Web, Android",
+            "inLanguage": "ru",
+            "isAccessibleForFree": true,
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "RUB"
+            },
+            "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+            "image": "%%SITE_URL%%/icon-512.png",
+            "screenshot": "%%SITE_URL%%/icon-512.png",
+            "author": {
+              "@type": "Person",
+              "name": "Виталий (prodilitant-dev)",
+              "url": "https://github.com/prodilitant-dev"
+            },
+            "codeRepository": "https://github.com/prodilitant-dev/RASgovorilka"
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "%%SITE_URL%%/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "РАСговорилка — это бесплатно?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Да, приложение полностью бесплатное. Без рекламы, без подписок, без встроенных покупок. Исходный код открыт под лицензией GPLv3."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Работает ли приложение без интернета?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Да. РАСговорилка — это PWA, которое устанавливается на устройство и работает полностью офлайн. Интернет нужен только для первой установки или обновления."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Нужна ли регистрация?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Нет. Регистрация не требуется. Все данные хранятся локально на устройстве пользователя в IndexedDB и никуда не отправляются."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Безопасно ли приложение для ребёнка?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Да. Приложение не собирает персональные данные, не показывает рекламу и не имеет внешних ссылок внутри интерфейса. Все данные остаются на устройстве."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Подходит ли приложение для неговорящего ребёнка?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Да, РАСговорилка создана именно для этого. Ребёнок нажимает на карточки с картинками и текстом, а приложение озвучивает получившуюся фразу с помощью синтеза речи."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "На каких устройствах работает РАСговорилка?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Приложение работает в любом современном браузере: Android, Windows, macOS, Linux, а также может быть установлено как PWA на домашний экран. На iOS поддержка ограничена."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Как добавить свои карточки?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "В режиме редактирования можно создавать новые категории и карточки, загружать собственные изображения (с камеры или из галереи), задавать слова и их падежные формы."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
+
     <style>
       body {
         margin: 0;
