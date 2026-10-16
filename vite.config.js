@@ -13,6 +13,47 @@ const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf-8'));
 const rawBase = process.env.BASE_PATH || '/RASgovorilka/';
 const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
 
+/**
+ * Плагин: генерирует robots.txt и sitemap.xml с правильным URL,
+ * а также подставляет %%SITE_URL%% в index.html.
+ * Работает и в TEST-репо, и в main — автоматически на основе base.
+ */
+function seoPlugin(basePath) {
+  const siteUrl = `https://prodilitant-dev.github.io${basePath.replace(/\/$/, '')}`;
+
+  return {
+    name: 'seo-files',
+
+    transformIndexHtml(html) {
+      return html.replace(/%%SITE_URL%%/g, siteUrl);
+    },
+
+    generateBundle() {
+      this.emitFile({
+        type: 'asset',
+        fileName: 'robots.txt',
+        source: ['User-agent: *', 'Allow: /', '', `Sitemap: ${siteUrl}/sitemap.xml`, ''].join('\n'),
+      });
+
+      this.emitFile({
+        type: 'asset',
+        fileName: 'sitemap.xml',
+        source: [
+          '<?xml version="1.0" encoding="UTF-8"?>',
+          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+          '  <url>',
+          `    <loc>${siteUrl}/</loc>`,
+          '    <changefreq>weekly</changefreq>',
+          '    <priority>1.0</priority>',
+          '  </url>',
+          '</urlset>',
+          '',
+        ].join('\n'),
+      });
+    },
+  };
+}
+
 export default defineConfig({
   base,
   root: resolve(root, 'src'),
@@ -24,6 +65,7 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(pkg.version),
   },
   plugins: [
+    seoPlugin(base),
     VitePWA({
       manifest: false,
       registerType: 'prompt',
