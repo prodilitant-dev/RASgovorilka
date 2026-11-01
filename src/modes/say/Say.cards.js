@@ -29,26 +29,31 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
     onReorder: editing ? (newOrder) => onReorder(newOrder, categoryId) : null,
   });
 
+  // Выносим функцию создания карточки, чтобы использовать и в кнопке "+", и в долгом тапе
+  const createNewCard = () => {
+    const newCard = { id: uid(), text: '', emoji: '', wordType: 'noun', forms: {} };
+    openCardEditor(
+      newCard,
+      (savedCard, done) => {
+        if (!savedCard.text.trim()) {
+          toast('Введите текст', 'error');
+          done();
+          return;
+        }
+        profile.cards[categoryId].push(savedCard);
+        saveProfile(profile);
+        renderCards(container, profile, categoryId, onCardClick, onReorder);
+        toast('Карточка добавлена');
+        done();
+      },
+      null
+    );
+  };
+
   const eventsCleanup = attachGridEvents(grid, {
     onClick: (id) => {
       if (id === 'add') {
-        const newCard = { id: uid(), text: '', emoji: '', wordType: 'noun', forms: {} };
-        openCardEditor(
-          newCard,
-          (savedCard, done) => {
-            if (!savedCard.text.trim()) {
-              toast('Введите текст', 'error');
-              done();
-              return;
-            }
-            profile.cards[categoryId].push(savedCard);
-            saveProfile(profile);
-            renderCards(container, profile, categoryId, onCardClick, onReorder);
-            toast('Карточка добавлена');
-            done();
-          },
-          null
-        );
+        createNewCard();
         return;
       }
 
@@ -60,8 +65,57 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
 
       if (onCardClick) onCardClick(id, categoryId);
     },
-    onLongPress: null,
+    onLongPress: null, // Оставляем null, так как логика ниже
   });
+
+  // === ЛОГИКА ДОЛГОГО НАЖАТИЯ (5 СЕК) НА ПУСТОЕ МЕСТО ===
+  let longPressTimer = null;
+  let startX = 0;
+  let startY = 0;
+
+  const onTouchStart = (e) => {
+    // Не срабатывает в режиме редактирования
+    if (editing) return;
+    // Игнорируем, если нажали на карточку (нужно только пустое место)
+    if (e.target.closest('.card')) return;
+
+    const touch = e.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+
+    longPressTimer = setTimeout(() => {
+      longPressTimer = null;
+      // Легкая вибрация для отклика, чтобы понять, что таймер сработал
+      if (navigator.vibrate) navigator.vibrate(50);
+      createNewCard();
+    }, 5000); // 5 секунд
+  };
+
+  const onTouchMove = (e) => {
+    if (!longPressTimer) return;
+    const touch = e.touches[0];
+    const dx = touch.clientX - startX;
+    const dy = touch.clientY - startY;
+
+    // Если сдвинули палец больше чем на 10px (скролл или свайп) — отменяем
+    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+    }
+  };
+
+  const onTouchEnd = () => {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+    }
+  };
+
+  // Вешаем слушатели на сетку
+  grid.addEventListener('touchstart', onTouchStart, { passive: true });
+  grid.addEventListener('touchmove', onTouchMove, { passive: true });
+  grid.addEventListener('touchend', onTouchEnd, { passive: true });
+  grid.addEventListener('touchcancel', onTouchEnd, { passive: true });
 
   function editCard(card) {
     openCardEditor(
@@ -85,12 +139,20 @@ export function renderCards(container, profile, categoryId, onCardClick, onReord
 
   // Единый cleanup карточек
   container._cardsCleanup = () => {
-    // grid cleanup — drag&drop от renderGrid
     if (typeof container._gridCleanup === 'function') {
       container._gridCleanup();
       container._gridCleanup = null;
     }
-    // events cleanup — клики от attachGridEvents
     eventsCleanup();
+
+    // Очищаем таймер и слушатели долгого тапа
+    grid.removeEventListener('touchstart', onTouchStart);
+    grid.removeEventListener('touchmove', onTouchMove);
+    grid.removeEventListener('touchend', onTouchEnd);
+    grid.removeEventListener('touchcancel', onTouchEnd);
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+    }
   };
 }
