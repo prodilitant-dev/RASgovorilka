@@ -1,10 +1,14 @@
 // src/modes/schedule/Schedule.editor.js
 import { openVerticalEditor } from '@components/common/VerticalEditor';
 import { toast } from '@utils/toast';
+import { findBankItem } from '@utils/cardBank'; // <-- ДОБАВИЛИ ИМПОРТ
 
 export function openEventEditor(eventData, onSave, onDelete) {
   const isNew = !eventData || !eventData.id;
-  const entity = isNew ? { time: '12:00', text: '', icon: '📌', imageId: null } : { ...eventData };
+  // Убрали дефолтный '📌', чтобы он не перекрывал картинку из банка
+  const entity = isNew
+    ? { time: '12:00', text: '', icon: '', imageId: null, imagePath: null }
+    : { ...eventData };
 
   openVerticalEditor({
     title: isNew ? 'Новое событие' : 'Редактировать событие',
@@ -18,7 +22,6 @@ export function openEventEditor(eventData, onSave, onDelete) {
         toast('Введите описание', 'error');
         return close(new Error('Validation'));
       }
-      // Явно передаем imageId
       onSave({ ...updated, imageId: updated.imageId || null });
       close();
     },
@@ -43,11 +46,26 @@ export function openEventEditor(eventData, onSave, onDelete) {
         type: 'text',
         required: true,
         placeholder: 'Например: Завтрак',
+        // ДОБАВИЛИ АВТОПОИСК
+        onChange: (value, ent) => {
+          if (!ent.imageId) {
+            const bankItem = findBankItem(value);
+            if (bankItem) {
+              ent.imagePath = `cards/${bankItem.category}/${bankItem.filename}`;
+              ent.filename = bankItem.filename;
+              ent.category = bankItem.category;
+              ent.icon = ''; // Очищаем эмодзи, чтобы не было конфликта
+            } else {
+              ent.imagePath = null; // Если нет совпадения, сбрасываем
+            }
+          }
+        },
       },
       {
         id: 'icon',
         label: 'Иконка (эмодзи)',
         type: 'text',
+        // Прячем поле, если найдена картинка в банке или загружено фото
         visible: (entity) => !entity.imageId && !entity.imagePath,
       },
     ],
