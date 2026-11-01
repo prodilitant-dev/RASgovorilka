@@ -45,6 +45,7 @@ export function renderScheduleView(
       text: `${event.time || ''} ${event.text || ''}`.trim(),
       emoji: event.icon || '📌',
       imageId: event.imageId || null,
+      imagePath: event.imagePath || null, // <--- ДОБАВИЛИ ЭТУ СТРОЧКУ
       isActive: false,
       isAdd: false,
       draggable: editingMode,

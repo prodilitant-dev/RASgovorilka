@@ -16,11 +16,11 @@
 }
 
 .profile-fab {
-  position: absolute; /* Вырываем из потока */
-  right: 12px; /* Прижимаем к правому краю */
+  position: absolute;
+  right: 12px;
   top: 50%;
-  transform: translateY(-50%); /* Центрируем по вертикали */
-  z-index: 20; /* Поверх всего */
+  transform: translateY(-50%);
+  z-index: 20;
 
   border: 1px solid var(--border);
   border-radius: 50%;
@@ -33,12 +33,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  /* ДОБАВЛЕНО: обрезаем всё, что вылезает за круглые края */
+  overflow: hidden;
+  padding: 0; /* Убираем стандартные отступы кнопки, если они есть */
 }
 
 .profile-fab__icon {
-  width: 2rem;
-  height: 2rem;
-  object-fit: contain;
+  /* ДОБАВЛЕНО: растягиваем картинку на весь размер кнопки */
+  width: 100%;
+  height: 100%;
+  /* ДОБАВЛЕНО: заставляем картинку заполнить круг без искажений */
+  object-fit: cover;
   display: block;
   pointer-events: none;
   -webkit-user-drag: none;

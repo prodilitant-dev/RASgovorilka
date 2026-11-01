@@ -12,13 +12,14 @@ export function openEventEditor(eventData, onSave, onDelete) {
     onSave: (updated, close) => {
       if (!updated.time) {
         toast('Введите время', 'error');
-        return;
+        return close(new Error('Validation'));
       }
       if (!updated.text || !updated.text.trim()) {
         toast('Введите описание', 'error');
-        return;
+        return close(new Error('Validation'));
       }
-      onSave(updated);
+      // Явно передаем imageId
+      onSave({ ...updated, imageId: updated.imageId || null });
       close();
     },
     onDelete: isNew
@@ -47,8 +48,7 @@ export function openEventEditor(eventData, onSave, onDelete) {
         id: 'icon',
         label: 'Иконка (эмодзи)',
         type: 'text',
-        // placeholder убран — серый «📌» путал пользователя
-        visible: (entity) => !entity.imageId,
+        visible: (entity) => !entity.imageId && !entity.imagePath,
       },
     ],
     buttons: [

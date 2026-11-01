@@ -34,6 +34,7 @@ export function openProfileSwitchModal(onProfileSwitched) {
           text: prof.name,
           emoji: prof.icon || '',
           imageId: prof.imageId || null,
+          imagePath: prof.imagePath || null,
           active: prof.id === activeId,
         }));
 

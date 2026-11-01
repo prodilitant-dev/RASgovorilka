@@ -19,7 +19,7 @@ export function initSW() {
   isInitialized = true;
 
   updateSWFn = registerSW({
-    immediate: true,
+    immediate: false,
     onNeedRefresh() {
       hasUpdate = true;
       logger.info('[SW] Доступно обновление');

@@ -72,6 +72,14 @@ export function renderProfileIcon(container, profile, options = {}) {
     return;
   }
 
+  if (profile.imagePath) {
+    clear(container);
+    const base = import.meta.env.BASE_URL || '/';
+    const url = base.endsWith('/') ? `${base}${profile.imagePath}` : `${base}/${profile.imagePath}`;
+    applyImage(container, url, iconClassName);
+    return;
+  }
+
   applyFallback(container, profile, iconClassName, fallbackEmoji);
 }
 

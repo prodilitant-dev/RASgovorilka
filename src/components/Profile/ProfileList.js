@@ -10,8 +10,9 @@ export function renderProfileList(
   const items = profiles.map((p) => ({
     id: p.id,
     text: p.name,
-    emoji: p.icon || '', // ← было '🧑'
-    imageId: p.imageId || null, // ← новое
+    emoji: p.icon || '',
+    imageId: p.imageId || null,
+    imagePath: p.imagePath || null,
     active: p.id === activeId,
   }));
 

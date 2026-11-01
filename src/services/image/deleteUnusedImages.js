@@ -9,10 +9,16 @@ import { logger } from '@utils/logger';
  * @param {Object} profile - профиль пользователя
  * @returns {Set<string>}
  */
+
 function collectUsedImageIds(profile) {
   const used = new Set();
 
-  // 1. Карточки во всех категориях
+  // 1. Иконка самого профиля
+  if (profile.imageId) {
+    used.add(profile.imageId);
+  }
+
+  // 2. Карточки во всех категориях
   for (const categoryId in profile.cards) {
     const cards = profile.cards[categoryId] || [];
     cards.forEach((card) => {
@@ -20,17 +26,17 @@ function collectUsedImageIds(profile) {
     });
   }
 
-  // 2. Быстрые кнопки
+  // 3. Быстрые кнопки
   (profile.quickButtons || []).forEach((btn) => {
     if (btn.imageId) used.add(btn.imageId);
   });
 
-  // 3. Кнопки Да/Нет
+  // 4. Кнопки Да/Нет
   (profile.yesnoButtons || []).forEach((btn) => {
     if (btn.imageId) used.add(btn.imageId);
   });
 
-  // 4. События расписания
+  // 5. События расписания
   (profile.scheduleTemplates || []).forEach((template) => {
     (template.events || []).forEach((event) => {
       if (event.imageId) used.add(event.imageId);

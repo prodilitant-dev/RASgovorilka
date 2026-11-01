@@ -5,7 +5,8 @@ import { uid } from '@utils/id';
 
 export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel }) {
   const isNew = !profile?.id;
-  const entity = profile || { id: uid(), name: '', icon: 'profiles' };
+  // imageId: null по умолчанию
+  const entity = profile || { id: uid(), name: '', icon: 'profile-default', imageId: null };
   const workingEntity = { ...entity };
 
   const config = {
@@ -14,9 +15,9 @@ export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel 
     onSave: (updated, done) => {
       if (!updated.name || !updated.name.trim()) {
         toast('Введите имя профиля', 'error');
-        done();
-        return;
+        return done(new Error('Validation'));
       }
+      // Передаем обновленные данные
       onSave(updated, done);
     },
     onDelete: (entity, close) => {
@@ -36,13 +37,8 @@ export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel 
         required: true,
         placeholder: 'Введите имя профиля...',
       },
-      {
-        id: 'icon',
-        label: 'Иконка (эмодзи)',
-        type: 'text',
-        // placeholder убран — серый «🧑» путал пользователя
-        visible: () => true,
-      },
+      // Поле 'icon' (Иконка эмодзи) полностью удалено.
+      // Остается только загрузка фото через превью.
     ],
     extraActions: [],
     buttons: (() => {

@@ -41,8 +41,9 @@ export async function renderProfiles(container) {
         openProfileEditor(null, {
           onSave: async (updatedEntity, done) => {
             const newProfile = createDefaultProfile(updatedEntity.name, updatedEntity.icon);
-            // Переносим все поля, которые мог задать пользователь
-            if (updatedEntity.imageId) newProfile.imageId = updatedEntity.imageId;
+
+            Object.assign(newProfile, updatedEntity);
+
             data.profiles.push(newProfile);
             data.activeProfileId = newProfile.id;
             await saveAppData(data);
