@@ -1,0 +1,12 @@
+// Сгенерировано автоматически из src/config/cards_data.json
+
+export const REZHIM = [
+  { word: "мультики", filename: "мультики.webp", category: "rezhim", emoji: "🖼️", wordType: null, gender: null, synonyms: [], variants: ["мультики_2.webp"] },
+  { word: "отдыхать", filename: "отдыхать.webp", category: "rezhim", emoji: "🏖️", wordType: "verb", gender: null, synonyms: ["сон","отдых"], variants: ["отдыхать_2.webp"] },
+  { word: "помоги", filename: "помоги.webp", category: "rezhim", emoji: "🖼️", wordType: null, gender: null, synonyms: [], variants: ["помоги_2.webp"] },
+  { word: "смотреть тв", filename: "смотреть_тв.webp", category: "rezhim", emoji: "🖼️", wordType: null, gender: null, synonyms: [], variants: ["смотреть_тв_2.webp"] },
+  { word: "умываться", filename: "умываться.webp", category: "rezhim", emoji: "🧼", wordType: "verb", gender: null, synonyms: ["вода","мыло"], variants: ["умываться_2.webp"] },
+  { word: "учиться", filename: "учиться.webp", category: "rezhim", emoji: "📚", wordType: "verb", gender: null, synonyms: ["школа","урок"], variants: ["учиться_2.webp","учиться_3.webp","учиться_4.webp"] },
+  { word: "чистить зубы", filename: "чистить_зубы.webp", category: "rezhim", emoji: "🖼️", wordType: null, gender: null, synonyms: [], variants: ["чистить_зубы_2.webp","чистить_зубы_3.webp","чистить_зубы_4.webp"] },
+  { word: "читать", filename: "читать.webp", category: "rezhim", emoji: "📖", wordType: "verb", gender: null, synonyms: ["книга","буквы"], variants: ["читать_2.webp"] }
+];

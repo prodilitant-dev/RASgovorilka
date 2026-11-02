@@ -1,0 +1,73 @@
+/* src/styles/modes/schedule.css */
+
+/* =========================================
+   МОДАЛКА УПРАВЛЕНИЯ ШАБЛОНАМИ РАСПИСАНИЯ
+   ========================================= */
+
+.schedule-tmpl-list {
+  margin-bottom: 20px;
+}
+
+.schedule-tmpl-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.schedule-tmpl-name {
+  flex: 1;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.schedule-tmpl-name:hover {
+  color: var(--primary);
+}
+
+.schedule-tmpl-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.schedule-mapping-title {
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-size: 1.1em;
+}
+
+.schedule-map-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.schedule-map-label {
+  min-width: 100px;
+}
+
+.schedule-map-select {
+  flex: 1;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* Список событий внутри шаблона */
+.schedule-event-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-event-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}

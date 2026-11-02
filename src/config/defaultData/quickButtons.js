@@ -4,6 +4,6 @@ export const QUICK_BUTTONS = [
   { text: 'Хочу', emoji: '🤩', wordType: 'other' },
   { text: 'Помоги', emoji: '🆘', wordType: 'other' },
   { text: 'Дай', emoji: '🤲', wordType: 'other' },
-  { text: 'Хватит', emoji: '✋', wordType: 'other' },
+  { text: 'Стоп', emoji: '✋', wordType: 'other' },
   { text: 'Не хочу', emoji: '🙅', wordType: 'other' },
 ];

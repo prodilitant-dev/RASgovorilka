@@ -2,7 +2,6 @@
 import { Modal } from '@components/common/Modal/Modal';
 import { createElement, on } from '@utils/dom';
 import { toast } from '@utils/toast';
-import { uid } from '@utils/id';
 import { confirm } from '@utils/dialog';
 import { openEventEditor } from './Schedule.editor';
 import { saveProfile } from '@storage/appStorage';
@@ -41,24 +40,24 @@ export function openTemplateManager(profile, onUpdate) {
     body: () => {
       const wrap = createElement('div', {});
 
-      const list = createElement('div', { className: 'template-list' });
+      // === СПИСОК ШАБЛОНОВ ===
+      const list = createElement('div', { className: 'schedule-tmpl-list' });
       profile.scheduleTemplates.forEach((tmpl) => {
-        const row = createElement('div', {
-          className: 'template-row',
-          style:
-            'display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border);',
-        });
+        const row = createElement('div', { className: 'schedule-tmpl-row' });
+        
         const nameSpan = createElement(
           'span',
-          { className: 'cursor-pointer', style: 'flex:1; cursor:pointer; font-weight:500;' },
+          { className: 'schedule-tmpl-name' },
           tmpl.name || 'Без названия'
         );
+        
         on(nameSpan, 'click', () => {
           modal.close();
           openTemplateEventsEditor(profile, tmpl.id, onUpdate);
         });
 
-        const actions = createElement('div', { style: 'display:flex; gap:6px;' });
+        const actions = createElement('div', { className: 'schedule-tmpl-actions' });
+        
         const editBtn = createIconButton({
           iconName: 'edit',
           fallbackEmoji: '✏️',
@@ -70,6 +69,7 @@ export function openTemplateManager(profile, onUpdate) {
             openTemplateEventsEditor(profile, tmpl.id, onUpdate);
           },
         });
+        
         const delBtn = createIconButton({
           iconName: 'delete',
           fallbackEmoji: '🗑️',
@@ -80,6 +80,7 @@ export function openTemplateManager(profile, onUpdate) {
             deleteTemplate(profile, tmpl.id, onUpdate, modal);
           },
         });
+        
         actions.appendChild(editBtn);
         actions.appendChild(delBtn);
         row.appendChild(nameSpan);
@@ -88,27 +89,29 @@ export function openTemplateManager(profile, onUpdate) {
       });
       wrap.appendChild(list);
 
+      // === ПРИВЯЗКА К ДНЯМ ===
       const mappingTitle = createElement(
         'h4',
-        { className: 'mt-4', style: 'margin-top:16px;' },
+        { className: 'schedule-mapping-title' },
         'Привязка к дням недели'
       );
       wrap.appendChild(mappingTitle);
 
       DAY_ORDER.forEach(({ name: dayName, dow }) => {
-        const row = createElement('div', {
-          className: 'd-flex align-items-center gap-3 py-1',
-          style: 'display:flex; align-items:center; gap:12px; padding:4px 0;',
-        });
-        const label = createElement('span', { style: 'min-width:100px;' }, dayName);
-        const select = createElement('select', { style: 'flex:1; padding:4px;' });
+        const row = createElement('div', { className: 'schedule-map-row' });
+        
+        const label = createElement('span', { className: 'schedule-map-label' }, dayName);
+        const select = createElement('select', { className: 'schedule-map-select' });
+        
         const noneOpt = createElement('option', { value: '' }, '—');
         select.appendChild(noneOpt);
+        
         profile.scheduleTemplates.forEach((tmpl) => {
           const opt = createElement('option', { value: tmpl.id }, tmpl.name);
           if (profile.scheduleDayMapping?.[dow] === tmpl.id) opt.selected = true;
           select.appendChild(opt);
         });
+        
         on(select, 'change', () => {
           const val = select.value;
           if (val) {
@@ -119,6 +122,7 @@ export function openTemplateManager(profile, onUpdate) {
           saveProfile(profile);
           toast('Привязка сохранена');
         });
+        
         row.appendChild(label);
         row.appendChild(select);
         wrap.appendChild(row);
@@ -146,7 +150,7 @@ function openTemplateEventsEditor(profile, templateId, onUpdate) {
     body: () => {
       const wrap = createElement('div', {});
 
-      const list = createElement('div', { className: 'event-list' });
+      const list = createElement('div', { className: 'schedule-event-list' });
       if (template.events.length === 0) {
         const empty = createElement(
           'div',
@@ -156,18 +160,20 @@ function openTemplateEventsEditor(profile, templateId, onUpdate) {
         list.appendChild(empty);
       } else {
         template.events.forEach((event) => {
-          const row = createElement('div', {
-            className: 'event-row',
-            style:
-              'display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border);',
-          });
-          const info = createElement(
-            'span',
-            {},
-            `${event.time || ''} ${event.icon || '📌'} ${event.text || ''}`
-          );
-          const actions = createElement('div', { style: 'display:flex; gap:6px;' });
+          const row = createElement('div', { className: 'schedule-event-row' });
+          
+          // Если есть картинка, показываем её маленькую копию (или эмодзи)
+          let previewText = `${event.time || ''} `;
+          if (event.imagePath) {
+             // Показываем текст, а картинка идет в фоне или рядом (можно добавить <img>)
+             previewText += `[img] ${event.text || ''}`;
+          } else {
+             previewText += `${event.icon || '📌'} ${event.text || ''}`;
+          }
 
+          const info = createElement('span', {}, previewText);
+          const actions = createElement('div', { className: 'schedule-tmpl-actions' });
+          
           const editBtn = createIconButton({
             iconName: 'edit',
             fallbackEmoji: '✏️',
@@ -199,13 +205,11 @@ function openTemplateEventsEditor(profile, templateId, onUpdate) {
             className: 'category category-danger',
             ariaLabel: 'Удалить событие',
             onClick: () => {
-              if (confirm('Удалить событие?')) {
-                template.events = template.events.filter((e) => e.id !== event.id);
-                saveProfile(profile);
-                toast('Событие удалено');
-                openTemplateEventsEditor(profile, templateId, onUpdate);
-              }
-            },
+               template.events = template.events.filter((e) => e.id !== event.id);
+               saveProfile(profile);
+               toast('Событие удалено');
+               openTemplateEventsEditor(profile, templateId, onUpdate);
+            }
           });
 
           actions.appendChild(editBtn);
@@ -216,31 +220,9 @@ function openTemplateEventsEditor(profile, templateId, onUpdate) {
         });
       }
       wrap.appendChild(list);
-
-      const addBtn = createElement('div', { className: 'category active' }, '➕ Добавить событие');
-      on(addBtn, 'click', () => {
-        modal.close();
-        openEventEditor(null, (newData) => {
-          const newEvent = { id: uid(), ...newData };
-          template.events.push(newEvent);
-          saveProfile(profile);
-          toast('Событие добавлено');
-          openTemplateEventsEditor(profile, templateId, onUpdate);
-        });
-      });
-      wrap.appendChild(addBtn);
-
       return wrap;
     },
-    buttons: [
-      {
-        label: 'Назад',
-        action: () => {
-          modal.close();
-          openTemplateManager(profile, onUpdate);
-        },
-      },
-    ],
+    buttons: [],
   });
   modal.open();
 }
@@ -259,3 +241,4 @@ async function deleteTemplate(profile, templateId, onUpdate, modal) {
   modal.close();
   openTemplateManager(profile, onUpdate);
 }
+

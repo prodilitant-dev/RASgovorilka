@@ -1,0 +1,15 @@
+// Сгенерировано автоматически из src/config/cards_data.json
+
+export const MORSKIE_ZHIVOTNIE = [
+  { word: "акула", filename: "акула.webp", category: "morskie_zhivotnie", emoji: "🦈", wordType: "noun", gender: "f", synonyms: ["рыба","хищник"], variants: [] },
+  { word: "водоросли", filename: "водоросли.webp", category: "morskie_zhivotnie", emoji: "🌿", wordType: "noun", gender: null, synonyms: ["море","растения"], variants: [] },
+  { word: "дельфин", filename: "дельфин.webp", category: "morskie_zhivotnie", emoji: "🐬", wordType: "noun", gender: "m", synonyms: ["животное","море"], variants: [] },
+  { word: "жаба", filename: "жаба.webp", category: "morskie_zhivotnie", emoji: "🐸", wordType: "noun", gender: "f", synonyms: ["лягушка","животное"], variants: [] },
+  { word: "кит", filename: "кит.webp", category: "morskie_zhivotnie", emoji: "🐋", wordType: "noun", gender: "m", synonyms: ["животное","море"], variants: [] },
+  { word: "лягушка", filename: "лягушка.webp", category: "morskie_zhivotnie", emoji: "🐸", wordType: "noun", gender: "f", synonyms: ["животное","зеленая"], variants: [] },
+  { word: "медуза", filename: "медуза.webp", category: "morskie_zhivotnie", emoji: "🪼", wordType: "noun", gender: "f", synonyms: ["море","щупальца"], variants: [] },
+  { word: "панцирь", filename: "панцирь.webp", category: "morskie_zhivotnie", emoji: "🖼️", wordType: "noun", gender: "m", synonyms: ["ракушка","защита","черепаха"], variants: [] },
+  { word: "пиявка", filename: "пиявка.webp", category: "morskie_zhivotnie", emoji: "🪱", wordType: "noun", gender: "f", synonyms: ["вода","червяк"], variants: [] },
+  { word: "ракушка", filename: "ракушка.webp", category: "morskie_zhivotnie", emoji: "🦪", wordType: "noun", gender: "f", synonyms: ["ракушечка","море","панцирь"], variants: [] },
+  { word: "черепаха", filename: "черепаха.webp", category: "morskie_zhivotnie", emoji: "🐢", wordType: "noun", gender: "f", synonyms: ["животное","панцирь"], variants: [] }
+];

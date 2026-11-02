@@ -44,6 +44,7 @@
 @import './modes/settings.css';
 @import './modes/learning/index.css';
 @import './modes/games.css';
+@import './modes/schedule.css';
 
 html,
 body {

@@ -1,0 +1,16 @@
+// Сгенерировано автоматически из src/config/cards_data.json
+
+export const LUDI = [
+  { word: "взрослый", filename: "взрослый.webp", category: "ludi", emoji: "🧑", wordType: "noun", gender: "m", synonyms: ["большой","человек"], variants: ["взрослый_2.webp"] },
+  { word: "девочка", filename: "девочка.webp", category: "ludi", emoji: "👧", wordType: "noun", gender: "f", synonyms: ["дочь","девчонка"], variants: ["девочка_2.webp"] },
+  { word: "дети", filename: "дети.webp", category: "ludi", emoji: "👶", wordType: "noun", gender: null, synonyms: ["ребенок","малыши"], variants: ["дети_2.webp"] },
+  { word: "женщина", filename: "женщина.webp", category: "ludi", emoji: "👩", wordType: "noun", gender: "f", synonyms: ["дама","леди"], variants: ["женщина_2.webp"] },
+  { word: "люди", filename: "люди.webp", category: "ludi", emoji: "🖼️", wordType: "noun", gender: null, synonyms: ["народ","человек"], variants: ["люди_2.webp"] },
+  { word: "малыш", filename: "малыш.webp", category: "ludi", emoji: "👶", wordType: "noun", gender: "m", synonyms: ["ребенок","маленький"], variants: ["малыш_2.webp"] },
+  { word: "мальчик", filename: "мальчик.webp", category: "ludi", emoji: "👦", wordType: "noun", gender: "m", synonyms: ["сын","пацан"], variants: ["мальчик_2.webp"] },
+  { word: "мужчина", filename: "мужчина.webp", category: "ludi", emoji: "👨", wordType: "noun", gender: "m", synonyms: ["муж","дядя"], variants: ["мужчина_2.webp"] },
+  { word: "подросток", filename: "подросток.webp", category: "ludi", emoji: "🧑", wordType: "noun", gender: "m", synonyms: ["ребенок","взрослый"], variants: ["подросток_2.webp"] },
+  { word: "старик", filename: "старик.webp", category: "ludi", emoji: "👴", wordType: "noun", gender: "m", synonyms: ["дедушка","старый"], variants: ["старик_2.webp"] },
+  { word: "старуха", filename: "старуха.webp", category: "ludi", emoji: "👵", wordType: "noun", gender: "f", synonyms: ["бабушка","старая"], variants: ["старуха_2.webp"] },
+  { word: "человек", filename: "человек.webp", category: "ludi", emoji: "🧑", wordType: "noun", gender: "m", synonyms: ["люди","он"], variants: ["человек_2.webp"] }
+];

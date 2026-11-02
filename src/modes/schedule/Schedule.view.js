@@ -4,6 +4,7 @@ import { renderElementGrid } from '@components/common/Grid/GridSimple';
 import { createCard } from '@components/common/Card/Card';
 import { renderScheduleNav } from './ScheduleNav';
 import { makeSortable } from '@utils/dragdrop';
+import { findBankItem } from '@utils/cardBank'; // ДОБАВИЛИ ИМПОРТ
 
 export function renderScheduleView(
   container,
@@ -40,12 +41,23 @@ export function renderScheduleView(
 
   const cards = [];
   events.forEach((event) => {
+    // --- УМНЫЙ ПОИСК КАРТИНКИ ---
+    let finalImagePath = event.imagePath;
+    
+    // Если нет картинки и нет загруженного фото, но есть текст (например, "Завтрак")
+    if (!finalImagePath && !event.imageId && event.text) {
+      const bankItem = findBankItem(event.text);
+      if (bankItem) {
+        finalImagePath = `cards/${bankItem.category}/${bankItem.filename}`;
+      }
+    }
+
     const card = createCard({
       id: event.id,
       text: `${event.time || ''} ${event.text || ''}`.trim(),
       emoji: event.icon || '📌',
       imageId: event.imageId || null,
-      imagePath: event.imagePath || null, // <--- ДОБАВИЛИ ЭТУ СТРОЧКУ
+      imagePath: finalImagePath || null, // Передаем найденную картинку
       isActive: false,
       isAdd: false,
       draggable: editingMode,

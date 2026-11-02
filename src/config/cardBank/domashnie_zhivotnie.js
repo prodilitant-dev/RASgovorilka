@@ -1,0 +1,16 @@
+// Сгенерировано автоматически из src/config/cards_data.json
+
+export const DOMASHNIE_ZHIVOTNIE = [
+  { word: "верблюд", filename: "верблюд.webp", category: "domashnie_zhivotnie", emoji: "🐫", wordType: "noun", gender: "m", synonyms: ["животное","пустыня"], variants: ["верблюд_2.webp"] },
+  { word: "коза", filename: "коза.webp", category: "domashnie_zhivotnie", emoji: "🐐", wordType: "noun", gender: "f", synonyms: ["животное","рога"], variants: ["коза_2.webp"] },
+  { word: "корова", filename: "корова.webp", category: "domashnie_zhivotnie", emoji: "🐮", wordType: "noun", gender: "f", synonyms: ["животное","молоко"], variants: ["корова_2.webp"] },
+  { word: "кошка", filename: "кошка.webp", category: "domashnie_zhivotnie", emoji: "🐱", wordType: "noun", gender: "f", synonyms: ["животное","кот"], variants: ["кошка_2.webp"] },
+  { word: "кролик", filename: "кролик.webp", category: "domashnie_zhivotnie", emoji: "🐰", wordType: "noun", gender: "m", synonyms: ["животное","уши"], variants: ["кролик_2.webp"] },
+  { word: "лама", filename: "лама.webp", category: "domashnie_zhivotnie", emoji: "🦙", wordType: "noun", gender: "f", synonyms: ["животное","горы"], variants: ["лама_2.webp"] },
+  { word: "лошадь", filename: "лошадь.webp", category: "domashnie_zhivotnie", emoji: "🐴", wordType: "noun", gender: "f", synonyms: ["животное","конь"], variants: ["лошадь_2.webp"] },
+  { word: "овца", filename: "овца.webp", category: "domashnie_zhivotnie", emoji: "🐑", wordType: "noun", gender: "f", synonyms: ["животное","шерсть"], variants: ["овца_2.webp"] },
+  { word: "осел", filename: "осел.webp", category: "domashnie_zhivotnie", emoji: "🫏", wordType: "noun", gender: "m", synonyms: ["животное"], variants: ["осел_2.webp"] },
+  { word: "свинья", filename: "свинья.webp", category: "domashnie_zhivotnie", emoji: "🐷", wordType: "noun", gender: "f", synonyms: ["животное","хрюшка"], variants: ["свинья_2.webp"] },
+  { word: "собака", filename: "собака.webp", category: "domashnie_zhivotnie", emoji: "🐶", wordType: "noun", gender: "f", synonyms: ["животное","пёс"], variants: ["собака_2.webp"] },
+  { word: "цыпленок", filename: "цыпленок.webp", category: "domashnie_zhivotnie", emoji: "🐥", wordType: "noun", gender: "m", synonyms: ["курица","маленький"], variants: [] }
+];

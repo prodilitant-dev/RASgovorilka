@@ -8,6 +8,7 @@ import { saveProfile } from '@storage/appStorage';
 import { uid } from '@utils/id';
 import { logger } from '@utils/logger';
 import { speakFromState } from '@utils/speech';
+import { findBankItem } from '@utils/cardBank'; // ДОБАВИЛИ ИМПОРТ
 
 let container = null;
 let currentProfile = null;
@@ -16,7 +17,6 @@ let gridCleanup = null;
 
 export function renderYesNo(containerEl, profile) {
   container = containerEl;
-  ``;
   currentProfile = profile;
 
   if (typeof container._modeCleanup === 'function') {
@@ -44,7 +44,22 @@ export function renderYesNo(containerEl, profile) {
 function renderTiles() {
   const state = getState();
   const editing = state.editingMode || false;
-  const items = currentProfile.yesnoButtons.map((btn) => ({ ...btn }));
+  
+  // Умный поиск картинки для каждой кнопки
+  const items = currentProfile.yesnoButtons.map((btn) => {
+    let finalImagePath = btn.imagePath;
+    
+    // Если картинки нет и нет загруженного фото, но есть текст
+    if (!finalImagePath && !btn.imageId && btn.text) {
+      const bankItem = findBankItem(btn.text);
+      if (bankItem) {
+        finalImagePath = `cards/${bankItem.category}/${bankItem.filename}`;
+      }
+    }
+    
+    return { ...btn, imagePath: finalImagePath };
+  });
+
   if (editing) {
     items.push({ id: 'add', text: 'Добавить', emoji: '➕', isAdd: true });
   }
@@ -73,9 +88,21 @@ function handleReorder(newOrder) {
   renderTiles();
 }
 
+// Хелпер: автопоиск картинки при сохранении
+function autoAssignImage(btn) {
+  if (!btn.imagePath && !btn.imageId && btn.text) {
+    const bankItem = findBankItem(btn.text);
+    if (bankItem) {
+      btn.imagePath = `cards/${bankItem.category}/${bankItem.filename}`;
+      btn.emoji = ''; // Очищаем эмодзи, если нашли картинку
+    }
+  }
+  return btn;
+}
+
 function handleButtonClick(id) {
   if (id === 'add') {
-    const newBtn = { id: uid(), text: '', emoji: '' };
+    const newBtn = { id: uid(), text: '', emoji: '', imagePath: null, imageId: null };
     openSimpleEditor({
       entity: newBtn,
       title: 'Новая кнопка',
@@ -85,7 +112,8 @@ function handleButtonClick(id) {
           done();
           return;
         }
-        currentProfile.yesnoButtons.push(updated);
+        const finalBtn = autoAssignImage(updated); // Ищем картинку при сохранении
+        currentProfile.yesnoButtons.push(finalBtn);
         saveProfile(currentProfile);
         renderTiles();
         done();
@@ -104,6 +132,7 @@ function handleButtonClick(id) {
       title: 'Редактировать кнопку',
       onSave: (updated, done) => {
         Object.assign(btn, updated);
+        autoAssignImage(btn); // Ищем картинку при сохранении
         saveProfile(currentProfile);
         renderTiles();
         done();

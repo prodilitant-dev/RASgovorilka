@@ -1,11 +1,17 @@
 // src/config/defaultData/categories.js
 export const CATEGORIES = [
-  { id: 'potrebnosti', name: 'Потребности', wordType: 'other' },
-
-  // СКРЫТАЯ КАТЕГОРИЯ (содержит вообще все слова из банка)
-  { id: 'dictionary', name: 'Банк карточек', wordType: 'other' },
+  { id: 'potrebnosti', name: 'Потребности', wordType: 'other', imagePath: 'cards/potrebnosti/завтрак.webp' },
+  { id: 'emocii', name: 'Эмоции', wordType: 'other', imagePath: 'cards/glagoli/радоваться.webp' },
+  { id: 'glagoli', name: 'Глаголы', wordType: 'verb', imagePath: 'cards/glagoli/сидеть.webp' },
+  { id: 'eda', name: 'Еда', wordType: 'noun', imagePath: 'cards/eda/хлеб.webp' },
+  { id: 'napitki', name: 'Напитки', wordType: 'noun', imagePath: 'cards/napitki/вода.webp' },
+  { id: 'igrushki', name: 'Игрушки', wordType: 'other', imagePath: 'cards/igrushki/машинка.webp' },
+  { id: 'odezhda', name: 'Одежда', wordType: 'noun', imagePath: 'cards/odezhda/футболка.webp' },
+  { id: 'semiy', name: 'Семья', wordType: 'noun', imagePath: 'cards/Semiy/мама.webp' },
+  { id: 'dikie_zveri', name: 'Животные', wordType: 'noun', imagePath: 'cards/dikie_zveri/лев.webp' },
 ];
 
+// Справочник для умного поиска (оставляем без изменений, картинки тут не нужны)
 export const KNOWN_CATEGORIES = [
   { id: 'potrebnosti', name: 'Потребности' },
   { id: 'emocii', name: 'Эмоции' },
@@ -35,5 +41,12 @@ export const KNOWN_CATEGORIES = [
   { id: 'molochka_jico', name: 'Молочные продукты и яйца' },
   { id: 'orehi_krupi', name: 'Орехи и крупы' },
   { id: 'sousi_pripravi', name: 'Соусы и приправы' },
-  { id: 'alkogol', name: 'Алкоголь' },
+  { id: 'bazovie', name: 'Базовые' },
+  { id: 'ptici', name: 'Птицы' },
+  { id: 'nasekomie', name: 'Насекомые' },
+  { id: 'ludi', name: 'Люди' },
+  { id: 'domashnie_zhivotnie', name: 'Домашние животные' },
+  { id: 'morskie_zhivotnie', name: 'Морские животные' },
+  { id: 'telo', name: 'Тело' },
+  { id: 'rezhim', name: 'Режим' },
 ];
