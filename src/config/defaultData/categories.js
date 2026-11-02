@@ -1,6 +1,11 @@
 // src/config/defaultData/categories.js
 export const CATEGORIES = [
-  { id: 'potrebnosti', name: 'Потребности', wordType: 'other', imagePath: 'cards/potrebnosti/завтрак.webp' },
+  {
+    id: 'potrebnosti',
+    name: 'Потребности',
+    wordType: 'other',
+    imagePath: 'cards/potrebnosti/завтрак.webp',
+  },
   { id: 'emocii', name: 'Эмоции', wordType: 'other', imagePath: 'cards/glagoli/радоваться.webp' },
   { id: 'glagoli', name: 'Глаголы', wordType: 'verb', imagePath: 'cards/glagoli/сидеть.webp' },
   { id: 'eda', name: 'Еда', wordType: 'noun', imagePath: 'cards/eda/хлеб.webp' },
@@ -8,7 +13,12 @@ export const CATEGORIES = [
   { id: 'igrushki', name: 'Игрушки', wordType: 'other', imagePath: 'cards/igrushki/машинка.webp' },
   { id: 'odezhda', name: 'Одежда', wordType: 'noun', imagePath: 'cards/odezhda/футболка.webp' },
   { id: 'semiy', name: 'Семья', wordType: 'noun', imagePath: 'cards/Semiy/мама.webp' },
-  { id: 'dikie_zveri', name: 'Животные', wordType: 'noun', imagePath: 'cards/dikie_zveri/лев.webp' },
+  {
+    id: 'dikie_zveri',
+    name: 'Животные',
+    wordType: 'noun',
+    imagePath: 'cards/dikie_zveri/лев.webp',
+  },
 ];
 
 // Справочник для умного поиска (оставляем без изменений, картинки тут не нужны)

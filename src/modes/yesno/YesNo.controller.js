@@ -44,11 +44,11 @@ export function renderYesNo(containerEl, profile) {
 function renderTiles() {
   const state = getState();
   const editing = state.editingMode || false;
-  
+
   // Умный поиск картинки для каждой кнопки
   const items = currentProfile.yesnoButtons.map((btn) => {
     let finalImagePath = btn.imagePath;
-    
+
     // Если картинки нет и нет загруженного фото, но есть текст
     if (!finalImagePath && !btn.imageId && btn.text) {
       const bankItem = findBankItem(btn.text);
@@ -56,7 +56,7 @@ function renderTiles() {
         finalImagePath = `cards/${bankItem.category}/${bankItem.filename}`;
       }
     }
-    
+
     return { ...btn, imagePath: finalImagePath };
   });
 
