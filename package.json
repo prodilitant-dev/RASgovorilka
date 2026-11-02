@@ -1,10 +1,10 @@
 {
-  "name": "rasgovorilka-test",
+  "name": "rasgovorilka",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "license": "GPL-3.0-or-later",
-  "description": "РАСговорилка — TEST-репозиторий для аудита кода и экспериментов",
+  "description": "РАСговорилка — бесплатный коммуникатор для детей с РАС",
   "engines": {
     "node": ">=18"
   },
