@@ -7,17 +7,9 @@ import { VitePWA } from 'vite-plugin-pwa';
 const root = process.cwd();
 const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf-8'));
 
-// Базовый путь для GitHub Pages. Позволяет собирать одно и то же
-// приложение под разные репозитории (RASgovorilka / RASgovorilka-TEST).
-// Переопределяется переменной окружения BASE_PATH при сборке в CI.
 const rawBase = process.env.BASE_PATH || '/RASgovorilka/';
 const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
 
-/**
- * Плагин: генерирует robots.txt и sitemap.xml с правильным URL,
- * а также подставляет %%SITE_URL%% в index.html.
- * Работает и в TEST-репо, и в main — автоматически на основе base.
- */
 function seoPlugin(basePath) {
   const siteUrl = `https://prodilitant-dev.github.io${basePath.replace(/\/$/, '')}`;
 
@@ -70,14 +62,52 @@ export default defineConfig({
       manifest: false,
       registerType: 'prompt',
       injectRegister: false,
+      // Включаем полную стратегию кэширования
+      strategies: 'generateSW',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,webp,webmanifest,ico,woff,woff2}'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        // 1. Что кэшируем при установке (Precaching) — ВСЁ
+        globPatterns: [
+          '**/*.{js,css,html,svg,png,webp,jpeg,jpg,webmanifest,ico,woff,woff2,mp3,json}',
+        ],
+        // 2. Максимальный размер одного файла (увеличиваем до 10 МБ на всякий случай)
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+        // 3. SPA-навигация: если интернет пропал и страница не найдена — отдаем index.html
         navigateFallback: `${base}index.html`,
         navigateFallbackDenylist: [/^\/api\//],
+        // 4. Чистим старый кэш при обновлении
         cleanupOutdatedCaches: true,
         skipWaiting: false,
         clientsClaim: false,
+        // 5. Runtime-кэширование (страховка для картинок, если они не попали в precache)
+        runtimeCaching: [
+          {
+            // Кэшируем все картинки карточек (webp) на лету
+            urlPattern: /\.(?:png|jpg|jpeg|svg|webp|ico)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'ras-images',
+              expiration: {
+                maxEntries: 3000, // Хватит на все карточки
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 год
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            // Кэшируем шрифты
+            urlPattern: /\.(?:woff|woff2|ttf|eot)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'ras-fonts',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+            },
+          },
+        ],
       },
       devOptions: {
         enabled: false,
