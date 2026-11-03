@@ -43,7 +43,7 @@ export function renderScheduleView(
   events.forEach((event) => {
     // --- УМНЫЙ ПОИСК КАРТИНКИ ---
     let finalImagePath = event.imagePath;
-    
+
     // Если нет картинки и нет загруженного фото, но есть текст (например, "Завтрак")
     if (!finalImagePath && !event.imageId && event.text) {
       const bankItem = findBankItem(event.text);
