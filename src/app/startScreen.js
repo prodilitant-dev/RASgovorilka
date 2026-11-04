@@ -22,8 +22,7 @@ function buildBrand() {
   const brand = createElement('div', { className: 'start-brand' });
 
   const logo = createElement('div', { className: 'start-brand-logo' });
-  logo.innerHTML =
-    '<span class="brand-ras">РАС</span><span class="brand-talk">говорилка</span>';
+  logo.innerHTML = '<span class="brand-ras">РАС</span><span class="brand-talk">говорилка</span>';
   brand.appendChild(logo);
 
   const svg = document.createElementNS(SVG_NS, 'svg');
@@ -60,12 +59,12 @@ export function mountStartScreen() {
 
   const brand = buildBrand();
 
-const icon = createElement('img', {
-  className: 'start-icon',
-  src: `${import.meta.env.BASE_URL}icon-512.png`, // было icon-192.png
-  alt: '',
-  'aria-hidden': 'true',
-});
+  const icon = createElement('img', {
+    className: 'start-icon',
+    src: `${import.meta.env.BASE_URL}icon-512.png`, // было icon-192.png
+    alt: '',
+    'aria-hidden': 'true',
+  });
 
   startBtn = createElement(
     'button',

@@ -62,7 +62,7 @@
 
 /* --- Иконка --- */
 .start-icon {
-  width: clamp(96px, 22vw, 160px);   /* было clamp(64px, 14vw, 96px) */
+  width: clamp(96px, 22vw, 160px); /* было clamp(64px, 14vw, 96px) */
   height: clamp(96px, 22vw, 160px);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
