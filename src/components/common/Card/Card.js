@@ -13,6 +13,7 @@ export function createCard({
   isAdd = false,
   className = '',
   children = null,
+  styleColor = null,
 }) {
   const card = createElement('div', {
     className: ['card', isActive && 'card--active', isAdd && 'card--add', className]
@@ -22,6 +23,12 @@ export function createCard({
     'data-log': `card:${id || 'unknown'}`,
     draggable: 'false',
   });
+
+  if (styleColor) {
+    card.style.borderColor = styleColor;
+    card.style.borderWidth = '2px';
+    card.style.borderStyle = 'solid';
+  }
 
   const bg = createElement('div', { className: 'card__bg' });
 
@@ -100,6 +107,11 @@ export function createCard({
 
   if (!isAdd && text) {
     const label = createElement('div', { className: 'card__label' }, text);
+    if (styleColor) {
+      label.style.backgroundColor = `${styleColor}33`; // ~20% opacity
+      label.style.borderTopColor = styleColor;
+      label.style.color = '#000000'; // Всегда черный текст
+    }
     card.appendChild(label);
   }
 

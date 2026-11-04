@@ -10,6 +10,7 @@ export function renderVerticalEditorContent({
   title,
   fields,
   extraActions,
+  extraContent,
   buttons,
   preview,
   callbacks,
@@ -48,6 +49,14 @@ export function renderVerticalEditorContent({
   // Поля формы
   const fieldsEl = renderFields(entity, fields, callbacks);
   root.appendChild(fieldsEl);
+
+  // Дополнительный контент (например, палитра цветов)
+  if (extraContent) {
+    const contentEl = extraContent(entity, callbacks);
+    if (contentEl) {
+      root.appendChild(contentEl);
+    }
+  }
 
   // Дополнительные действия (например, «Падежи»)
   if (extraActions && extraActions.length > 0) {

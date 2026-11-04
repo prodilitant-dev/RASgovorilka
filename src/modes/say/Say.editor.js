@@ -5,7 +5,8 @@ import { autoDetectCard } from '@utils/inflect';
 import { openDeclensionModal } from '@components/common/DeclensionModal/DeclensionModal';
 import { getState } from '@state/store';
 import { getActiveProfile } from '@state/actions';
-import { findBankItem } from '@utils/cardBank'; // <-- Импорт для поиска в банке
+import { findBankItem } from '@utils/cardBank';
+import { createElement } from '@utils/dom';
 
 export function openCardEditor(cardData, onSave, onDelete) {
   const isNew = !cardData.id;
@@ -129,6 +130,40 @@ export function openCardEditor(cardData, onSave, onDelete) {
         },
       },
     ],
+    extraContent: (ent, callbacks) => {
+      const wrap = createElement('div', { className: 've-color-palette-wrap' });
+      const label = createElement('span', { className: 've-color-label' }, 'Оформление:');
+      const palette = createElement('div', { className: 've-color-palette' });
+
+      const colors = [
+        { value: null, name: 'Без цвета', bg: 'transparent', border: '2px dashed var(--border)' },
+        { value: '#4caf50', name: 'Зелёный', bg: '#4caf50' },
+        { value: '#c62828', name: 'Красный', bg: '#c62828' },
+        { value: '#f9a825', name: 'Жёлтый', bg: '#f9a825' },
+        { value: '#0054a6', name: 'Синий', bg: '#0054a6' },
+        { value: '#333333', name: 'Чёрный', bg: '#333333' },
+      ];
+
+      colors.forEach((c) => {
+        const btn = createElement('button', {
+          type: 'button',
+          className: `ve-color-btn ${ent.styleColor === c.value ? 'active' : ''}`,
+          title: c.name,
+          'aria-label': c.name,
+        });
+        btn.style.backgroundColor = c.bg;
+        if (c.border) btn.style.border = c.border;
+
+        btn.addEventListener('click', () => {
+          callbacks.onFieldChange('styleColor', c.value);
+        });
+        palette.appendChild(btn);
+      });
+
+      wrap.appendChild(label);
+      wrap.appendChild(palette);
+      return wrap;
+    },
     buttons: [
       {
         id: 'delete',
