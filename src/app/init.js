@@ -8,8 +8,9 @@ import { initFullscreenManager } from '@utils/fullscreen';
 import { resetDatabaseIfPending } from '@storage/db';
 import { logger } from '@utils/logger';
 import { toast } from '@utils/toast';
-import { initSpeech, warmUpSpeech, ensureVoicesLoaded } from '@utils/speech';
+import { initSpeech, ensureVoicesLoaded } from '@utils/speech';
 import { applyUISize } from '@utils/uiSize';
+import { mountStartScreen, markStartScreenReady } from './startScreen';
 
 /**
  * Обработка открытия файла .rasbackup через файловый менеджер.
@@ -53,61 +54,49 @@ function setupFileHandler() {
   logger.debug('File handler инициализирован');
 }
 
-/**
- * Прогрев синтеза речи на первом user gesture.
- * На Android Chrome speech без user gesture игнорируется, поэтому
- * прогреваем при первом касании/клике.
- */
-function setupSpeechWarmUp() {
-  if (!('speechSynthesis' in window)) return;
-
-  let done = false;
-  const handler = () => {
-    if (done) return;
-    done = true;
-    document.removeEventListener('pointerdown', handler, true);
-    document.removeEventListener('touchstart', handler, true);
-    document.removeEventListener('click', handler, true);
-    warmUpSpeech();
-  };
-
-  document.addEventListener('pointerdown', handler, true);
-  document.addEventListener('touchstart', handler, true);
-  document.addEventListener('click', handler, true);
-
-  logger.debug('Speech warm-up: waiting for first user interaction');
-}
-
 export async function initApp() {
   logger.debug('Initializing app');
 
+  // Монтируем старт-экран ПЕРВЫМ — иначе на медленных устройствах
+  // пользователь видит пустой серый экран, пока идёт loadInitialState().
+  // Прогрев синтеза речи выполняется внутри обработчика кнопки «Начать»
+  // (явный user gesture — обязательное условие на Android Chrome).
+  mountStartScreen();
+
   try {
-    await resetDatabaseIfPending();
+    try {
+      await resetDatabaseIfPending();
+    } catch (e) {
+      logger.error('resetDatabaseIfPending error:', e);
+    }
+
+    initKeyboardHandler();
+    initSpeech();
+    setupFileHandler();
+
+    // Не блокируем старт — голоса подгрузятся в фоне,
+    // если getVoices() изначально пуст.
+    ensureVoicesLoaded().catch(() => {});
+
+    await loadInitialState();
+
+    // Применяем размер интерфейса (small/medium/large) до рендера,
+    // чтобы не было «мигания» при переключении.
+    const state = getState();
+    applyUISize(state.globalSettings?.uiSize || 'small');
+
+    initFullscreenManager();
+
+    const { modeBarSlot, mainArea } = renderApp();
+    setContainers(modeBarSlot, mainArea);
+
+    subscribeToStore();
+    logger.debug('App initialized');
   } catch (e) {
-    logger.error('resetDatabaseIfPending error:', e);
+    logger.error('App initialization error:', e);
+  } finally {
+    // Даже при ошибке даём пользователю нажать «Начать» —
+    // лучше увидеть частично отрисованное приложение, чем вечный оверлей.
+    markStartScreenReady();
   }
-
-  initKeyboardHandler();
-  initSpeech();
-  setupFileHandler();
-  setupSpeechWarmUp();
-
-  // Не блокируем старт — голоса подгрузятся в фоне,
-  // если getVoices() изначально пуст.
-  ensureVoicesLoaded().catch(() => {});
-
-  await loadInitialState();
-
-  // Применяем размер интерфейса (small/medium/large) до рендера,
-  // чтобы не было «мигания» при переключении.
-  const state = getState();
-  applyUISize(state.globalSettings?.uiSize || 'small');
-
-  initFullscreenManager();
-
-  const { modeBarSlot, mainArea } = renderApp();
-  setContainers(modeBarSlot, mainArea);
-
-  subscribeToStore();
-  logger.debug('App initialized');
 }
