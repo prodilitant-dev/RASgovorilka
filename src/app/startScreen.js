@@ -11,6 +11,38 @@ let startBtn = null;
 // idle | initializing | ready | pending-ready | starting | hidden
 let state = 'idle';
 
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+/**
+ * Шапка в стиле печатных листов (PrintPage.js):
+ * «РАСговорилка» в брендовых цветах + декоративная дуга.
+ * Классы свои (.start-brand-*), чтобы не зависеть от print.css.
+ */
+function buildBrand() {
+  const brand = createElement('div', { className: 'start-brand' });
+
+  const logo = createElement('div', { className: 'start-brand-logo' });
+  logo.innerHTML =
+    '<span class="brand-ras">РАС</span><span class="brand-talk">говорилка</span>';
+  brand.appendChild(logo);
+
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 100 10');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.classList.add('start-brand-arch');
+  svg.setAttribute('aria-hidden', 'true');
+
+  const path = document.createElementNS(SVG_NS, 'path');
+  path.setAttribute('d', 'M 0 10 Q 50 -5 100 10');
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', '#888');
+  path.setAttribute('stroke-width', '2');
+  svg.appendChild(path);
+  brand.appendChild(svg);
+
+  return brand;
+}
+
 export function mountStartScreen() {
   if (consumeSkipStartScreen()) {
     logger.debug('StartScreen: пропущен (после обновления)');
@@ -26,19 +58,14 @@ export function mountStartScreen() {
   const app = document.getElementById('app');
   if (app) app.inert = true;
 
-  const logo = createElement('img', {
-    className: 'start-logo',
-    src: `${import.meta.env.BASE_URL}icon-192.png`,
-    alt: '',
-    'aria-hidden': 'true',
-  });
+  const brand = buildBrand();
 
-  const title = createElement('h1', { className: 'start-title' }, 'РАСговорилка');
-  const subtitle = createElement(
-    'p',
-    { className: 'start-subtitle' },
-    'Бесплатный офлайн-коммуникатор'
-  );
+const icon = createElement('img', {
+  className: 'start-icon',
+  src: `${import.meta.env.BASE_URL}icon-512.png`, // было icon-192.png
+  alt: '',
+  'aria-hidden': 'true',
+});
 
   startBtn = createElement(
     'button',
@@ -47,12 +74,7 @@ export function mountStartScreen() {
   );
   on(startBtn, 'click', handleStartClick);
 
-  const inner = createElement('div', { className: 'start-inner' }, [
-    logo,
-    title,
-    subtitle,
-    startBtn,
-  ]);
+  const inner = createElement('div', { className: 'start-inner' }, [brand, icon, startBtn]);
 
   overlayEl = createElement(
     'div',

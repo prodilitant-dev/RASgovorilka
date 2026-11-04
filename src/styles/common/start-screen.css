@@ -28,26 +28,47 @@
   width: 100%;
 }
 
-.start-logo {
-  width: 96px;
-  height: 96px;
+/* --- Шапка в стиле печатных листов (PrintPage.js) --- */
+.start-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.start-brand-logo {
+  font-family: system-ui, sans-serif;
+  font-size: clamp(32px, 6vw, 52px);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.brand-ras {
+  color: #f58220;
+}
+
+.brand-talk {
+  color: #0054a6;
+}
+
+.start-brand-arch {
+  width: 60%;
+  max-width: 280px;
+  height: 12px;
+  margin: 6px 0 0;
+}
+
+/* --- Иконка --- */
+.start-icon {
+  width: clamp(96px, 22vw, 160px);   /* было clamp(64px, 14vw, 96px) */
+  height: clamp(96px, 22vw, 160px);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
 
-.start-title {
-  margin: 0;
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.start-subtitle {
-  margin: 0;
-  font-size: 1rem;
-  color: var(--text-secondary);
-}
-
+/* --- Кнопка «Начать» --- */
 .start-btn {
   margin-top: var(--spacing-lg);
   min-width: 220px;
