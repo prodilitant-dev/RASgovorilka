@@ -35,6 +35,7 @@
 @import './common/sentence-bar.css';
 @import './common/progress-bar.css';
 @import './common/toast.css';
+@import './common/start-screen.css';
 @import './common/icon.css';
 @import './common/data-manager.css';
 @import './common/voice-settings.css';
@@ -45,6 +46,8 @@
 @import './modes/learning/index.css';
 @import './modes/games.css';
 @import './modes/schedule.css';
+
+
 
 html,
 body {
