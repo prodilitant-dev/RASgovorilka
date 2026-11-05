@@ -16,6 +16,7 @@ export function openVerticalEditor(config) {
     onClose = null,
     fields = [],
     extraActions = [],
+    extraContent = null,
     buttons = [],
     preview = null,
   } = config;
@@ -33,6 +34,7 @@ export function openVerticalEditor(config) {
       title,
       fields,
       extraActions,
+      extraContent,
       buttons,
       preview,
       callbacks: {

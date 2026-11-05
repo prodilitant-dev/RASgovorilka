@@ -49,7 +49,7 @@ export const POTREBNOSTI = [
     wordType: 'verb',
     gender: null,
     synonyms: ['вода', 'плавать'],
-    variants: [],
+    variants: ['купаться_2.webp'],
   },
   {
     word: 'обед',

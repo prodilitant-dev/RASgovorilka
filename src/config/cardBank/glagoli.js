@@ -39,7 +39,7 @@ export const GLAGOLI = [
     wordType: 'verb',
     gender: null,
     synonyms: ['руки'],
-    variants: [],
+    variants: ['обнимать_2.webp', 'обнимать_3.webp'],
   },
   {
     word: 'прыгать',

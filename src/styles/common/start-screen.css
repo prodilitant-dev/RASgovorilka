@@ -1,0 +1,111 @@
+/* src/styles/common/start-screen.css */
+
+.start-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1500; /* выше модалок (1000), ниже тостов (2000) */
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.start-overlay--hiding {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.start-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+}
+
+/* --- Шапка в стиле печатных листов (PrintPage.js) --- */
+.start-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.start-brand-logo {
+  font-family: system-ui, sans-serif;
+  font-size: clamp(32px, 6vw, 52px);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.brand-ras {
+  color: #f58220;
+}
+
+.brand-talk {
+  color: #0054a6;
+}
+
+.start-brand-arch {
+  width: 60%;
+  max-width: 280px;
+  height: 12px;
+  margin: 6px 0 0;
+}
+
+/* --- Иконка --- */
+.start-icon {
+  width: clamp(96px, 22vw, 160px); /* было clamp(64px, 14vw, 96px) */
+  height: clamp(96px, 22vw, 160px);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* --- Кнопка «Начать» --- */
+.start-btn {
+  margin-top: var(--spacing-lg);
+  min-width: 220px;
+  min-height: 56px;
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--surface);
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition:
+    background var(--transition),
+    transform var(--transition);
+}
+
+.start-btn:hover,
+.start-btn:focus-visible {
+  background: var(--primary-dark);
+  outline: none;
+}
+
+.start-btn:active {
+  transform: scale(0.98);
+}
+
+.start-btn:disabled {
+  background: var(--text-muted);
+  cursor: wait;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .start-overlay,
+  .start-btn {
+    transition: none;
+  }
+}

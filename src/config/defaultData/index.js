@@ -16,6 +16,7 @@ export function createDefaultProfile(name = 'дом', icon = 'profile-default') 
 
   const cards = {};
   categories.forEach((cat) => {
+    // Если это "Банк карточек" — берем ВСЕ слова. Иначе — только этой категории.
     const sourceCards =
       cat.id === 'dictionary' ? CARD_BANK : CARD_BANK.filter((item) => item.category === cat.id);
 
@@ -28,6 +29,7 @@ export function createDefaultProfile(name = 'дом', icon = 'profile-default') 
         gender: raw.gender || null,
         animate: false,
         imageId: null,
+        // Используем filename из базы (например, "спортивные_штаны.webp")
         imagePath: `cards/${raw.category}/${raw.filename || raw.word + '.webp'}`,
         forms: null,
         variants: raw.variants || [],
@@ -41,6 +43,7 @@ export function createDefaultProfile(name = 'дом', icon = 'profile-default') 
   });
 
   const quickButtons = QUICK_BUTTONS.map((btn) => {
+    // Ищем слово в банке (без учета регистра)
     const bankItem = CARD_BANK.find((item) => item.word.toLowerCase() === btn.text.toLowerCase());
 
     return {
