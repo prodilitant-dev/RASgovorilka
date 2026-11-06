@@ -1,82 +1,185 @@
-/* src/styles/modes/stories-editor.css */
+/* =========================================
+   ГЛАВНЫЙ КОНТЕЙНЕР РЕДАКТОРА
+   ========================================= */
 
 .story-editor-root {
   display: flex;
   flex-direction: column;
   height: 100%;
   background: var(--bg);
+  overflow: hidden;
 }
 
-/* Шапка */
+/* =========================================
+   ШАПКА (Обложка + Название)
+   ========================================= */
+
 .story-editor-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--spacing-md);
   padding: var(--spacing-md);
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
+  gap: var(--spacing-sm);
+}
+
+.story-cover-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.story-cover-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius);
+  border: 2px dashed var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  transition: border-color 0.2s;
+}
+.story-cover-btn:hover {
+  border-color: var(--primary);
+}
+
+.story-title-wrap {
+  width: 100%;
+  max-width: 400px;
 }
 
 .story-title-input {
-  flex: 1;
+  width: 100%;
   padding: 10px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   font-size: 1.1rem;
   font-weight: 600;
+  text-align: center;
+  background: var(--surface);
+  color: var(--text);
+}
+.story-title-input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
 }
 
-.story-cover-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: var(--radius-sm);
-  border: 2px dashed var(--border);
-  background: var(--bg);
-  cursor: pointer;
-  padding: 0;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.story-cover-btn img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+/* =========================================
+   ЦЕНТРАЛЬНАЯ ЗОНА (Слайды)
+   ========================================= */
 
-/* Основная область */
 .story-editor-main {
   flex: 1;
   display: flex;
   flex-direction: column;
   padding: var(--spacing-md);
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
   overflow: hidden;
 }
 
-.story-editor-empty {
+/* Верхняя панель слайда (Точки + Удалить) */
+.story-slide-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-sm);
+  min-height: 32px;
+}
+
+.story-slide-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.story-slide-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.story-slide-dot.active {
+  background: var(--primary);
+  transform: scale(1.2);
+}
+
+.story-slide-del-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+.story-slide-del-btn:hover {
+  opacity: 1;
+}
+.story-slide-del-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Центральный ряд (Навигация + Превью) */
+.story-slide-center-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
   flex: 1;
+  min-height: 0; /* Важно для flex-контейнеров со скроллом */
+}
+
+/* Кнопки навигации (Стрелки) */
+.story-nav-arrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.story-nav-arrow:hover:not(:disabled) {
+  background: var(--bg);
+}
+.story-nav-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.story-nav-arrow img {
+  width: 20px;
+  height: 20px;
 }
 
-/* Навигация */
-.story-editor-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-.slide-num {
-  font-weight: 600;
-  font-size: 0.95rem;
+/* Спец. стиль для кнопки "Добавить слайд" (когда справа плюс) */
+.story-nav-arrow.is-add {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary-dark);
 }
 
-/* Картинка */
+/* Превью картинки (Строгий квадрат) */
 .story-editor-image-wrap {
-  flex: 1;
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 1 / 1;
   background: var(--surface);
   border-radius: var(--radius);
   border: 2px dashed var(--border);
@@ -85,28 +188,66 @@
   justify-content: center;
   overflow: hidden;
   position: relative;
-}
-.story-editor-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
   cursor: pointer;
-  transition: opacity 0.2s;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  flex-shrink: 1;
 }
-.story-editor-image:hover {
-  opacity: 0.8;
-}
-.img-placeholder {
-  color: var(--text-muted);
+.story-editor-image-wrap:hover {
+  border-color: var(--primary);
 }
 
-/* Лента карточек */
+.story-placeholder-img {
+  width: 48px;
+  height: 48px;
+  opacity: 0.4;
+}
+
+/* Кнопка "Добавить первый слайд" */
+.story-add-first-slide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+.story-add-first-slide:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.story-add-first-slide img {
+  width: 48px;
+  height: 48px;
+  opacity: 0.5;
+}
+
+/* =========================================
+   ЛЕНТА КАРТОЧЕК
+   ========================================= */
+
 .story-editor-cards-tray {
   display: flex;
   gap: var(--spacing-sm);
   overflow-x: auto;
   padding-bottom: var(--spacing-sm);
   flex-shrink: 0;
+  scrollbar-width: thin;
+}
+.story-editor-cards-tray::-webkit-scrollbar {
+  height: 6px;
+}
+.story-editor-cards-tray::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
 }
 
 .editor-mini-card {
@@ -120,6 +261,11 @@
   flex-direction: column;
   flex-shrink: 0;
   position: relative;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.editor-mini-card:active {
+  transform: scale(0.95);
 }
 
 .editor-mini-card-img {
@@ -128,6 +274,13 @@
   background-position: center;
   background-repeat: no-repeat;
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  /* ФИКС: Центрируем текстовый фолбек (первую букву) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-secondary);
 }
 
 .editor-mini-card-label {
@@ -138,6 +291,9 @@
   border-top: 1px solid var(--border);
   background: var(--bg);
   border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .editor-mini-card-remove {
@@ -158,26 +314,38 @@
   z-index: 2;
 }
 
+/* ФИКС: Кнопка "Добавить" теперь текстовая и в стиле пунктирной рамки */
 .editor-add-card-btn {
   width: 90px;
   height: 110px;
   border-radius: var(--radius-sm);
-  border: 2px dashed var(--border);
-  background: var(--bg);
-  color: var(--text-muted);
-  font-size: 1.5rem;
+  border: 2px dashed var(--primary);
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
+  text-align: center;
+  padding: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+.editor-add-card-btn:hover {
+  background: var(--primary);
+  color: var(--surface);
 }
 
-/* Футер */
+/* =========================================
+   ФУТЕР (Кнопки управления)
+   ========================================= */
+
 .story-editor-footer {
   display: flex;
   justify-content: space-between;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
   padding: var(--spacing-md);
   background: var(--surface);
   border-top: 1px solid var(--border);
@@ -185,17 +353,28 @@
   padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom, 0px));
 }
 
-/* --- Стили для модалки карточек в историях --- */
+.story-editor-footer .btn {
+  flex: 1; /* Кнопки равномерно растянуты */
+}
+
+/* =========================================
+   МОДАЛКА ДОБАВЛЕНИЯ/РЕДАКТИРОВАНИЯ КАРТОЧКИ
+   ========================================= */
+
 .story-card-modal-wrap {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
+  box-sizing: border-box; /* ФИКС: Чтобы padding не расширял блок */
+  overflow-x: hidden;     /* ФИКС: Убираем горизонтальный скролл */
 }
 
 .story-card-modal-step {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
 }
 
 .slide-search-input {
@@ -204,6 +383,12 @@
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   font-size: 1rem;
+  box-sizing: border-box;
+}
+.slide-search-input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
 }
 
 .slide-search-results-inline {
@@ -214,6 +399,8 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--surface);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .search-item {
@@ -228,12 +415,13 @@
 .search-item:hover {
   background: var(--bg);
 }
+
 .search-create {
   color: var(--primary);
   font-weight: 600;
 }
 
-/* Превью редактируемой карточки */
+/* Превью редактируемой карточки в модалке */
 .story-card-edit-preview {
   width: 140px;
   height: 140px;
@@ -251,7 +439,9 @@
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  font-size: 2rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-secondary);
 }
 
 .story-card-edit-actions {
@@ -261,4 +451,21 @@
 }
 .story-card-edit-actions .btn {
   flex: 1;
+}
+
+/* Добавить в конец файла src/styles/modes/stories-editor.css */
+
+.modal-header-action {
+  background: var(--primary);
+  color: var(--surface);
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-header-action:hover {
+  background: var(--primary-dark);
 }

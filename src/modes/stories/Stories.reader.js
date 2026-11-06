@@ -14,6 +14,7 @@ export function openStoriesReader(story) {
 
   let currentSlideIndex = 0;
   let playbackState = 'stopped'; // 'stopped' | 'playing' | 'paused'
+  let waitTimeout = null;
 
   // Создаем оверлей
   const overlay = createElement('div', { className: 'story-reader-overlay' });
@@ -46,7 +47,7 @@ export function openStoriesReader(story) {
   contentArea.appendChild(imageWrap);
   contentArea.appendChild(cardsTray);
 
-  // Футер (Кнопки навигации)
+  // Футер
   const footer = createElement('div', { className: 'story-reader-footer' });
   const btnPrev = createElement('button', { className: 'btn btn-secondary story-nav-btn' }, '< Назад');
   const btnNext = createElement('button', { className: 'btn btn-primary story-nav-btn' }, 'Далее >');
@@ -60,7 +61,7 @@ export function openStoriesReader(story) {
   document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
 
-  // --- Логика озвучки ---
+  // --- Логика ---
 
   function updatePlayBtnState() {
     if (playbackState === 'playing') {
@@ -75,9 +76,8 @@ export function openStoriesReader(story) {
   }
 
   function stopPlayback() {
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    if (waitTimeout) clearTimeout(waitTimeout);
     playbackState = 'stopped';
     updatePlayBtnState();
     cardsTray.querySelectorAll('.card--active').forEach(c => c.classList.remove('card--active'));
@@ -88,16 +88,68 @@ export function openStoriesReader(story) {
     return state.globalSettings?.voiceSettings || {};
   }
 
-  function playSlide(slide) {
-    stopPlayback();
-    if (!slide.cards || slide.cards.length === 0) return;
+  // Обновление интерфейса (без сброса состояния воспроизведения)
+  async function renderSlideUI() {
+    const slide = story.slides[currentSlideIndex];
+    
+    if (story.slides.length > 1) {
+      progressEl.textContent = `${currentSlideIndex + 1} / ${story.slides.length}`;
+    } else {
+      progressEl.textContent = '';
+    }
 
-    playbackState = 'playing';
-    updatePlayBtnState();
+    // Картинка
+    imageEl.src = '';
+    imageEl.style.display = 'none';
+    if (slide.imageId) {
+      const url = await getImageUrl(slide.imageId);
+      if (url) { imageEl.src = url; imageEl.style.display = 'block'; }
+    } else if (slide.imagePath) {
+      const base = import.meta.env.BASE_URL || '/';
+      imageEl.src = base.endsWith('/') ? `${base}${slide.imagePath}` : `${base}/${slide.imagePath}`;
+      imageEl.style.display = 'block';
+    }
+
+    // Лента карточек
+    clear(cardsTray);
+    if (slide.cards && slide.cards.length > 0) {
+      slide.cards.forEach((cardData) => {
+        const cardEl = createCard({
+          id: cardData.id,
+          text: cardData.text,
+          imageId: cardData.imageId,
+          imagePath: cardData.imagePath,
+          emoji: cardData.emoji
+        });
+        cardEl.classList.add('story-card-mini');
+        
+        on(cardEl, 'click', () => {
+          stopPlayback();
+          speakSingle(cardData.text, cardEl);
+        });
+        cardsTray.appendChild(cardEl);
+      });
+    }
+
+    // Кнопки навигации
+    btnPrev.disabled = currentSlideIndex === 0;
+    if (currentSlideIndex === story.slides.length - 1) {
+      btnNext.textContent = 'Готово';
+    } else {
+      btnNext.textContent = 'Далее >';
+    }
+  }
+
+  // Воспроизведение текущего слайда с коллбэком на завершение
+  function playCurrentSlideAudio(onComplete) {
+    const slide = story.slides[currentSlideIndex];
+    if (!slide.cards || slide.cards.length === 0) {
+      if (onComplete) onComplete();
+      return;
+    }
 
     const vs = getVoiceSettings();
     
-    // 1. Собираем весь текст в одну строку и запоминаем индексы карточек
     let fullText = '';
     const mapping = [];
     slide.cards.forEach((card, index) => {
@@ -105,12 +157,9 @@ export function openStoriesReader(story) {
       fullText += card.text;
       const end = fullText.length;
       mapping.push({ start, end, index });
-      if (index < slide.cards.length - 1) {
-        fullText += ' '; // Пробел между словами
-      }
+      if (index < slide.cards.length - 1) fullText += ' ';
     });
 
-    // 2. Создаем одно длинное высказывание
     const utt = new SpeechSynthesisUtterance(fullText);
     utt.lang = 'ru-RU';
     utt.rate = vs.rate ?? 1;
@@ -125,11 +174,9 @@ export function openStoriesReader(story) {
 
     const cardElements = Array.from(cardsTray.querySelectorAll('.story-card-mini'));
 
-    // 3. Синхронная подсветка карточек
     utt.onboundary = (event) => {
       if (event.name === 'word' || event.name === 'sentence') {
         const charIndex = event.charIndex;
-        // Находим, в какую карточку попадает текущий индекс символа
         const activeMapping = mapping.find(m => charIndex >= m.start && charIndex <= m.end);
         
         if (activeMapping) {
@@ -145,24 +192,60 @@ export function openStoriesReader(story) {
 
     utt.onend = () => {
       cardElements.forEach(c => c.classList.remove('card--active'));
-      if (playbackState === 'playing') {
-        playbackState = 'stopped';
-        updatePlayBtnState();
-      }
+      if (onComplete) onComplete();
     };
 
     utt.onerror = (e) => {
       if (e.error !== 'interrupted') {
         cardElements.forEach(c => c.classList.remove('card--active'));
-        stopPlayback();
+        if (onComplete) onComplete();
       }
     };
 
     window.speechSynthesis.speak(utt);
   }
 
-  function speakSingle(text, cardEl) {
+  // Запуск всей истории (с задержками)
+  function playEntireStory(startIndex = 0) {
     stopPlayback();
+    playbackState = 'playing';
+    updatePlayBtnState();
+    currentSlideIndex = startIndex;
+    
+    const vs = getVoiceSettings();
+    const delayMs = vs.slideDelay ?? 1500;
+
+    const playNextSlide = async () => {
+      if (playbackState !== 'playing') return;
+      
+      await renderSlideUI();
+
+      // Небольшая пауза перед стартом речи на новом слайде (чтобы DOM успел обновиться)
+      waitTimeout = setTimeout(() => {
+        if (playbackState !== 'playing') return;
+        
+        playCurrentSlideAudio(() => {
+          if (playbackState !== 'playing') return;
+          
+          if (currentSlideIndex < story.slides.length - 1) {
+            // Задержка перед следующим слайдом
+            waitTimeout = setTimeout(() => {
+              currentSlideIndex++;
+              playNextSlide();
+            }, delayMs);
+          } else {
+            // Конец истории
+            stopPlayback();
+            btnNext.textContent = 'Готово';
+          }
+        });
+      }, 300); // 300мс на рендер DOM
+    };
+
+    playNextSlide();
+  }
+
+  function speakSingle(text, cardEl) {
     if (cardEl) {
       cardEl.classList.add('card--active');
       cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
@@ -184,7 +267,6 @@ export function openStoriesReader(story) {
     utt.onend = () => {
       if (cardEl) cardEl.classList.remove('card--active');
     };
-
     window.speechSynthesis.speak(utt);
   }
 
@@ -198,90 +280,58 @@ export function openStoriesReader(story) {
 
   on(btnClose, 'click', closeReader);
 
-  function renderSlide() {
-    stopPlayback();
-    const slide = story.slides[currentSlideIndex];
-    
-    if (story.slides.length > 1) {
-      progressEl.textContent = `${currentSlideIndex + 1} / ${story.slides.length}`;
-    } else {
-      progressEl.textContent = '';
-    }
-
-    imageEl.src = '';
-    imageEl.style.display = 'none';
-    if (slide.imageId) {
-      getImageUrl(slide.imageId).then((url) => {
-        if (url) {
-          imageEl.src = url;
-          imageEl.style.display = 'block';
-        }
-      });
-    } else if (slide.imagePath) {
-      const base = import.meta.env.BASE_URL || '/';
-      imageEl.src = base.endsWith('/') ? `${base}${slide.imagePath}` : `${base}/${slide.imagePath}`;
-      imageEl.style.display = 'block';
-    }
-
-    clear(cardsTray);
-    if (slide.cards && slide.cards.length > 0) {
-      slide.cards.forEach((cardData) => {
-        const cardEl = createCard({
-          id: cardData.id,
-          text: cardData.text,
-          imageId: cardData.imageId,
-          imagePath: cardData.imagePath,
-          emoji: cardData.emoji
-        });
-        cardEl.classList.add('story-card-mini');
-        
-        on(cardEl, 'click', () => {
-          speakSingle(cardData.text, cardEl);
-        });
-        
-        cardsTray.appendChild(cardEl);
-      });
-    }
-
-    btnPrev.disabled = currentSlideIndex === 0;
-    if (currentSlideIndex === story.slides.length - 1) {
-      btnNext.textContent = 'Готово';
-    } else {
-      btnNext.textContent = 'Далее >';
-    }
-  }
-
   on(btnPlay, 'click', () => {
-    const slide = story.slides[currentSlideIndex];
-    
     if (playbackState === 'stopped') {
-      playSlide(slide);
+      playEntireStory(currentSlideIndex);
     } else if (playbackState === 'playing') {
       playbackState = 'paused';
       window.speechSynthesis.pause();
+      if (waitTimeout) clearTimeout(waitTimeout); // Останавливаем таймер ожидания
       updatePlayBtnState();
     } else if (playbackState === 'paused') {
       playbackState = 'playing';
-      window.speechSynthesis.resume();
+      
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      } else {
+        // Если мы были в паузе между слайдами (речь не играла), нужно запустить таймер заново
+        const vs = getVoiceSettings();
+        const delayMs = vs.slideDelay ?? 1500;
+        
+        // Продолжаем с того же слайда, где остановились
+        // Если пауза была во время речи, speechSynthesis.resume() поднимет её.
+        // Если пауза была во время задержки, нам нужно понять, чей это был таймер.
+        // Для простоты: если речь на паузе - resume, иначе просто запускаем playNextSlide
+        if (!window.speechSynthesis.speaking && !window.speechSynthesis.pending) {
+           // Если мы стояли на паузе, но ничего не говорили (т.е. это была пауза во время waitTimeout)
+           // Просто перезапускаем воспроизведение текущего слайда (или продолжаем ожидание)
+           // Самый простой и надежный путь - перезапустить playEntireStory с текущего индекса, но с флагом, 
+           // что это продолжение, чтобы не сбрасывать UI.
+           playEntireStory(currentSlideIndex);
+        }
+      }
       updatePlayBtnState();
     }
   });
 
   on(btnPrev, 'click', () => {
+    stopPlayback();
     if (currentSlideIndex > 0) {
       currentSlideIndex--;
-      renderSlide();
+      renderSlideUI();
     }
   });
 
   on(btnNext, 'click', () => {
+    stopPlayback();
     if (currentSlideIndex < story.slides.length - 1) {
       currentSlideIndex++;
-      renderSlide();
+      renderSlideUI();
     } else {
       closeReader();
     }
   });
 
-  renderSlide();
+  // Инициализация
+  renderSlideUI();
 }

@@ -1,136 +1,130 @@
 // src/modes/stories/components/StoryCardModal.js
 import { Modal } from '@components/common/Modal/Modal';
 import { createElement, on, clear } from '@utils/dom';
-import { searchCardBank } from '@utils/cardBank';
+import { findBankItem } from '@utils/cardBank';
 import { showCardImage } from '@utils/image/showCardImage';
 import { openStoryImagePicker } from '../utils/StoryImagePicker';
 import { uid } from '@utils/id';
 
-export function openStoryCardModal(existingCard, onSave) {
-  const isEditing = !!existingCard;
-  const workingCard = JSON.parse(JSON.stringify(existingCard || { id: uid(), text: '', imageId: null, imagePath: null, emoji: '' }));
+let isModalOpen = false; // <-- ЗАЩИТА ОТ ДУБЛЕЙ
 
-  let step = isEditing ? 'edit' : 'search'; // 'search' или 'edit'
+export function openStoryCardModal(existingCard, onSave) {
+  if (isModalOpen) return; // Если модалка уже открыта, игнорируем клик
+  isModalOpen = true;
+
+  const isEditing = !!existingCard;
+  
+  const createEmptyCard = () => ({ 
+    id: uid(), 
+    text: '', 
+    imageId: null, 
+    imagePath: null, 
+    emoji: '' 
+  });
+
+  let workingCard = JSON.parse(JSON.stringify(existingCard || createEmptyCard()));
+
   let modalInstance = null;
   let contentWrap = null;
+  let textInput = null;
+  let previewBox = null;
 
   function render() {
     if (!contentWrap) return;
     clear(contentWrap);
 
-    if (step === 'search') {
-      // --- ШАГ 1: ПОИСК ---
-      const searchInput = createElement('input', {
-        type: 'text',
-        className: 'slide-search-input',
-        placeholder: 'Введите слово для поиска...',
-        value: workingCard.text || ''
+    previewBox = createElement('div', { className: 'story-card-edit-preview' });
+    showCardImage(previewBox, workingCard, { fontSize: '2.5em' });
+    previewBox.title = 'Нажмите, чтобы изменить картинку';
+    
+    on(previewBox, 'click', () => {
+      openStoryImagePicker(previewBox, workingCard, (updatedMedia) => {
+        Object.assign(workingCard, updatedMedia);
+        render();
       });
-      const resultsWrap = createElement('div', { className: 'slide-search-results-inline' });
-      
-      const performSearch = (q) => {
-        clear(resultsWrap);
-        if (!q.trim()) return;
+    });
 
-        const found = searchCardBank(q);
-        if (found.length > 0) {
-          found.forEach(r => {
-            const item = createElement('div', { className: 'search-item' }, r.text);
-            on(item, 'click', () => {
-              Object.assign(workingCard, { text: r.text, imagePath: r.imagePath, imageId: null, emoji: '' });
-              step = 'edit';
-              render();
-            });
-            resultsWrap.appendChild(item);
-          });
+    textInput = createElement('input', {
+      type: 'text',
+      className: 'slide-search-input',
+      placeholder: 'Текст карточки...',
+      value: workingCard.text || ''
+    });
+
+    on(textInput, 'input', (e) => {
+      const val = e.target.value;
+      workingCard.text = val;
+
+      if (!workingCard.imageId) {
+        if (val.trim()) {
+          const bankItem = findBankItem(val);
+          if (bankItem) {
+            const newPath = `cards/${bankItem.category}/${bankItem.filename || bankItem.word + '.webp'}`;
+            if (workingCard.imagePath !== newPath) {
+              workingCard.imagePath = newPath;
+              showCardImage(previewBox, workingCard, { fontSize: '2.5em' });
+            }
+          } else {
+            if (workingCard.imagePath !== null) {
+              workingCard.imagePath = null;
+              showCardImage(previewBox, workingCard, { fontSize: '2.5em' });
+            }
+          }
         } else {
-          const createBtn = createElement('div', { className: 'search-item search-create' }, `➕ Создать "${q}"`);
-          on(createBtn, 'click', () => {
-            Object.assign(workingCard, { text: q, imagePath: null, imageId: null, emoji: '' });
-            step = 'edit';
-            render();
-          });
-          resultsWrap.appendChild(createBtn);
+           if (workingCard.imagePath !== null) {
+             workingCard.imagePath = null;
+             showCardImage(previewBox, workingCard, { fontSize: '2.5em' });
+           }
         }
-      };
+      }
+    });
 
-      on(searchInput, 'input', (e) => performSearch(e.target.value));
-      if (workingCard.text) performSearch(workingCard.text);
-
-      const container = createElement('div', { className: 'story-card-modal-step' }, [
-        searchInput,
-        resultsWrap
-      ]);
-      contentWrap.appendChild(container);
-      
-      setTimeout(() => searchInput.focus(), 100);
-    } else {
-      // --- ШАГ 2: РЕДАКТИРОВАНИЕ ---
-      const editWrap = createElement('div', { className: 'story-card-modal-step' });
-      
-      // Превью карточки
-      const previewBox = createElement('div', { className: 'story-card-edit-preview' });
-      showCardImage(previewBox, workingCard, { fontSize: '2em' });
-      previewBox.title = 'Нажмите, чтобы изменить картинку';
-      on(previewBox, 'click', () => {
-        openStoryImagePicker(previewBox, workingCard, (updatedMedia) => {
-          Object.assign(workingCard, updatedMedia);
-          render();
-        });
-      });
-
-      // Поле текста
-      const textInput = createElement('input', {
-        type: 'text',
-        className: 'slide-search-input',
-        placeholder: 'Текст карточки...',
-        value: workingCard.text || ''
-      });
-      on(textInput, 'input', (e) => {
-        workingCard.text = e.target.value;
-      });
-
-      // Кнопки шага
-      const actions = createElement('div', { className: 'story-card-edit-actions' });
-      
-      const btnBack = createElement('button', { className: 'btn btn-secondary', type: 'button' }, isEditing ? 'Отмена' : 'Назад');
-      on(btnBack, 'click', () => {
-        if (isEditing) {
-          modalInstance.close();
-        } else {
-          step = 'search';
-          render();
+    on(textInput, 'keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (!isEditing) {
+          handleAddAndContinue();
         }
-      });
+      }
+    });
 
-      const btnAdd = createElement('button', { className: 'btn btn-primary', type: 'button' }, isEditing ? 'Сохранить' : 'Добавить');
-      on(btnAdd, 'click', () => {
-        if (!workingCard.text.trim()) {
-          workingCard.text = 'Без названия';
-        }
-        onSave(workingCard);
-        modalInstance.close();
-      });
+    contentWrap.appendChild(previewBox);
+    contentWrap.appendChild(textInput);
+    
+    setTimeout(() => textInput.focus(), 50);
+  }
 
-      actions.appendChild(btnBack);
-      actions.appendChild(btnAdd);
-
-      editWrap.appendChild(previewBox);
-      editWrap.appendChild(textInput);
-      editWrap.appendChild(actions);
-      contentWrap.appendChild(editWrap);
-    }
+  function handleAddAndContinue() {
+    if (!workingCard.text.trim()) return;
+    onSave({ ...workingCard });
+    workingCard = createEmptyCard();
+    render();
   }
 
   modalInstance = new Modal({
-    title: isEditing ? 'Редактировать карточку' : 'Добавить карточку',
+    title: isEditing ? 'Редактировать' : 'Добавить',
     showCloseButton: true,
+    onClose: () => {
+      isModalOpen = false; // <-- СНИМАЕМ БЛОКИРОВКУ ПРИ ЗАКРЫТИИ
+    },
+    headerAction: {
+      label: isEditing ? 'Сохранить' : 'Добавить',
+      action: () => {
+        if (isEditing) {
+          if (!workingCard.text.trim()) workingCard.text = 'Без названия';
+          onSave(workingCard);
+          modalInstance.close();
+        } else {
+          handleAddAndContinue();
+        }
+      }
+    },
     body: () => {
       contentWrap = createElement('div', { className: 'story-card-modal-wrap' });
       render();
       return contentWrap;
     },
-    buttons: [] // Используем свои кнопки внутри контента
+    buttons: []
   });
 
   modalInstance.open();
