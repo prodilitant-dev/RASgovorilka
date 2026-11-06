@@ -14,6 +14,7 @@ export function openVerticalEditor(config) {
     onSave = null,
     onDelete = null,
     onClose = null,
+    onChange = null, // <-- ДОБАВЛЕНО
     fields = [],
     extraActions = [],
     extraContent = null,
@@ -37,6 +38,12 @@ export function openVerticalEditor(config) {
         if (field && field.onChange) {
           field.onChange(value, workingEntity);
         }
+        
+        // <-- ВЫЗЫВАЕМ ONCHANGE ПРИ ЛЮБОМ ИЗМЕНЕНИИ
+        if (onChange) {
+          onChange(key, value, workingEntity);
+        }
+        
         renderContent();
       },
       onUploadImage: async (file) => {
@@ -47,6 +54,7 @@ export function openVerticalEditor(config) {
           workingEntity.imageId = imageId;
           workingEntity.emoji = '';
           toast('Фото загружено', 'success');
+          if (onChange) onChange('imageId', imageId, workingEntity); // <-- ВЫЗЫВАЕМ ДЛЯ КАРТИНКИ
           renderContent();
         } catch (err) {
           logger.error('Upload error:', err);
@@ -56,6 +64,7 @@ export function openVerticalEditor(config) {
         workingEntity.imageId = null;
         workingEntity.imagePath = null;
         workingEntity.emoji = '';
+        if (onChange) onChange('imageId', null, workingEntity); // <-- ВЫЗЫВАЕМ ПРИ УДАЛЕНИИ
         renderContent();
       },
       onExtraActionClick: (actionId) => {

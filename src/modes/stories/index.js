@@ -3,7 +3,7 @@ import { createElement, clear } from '@utils/dom';
 import { getState } from '@state/store';
 import { saveProfile } from '@storage/appStorage';
 import { createCard } from '@components/common/Card/Card';
-import { openStoriesReader } from './reader/Stories.reader'; // <-- ПРАВИЛЬНЫЙ ПУТЬ
+import { openStoriesReader } from './reader/Stories.reader';
 import { openStoriesEditor } from './Stories.editor';
 import { createEmptyState } from '@components/common/EmptyState/EmptyState';
 import { openStoryManageModal } from './components/StoryManageModal';
@@ -49,14 +49,14 @@ export function renderStories(container, profile) {
       imagePath: coverPath,
       emoji: '📖',
       className: 'story-main-card',
+      styleColor: story.styleColor || null,
     });
 
     cardEl.addEventListener('click', () => {
       if (editing) {
-        // ОТКРЫВАЕМ МОДАЛКУ УПРАВЛЕНИЯ
         openStoryManageModal(
           story,
-          // On Edit
+          // 1. On Edit (открыть редактор)
           () => {
             openStoriesEditor(
               container,
@@ -70,11 +70,20 @@ export function renderStories(container, profile) {
               () => renderStories(container, profile)
             );
           },
-          // On Delete
+          // 2. On Delete (удалить)
           () => {
-            profile.stories = profile.stories.filter(s => s.id !== story.id);
+            profile.stories = profile.stories.filter((s) => s.id !== story.id);
             saveProfile(profile);
             renderStories(container, profile);
+          },
+          // 3. On Save Color/Title (мгновенное сохранение при выборе цвета/картинки)
+          (updatedStory) => {
+            const idx = profile.stories.findIndex((s) => s.id === updatedStory.id);
+            if (idx !== -1) profile.stories[idx] = updatedStory;
+            saveProfile(profile);
+            
+            // ВОТ ЭТОЙ СТРОКИ НЕ ХВАТАЛО:
+            renderStories(container, profile); 
           }
         );
       } else {

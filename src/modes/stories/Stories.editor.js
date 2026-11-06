@@ -1,7 +1,7 @@
 // src/modes/stories/Stories.editor.js
 import { createElement, clear } from '@utils/dom';
 import { uid } from '@utils/id';
-import { openStoriesReader } from './reader/Stories.reader'; // Учтите путь
+import { openStoriesReader } from './reader/Stories.reader';
 import { createEditorHeader } from './components/editor/EditorHeader';
 import { createSlideNavigation } from './components/editor/SlideNavigation';
 import { createSlideContent } from './components/editor/SlideContent';
@@ -51,15 +51,11 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
       const isFirst = currentSlideIndex === 0;
       const isLast = currentSlideIndex === workingStory.slides.length - 1;
 
-      // Навигация (точки)
       main.appendChild(
         createSlideNavigation(
           workingStory,
           currentSlideIndex,
-          (idx) => {
-            currentSlideIndex = idx;
-            renderEditor();
-          },
+          (idx) => { currentSlideIndex = idx; renderEditor(); },
           () => {
             workingStory.slides.splice(currentSlideIndex, 1);
             currentSlideIndex = Math.max(0, currentSlideIndex - 1);
@@ -69,16 +65,12 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
         )
       );
 
-      // Контент (стрелки + картинка + пауза)
       main.appendChild(
         createSlideContent(
           slide,
           isFirst,
           isLast,
-          () => {
-            currentSlideIndex--;
-            renderEditor();
-          },
+          () => { currentSlideIndex--; renderEditor(); },
           () => {
             if (isLast) {
               workingStory.slides.push({
@@ -98,7 +90,6 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
         )
       );
 
-      // Лента карточек
       main.appendChild(createCardTray(slide, renderEditor));
     }
 
