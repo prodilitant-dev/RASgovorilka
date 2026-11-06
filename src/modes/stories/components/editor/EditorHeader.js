@@ -9,9 +9,9 @@ export function createEditorHeader(workingStory) {
     type: 'text',
     className: 'story-title-input',
     placeholder: 'Название истории...',
-    value: workingStory.title || ''
+    value: workingStory.title || '',
   });
-  on(titleInput, 'input', (e) => workingStory.title = e.target.value);
+  on(titleInput, 'input', (e) => (workingStory.title = e.target.value));
   titleWrap.appendChild(titleInput);
   header.appendChild(titleWrap);
 

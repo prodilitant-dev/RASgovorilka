@@ -197,12 +197,12 @@ export async function openImageCropper(file, options = {}) {
     const finish = (value) => {
       if (resolved) return;
       resolved = true;
-      
+
       // ФИКС: ОСВОБОЖДАЕМ ПАМЯТЬ ПРИ ЗАКРЫТИИ
       if (bitmap && typeof bitmap.close === 'function') {
         bitmap.close();
       }
-      
+
       resolve(value);
     };
 

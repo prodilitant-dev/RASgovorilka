@@ -55,7 +55,10 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
         createSlideNavigation(
           workingStory,
           currentSlideIndex,
-          (idx) => { currentSlideIndex = idx; renderEditor(); },
+          (idx) => {
+            currentSlideIndex = idx;
+            renderEditor();
+          },
           () => {
             workingStory.slides.splice(currentSlideIndex, 1);
             currentSlideIndex = Math.max(0, currentSlideIndex - 1);
@@ -70,7 +73,10 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
           slide,
           isFirst,
           isLast,
-          () => { currentSlideIndex--; renderEditor(); },
+          () => {
+            currentSlideIndex--;
+            renderEditor();
+          },
           () => {
             if (isLast) {
               workingStory.slides.push({

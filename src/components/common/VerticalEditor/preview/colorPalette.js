@@ -12,7 +12,7 @@ export function createColorPalette(ent, callbacks) {
       });
       btn.style.backgroundColor = c.bg;
       if (c.border) btn.style.border = c.border;
-      
+
       btn.addEventListener('click', () => {
         callbacks.onFieldChange('styleColor', c.value);
         col.querySelectorAll('.ve-color-btn').forEach((b) => b.classList.remove('active'));

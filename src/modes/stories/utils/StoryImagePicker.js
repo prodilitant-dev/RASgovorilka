@@ -29,7 +29,8 @@ export function openStoryImagePicker(anchorEl, currentSource, onUpdate) {
       if (!croppedBlob) return;
       const imageId = await uploadImage(croppedBlob, { size: 512, showToast: true });
       onUpdate({ imageId, imagePath: null, emoji: '' });
-    } catch { // <-- Убрали (err)
+    } catch {
+      // <-- Убрали (err)
       toast('Ошибка загрузки фото', 'error');
     } finally {
       fileInput.value = '';

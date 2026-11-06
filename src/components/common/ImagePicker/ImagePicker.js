@@ -5,12 +5,10 @@ import { openImageSourcePopup } from '@components/common/VerticalEditor/preview/
 import { openBankPicker } from '@components/common/VerticalEditor/BankPickerModal';
 import { openImageCropper } from '@components/common/ImageCropper';
 import { uploadImage } from '@services/image';
+import { revokeImageUrl } from '@services/image/revokeImageUrl'; // <-- ДОБАВЛЕН ИМПОРТ
 import { toast } from '@utils/toast';
 import '@styles/components/image-picker.css';
 
-/**
- * Универсальный пикер картинок с поддержкой вариантов.
- */
 export function createImagePicker(source, options = {}, onChange, onRemove) {
   const wrapper = createElement('div', {
     className: `image-picker-wrap ${options.className || ''}`,
@@ -21,11 +19,9 @@ export function createImagePicker(source, options = {}, onChange, onRemove) {
   const render = () => {
     clear(wrapper);
 
-    // 1. Основное превью
     const box = createElement('div', { className: 'image-picker-box' });
     showCardImage(box, localSource, { fontSize: '3em' });
 
-    // Кнопка удаления (крестик)
     if (localSource.imageId || localSource.imagePath) {
       const removeBtn = createElement(
         'button',
@@ -34,6 +30,12 @@ export function createImagePicker(source, options = {}, onChange, onRemove) {
       );
       on(removeBtn, 'click', (e) => {
         e.stopPropagation();
+
+        // ОСВОБОЖДАЕМ ПАМЯТЬ ОТ СТАРОЙ КАРТИНКИ
+        if (localSource.imageId) {
+          revokeImageUrl(localSource.imageId);
+        }
+
         localSource.imageId = null;
         localSource.imagePath = null;
         localSource.emoji = '';
@@ -45,7 +47,6 @@ export function createImagePicker(source, options = {}, onChange, onRemove) {
       box.appendChild(removeBtn);
     }
 
-    // Клик по превью — открываем меню
     on(box, 'click', () => {
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
@@ -61,14 +62,18 @@ export function createImagePicker(source, options = {}, onChange, onRemove) {
         if (!file) return;
 
         try {
-          // Вызываем кроппер (с защитой от утечек памяти внутри него)
           const croppedBlob = await openImageCropper(file, { size: options.size || 512 });
-          
           if (croppedBlob) {
             const imageId = await uploadImage(croppedBlob, {
               size: options.size || 512,
               showToast: true,
             });
+
+            // ОСВОБОЖДАЕМ ПАМЯТЬ ОТ СТАРОГО ID, ЕСЛИ ОН БЫЛ
+            if (localSource.imageId) {
+              revokeImageUrl(localSource.imageId);
+            }
+
             localSource.imageId = imageId;
             localSource.imagePath = null;
             localSource.emoji = '';
@@ -79,7 +84,6 @@ export function createImagePicker(source, options = {}, onChange, onRemove) {
           console.error('Image processing error:', err);
           toast('Упс, зарядил пленку, пробуй еще', 'error');
         } finally {
-          // Всегда очищаем инпуты, чтобы браузер не держал файл в памяти
           fileInput.value = '';
           cameraInput.value = '';
         }
@@ -93,6 +97,11 @@ export function createImagePicker(source, options = {}, onChange, onRemove) {
         cameraInput,
         onSelectFromBank: () => {
           openBankPicker((item) => {
+            // ОСВОБОЖДАЕМ ПАМЯТЬ
+            if (localSource.imageId) {
+              revokeImageUrl(localSource.imageId);
+            }
+
             localSource.imageId = null;
             localSource.imagePath = `cards/${item.category}/${item.filename || item.word + '.webp'}`;
             localSource.emoji = item.emoji || '';
@@ -109,7 +118,6 @@ export function createImagePicker(source, options = {}, onChange, onRemove) {
 
     wrapper.appendChild(box);
 
-    // 2. Ряд с вариантами (если есть)
     if (
       options.showVariants !== false &&
       !localSource.imageId &&
@@ -121,11 +129,7 @@ export function createImagePicker(source, options = {}, onChange, onRemove) {
         Boolean
       );
 
-      // Синхронизируем выбранную картинку с главной
-      if (
-        !localSource.imagePath ||
-        !allImages.some((f) => localSource.imagePath.endsWith(f))
-      ) {
+      if (!localSource.imagePath || !allImages.some((f) => localSource.imagePath.endsWith(f))) {
         localSource.imagePath = `cards/${localSource.category}/${allImages[0]}`;
       }
 

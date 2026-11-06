@@ -81,9 +81,9 @@ export function renderStories(container, profile) {
             const idx = profile.stories.findIndex((s) => s.id === updatedStory.id);
             if (idx !== -1) profile.stories[idx] = updatedStory;
             saveProfile(profile);
-            
+
             // ВОТ ЭТОЙ СТРОКИ НЕ ХВАТАЛО:
-            renderStories(container, profile); 
+            renderStories(container, profile);
           }
         );
       } else {

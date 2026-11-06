@@ -6,7 +6,7 @@ import { openStoryCardModal } from '../StoryCardModal';
 
 export function createCardTray(slide, onUpdate) {
   const tray = createElement('div', { className: 'story-editor-cards-tray' });
-  
+
   slide.cards.forEach((card, idx) => {
     const cardEl = createCard({
       id: card.id,
@@ -14,20 +14,20 @@ export function createCardTray(slide, onUpdate) {
       imageId: card.imageId,
       imagePath: card.imagePath,
       emoji: card.emoji,
-      className: 'story-card-tray-item'
+      className: 'story-card-tray-item',
     });
-    
+
     // Кнопка удаления (крестик с иконкой delete)
-    const removeBtn = createElement('button', { 
-      className: 'story-tray-remove-btn', 
+    const removeBtn = createElement('button', {
+      className: 'story-tray-remove-btn',
       type: 'button',
-      'aria-label': 'Удалить карточку'
+      'aria-label': 'Удалить карточку',
     });
-    
+
     const delImg = createElement('img', { src: iconUrl('delete'), alt: '✕' });
     delImg.onerror = () => delImg.replaceWith(document.createTextNode('✕'));
     removeBtn.appendChild(delImg);
-    
+
     on(removeBtn, 'click', (e) => {
       e.stopPropagation();
       slide.cards.splice(idx, 1);
@@ -45,7 +45,11 @@ export function createCardTray(slide, onUpdate) {
     tray.appendChild(cardEl);
   });
 
-  const addCardBtn = createElement('button', { className: 'editor-add-card-btn', type: 'button' }, 'Добавить');
+  const addCardBtn = createElement(
+    'button',
+    { className: 'editor-add-card-btn', type: 'button' },
+    'Добавить'
+  );
   on(addCardBtn, 'click', () => {
     openStoryCardModal(null, (newCard) => {
       slide.cards.push(newCard);

@@ -97,6 +97,7 @@ export function createCustomSelect({
     getValue: () => selectedValue,
     setValue: (val) => selectValue(val),
     destroy: () => {
+      closeDropdown();
       document.removeEventListener('click', handleOutsideClick);
     },
   };

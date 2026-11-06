@@ -1,15 +1,10 @@
 // src/utils/dragdrop.js
-/**
- * Универсальный сортируемый список.
- * Работает на тач-устройствах и мыши.
- */
 export function makeSortable(container, options = {}) {
   const {
     itemSelector = '[data-id]',
     onReorder = null,
     longPressDelay = 200,
     moveTolerance = 8,
-    // Элементы внутри item, тап по которым НЕ запускает drag
     ignoreSelector = 'input, button, label, .toggle-switch, .cat-action-btn',
   } = options;
 
@@ -51,7 +46,6 @@ export function makeSortable(container, options = {}) {
 
   const beginDrag = (initX, initY) => {
     isDragging = true;
-
     const rect = draggedEl.getBoundingClientRect();
     offsetX = initX - rect.left;
     offsetY = initY - rect.top;
@@ -134,7 +128,6 @@ export function makeSortable(container, options = {}) {
       ghostEl = null;
     }
 
-    // Снимаем .dragging со всех на всякий случай
     container.querySelectorAll('.dragging').forEach((el) => {
       el.classList.remove('dragging');
     });
@@ -142,20 +135,16 @@ export function makeSortable(container, options = {}) {
     const ids = getItems()
       .map((el) => el.dataset.id)
       .filter(Boolean);
-
     if (onReorder) onReorder(ids);
-
     draggedEl = null;
   };
 
-  // ===== Touch =====
   const onTouchStart = (e) => {
     if (e.touches.length !== 1) return;
-
     const item = e.target.closest(itemSelector);
     if (!item) return;
     if (item.dataset.id === 'add') return;
-    if (isInteractive(e.target)) return; // тап по toggle/label/button — игнор
+    if (isInteractive(e.target)) return;
 
     draggedEl = item;
     const t = e.touches[0];
@@ -175,7 +164,6 @@ export function makeSortable(container, options = {}) {
 
   const onTouchMove = (e) => {
     if (!draggedEl) return;
-
     if (longPressTimer) {
       const t = e.touches[0];
       const dx = t.clientX - startX;
@@ -187,7 +175,6 @@ export function makeSortable(container, options = {}) {
       }
       return;
     }
-
     if (isDragging) {
       e.preventDefault();
       const t = e.touches[0];
@@ -215,14 +202,12 @@ export function makeSortable(container, options = {}) {
     document.removeEventListener('touchcancel', onTouchCancel);
   };
 
-  // ===== Mouse =====
   const onMouseDown = (e) => {
     if (e.button !== 0) return;
-
     const item = e.target.closest(itemSelector);
     if (!item) return;
     if (item.dataset.id === 'add') return;
-    if (isInteractive(e.target)) return; // тап по toggle/label/button — игнор
+    if (isInteractive(e.target)) return;
 
     draggedEl = item;
     startX = e.clientX;
@@ -240,7 +225,6 @@ export function makeSortable(container, options = {}) {
 
   const onMouseMove = (e) => {
     if (!draggedEl) return;
-
     if (longPressTimer) {
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
@@ -251,7 +235,6 @@ export function makeSortable(container, options = {}) {
       }
       return;
     }
-
     if (isDragging) {
       e.preventDefault();
       moveDrag(e.clientX, e.clientY);
@@ -279,6 +262,20 @@ export function makeSortable(container, options = {}) {
     cleanupTouchListeners();
     cleanupMouseListeners();
     clearTimer();
-    if (isDragging) endDrag();
+
+    // ФИКС: Принудительная очистка при закрытии
+    if (ghostEl) {
+      ghostEl.remove();
+      ghostEl = null;
+    }
+    if (placeholderEl) {
+      placeholderEl.remove();
+      placeholderEl = null;
+    }
+    if (draggedEl) {
+      draggedEl.style.display = '';
+      draggedEl.classList.remove('dragging');
+      draggedEl = null;
+    }
   };
 }

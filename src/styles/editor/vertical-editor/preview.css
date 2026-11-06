@@ -294,8 +294,11 @@
   border: 2px solid transparent;
   cursor: pointer;
   padding: 0;
-  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+  transition:
+    transform 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
 .ve-color-btn:hover {
@@ -305,5 +308,7 @@
 .ve-color-btn.active {
   border-color: var(--primary);
   transform: scale(1.15);
-  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--primary);
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--primary);
 }

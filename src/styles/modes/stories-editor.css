@@ -80,7 +80,9 @@
   border-radius: 50%;
   background: var(--border);
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.2s;
 }
 .story-slide-dot.active {
   background: var(--primary);
@@ -176,7 +178,9 @@
   cursor: pointer;
   color: var(--text-muted);
   font-size: 1.1rem;
-  transition: border-color 0.2s, color 0.2s;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
 }
 .story-add-first-slide:hover {
   border-color: var(--primary);
@@ -304,7 +308,9 @@
   flex-shrink: 0;
   text-align: center;
   padding: 4px;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 .editor-add-card-btn:hover {
   background: var(--primary);

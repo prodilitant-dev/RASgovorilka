@@ -54,9 +54,13 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  
+
   /* Анимация нажатия */
-  transition: transform 0.1s ease, background 0.2s, border-color 0.2s, box-shadow 0.1s;
+  transition:
+    transform 0.1s ease,
+    background 0.2s,
+    border-color 0.2s,
+    box-shadow 0.1s;
 }
 
 /* Анимация нажатия (пружинка) */
@@ -89,9 +93,11 @@
   box-sizing: border-box;
   z-index: 1;
   overflow: hidden;
-  
+
   /* Плавная анимация при нажатии */
-  transition: transform 0.1s ease, border-color 0.2s;
+  transition:
+    transform 0.1s ease,
+    border-color 0.2s;
 }
 
 /* Уменьшаем аватарку при нажатии на кнопку (для эффекта глубины) */

@@ -100,7 +100,7 @@ function autoAssignImage(btn) {
 function handleButtonClick(id) {
   if (id === 'add') {
     const newBtn = { id: uid(), text: '', emoji: '', imagePath: null, imageId: null };
-    
+
     // ИСПОЛЬЗУЕМ openCardEditor
     openCardEditor(
       newBtn,

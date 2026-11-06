@@ -62,7 +62,9 @@
   height: 6px;
   border-radius: 50%;
   background: var(--border);
-  transition: background 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.2s;
 }
 
 .story-reader-dot.active {
@@ -157,7 +159,7 @@
   overflow-y: visible; /* Разрешаем карточке вылезать за границы по вертикали при scale */
   padding: 16px 0; /* Добавили отступы сверху и снизу, чтобы было куда расти */
   flex-shrink: 0;
-  scrollbar-width: thin; 
+  scrollbar-width: thin;
   min-height: 140px;
   align-items: center;
 }
@@ -175,7 +177,9 @@
   width: 100px !important;
   height: 125px !important;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .card--mini .card__label {
@@ -216,7 +220,7 @@
 
 .story-nav-btn {
   /* Убираем flex: 1, чтобы кнопки не растягивались на весь экран */
-  flex: 0 0 auto; 
+  flex: 0 0 auto;
   min-width: 110px; /* Минимальная ширина кнопки */
   min-height: 44px; /* Стандартная высота кнопок */
   font-size: 1rem;

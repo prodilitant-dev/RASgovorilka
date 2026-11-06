@@ -38,12 +38,12 @@ export function openVerticalEditor(config) {
         if (field && field.onChange) {
           field.onChange(value, workingEntity);
         }
-        
+
         // <-- ВЫЗЫВАЕМ ONCHANGE ПРИ ЛЮБОМ ИЗМЕНЕНИИ
         if (onChange) {
           onChange(key, value, workingEntity);
         }
-        
+
         renderContent();
       },
       onUploadImage: async (file) => {
@@ -116,9 +116,10 @@ export function openVerticalEditor(config) {
       fields,
       extraActions,
       extraContent,
-      previewSides: typeof previewSides === 'function' 
-        ? previewSides(workingEntity, currentCallbacks) 
-        : previewSides,
+      previewSides:
+        typeof previewSides === 'function'
+          ? previewSides(workingEntity, currentCallbacks)
+          : previewSides,
       buttons,
       preview,
       callbacks: currentCallbacks,

@@ -117,7 +117,9 @@ export async function exportToZip({
     a.href = url;
     a.download = `RASgovorilka_печать_${new Date().toISOString().slice(0, 10)}.zip`;
     a.click();
-    URL.revokeObjectURL(url);
+
+    // Очищаем память только с задержкой, чтобы браузер успел скачать файл
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
 
     toast('PNG сохранены в ZIP!', 'success');
   } catch (e) {

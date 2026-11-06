@@ -1,69 +1,55 @@
 // src/services/image/deleteUnusedImages.js
-
 import { getAllImageIds } from '@storage/imageStorage';
 import { deleteImage } from './deleteImage';
+import { getState } from '@state/store'; // <-- ДОБАВЛЕНО
 import { logger } from '@utils/logger';
 
-/**
- * Собирает все используемые imageId из профиля.
- * @param {Object} profile - профиль пользователя
- * @returns {Set<string>}
- */
+function collectUsedImageIdsFromProfile(profile, usedSet) {
+  if (profile.imageId) usedSet.add(profile.imageId);
 
-function collectUsedImageIds(profile) {
-  const used = new Set();
-
-  // 1. Иконка самого профиля
-  if (profile.imageId) {
-    used.add(profile.imageId);
-  }
-
-  // 2. Карточки во всех категориях
   for (const categoryId in profile.cards) {
-    const cards = profile.cards[categoryId] || [];
-    cards.forEach((card) => {
-      if (card.imageId) used.add(card.imageId);
+    (profile.cards[categoryId] || []).forEach((card) => {
+      if (card.imageId) usedSet.add(card.imageId);
     });
   }
 
-  // 3. Быстрые кнопки
   (profile.quickButtons || []).forEach((btn) => {
-    if (btn.imageId) used.add(btn.imageId);
+    if (btn.imageId) usedSet.add(btn.imageId);
   });
 
-  // 4. Кнопки Да/Нет
   (profile.yesnoButtons || []).forEach((btn) => {
-    if (btn.imageId) used.add(btn.imageId);
+    if (btn.imageId) usedSet.add(btn.imageId);
   });
 
-  // 5. События расписания
   (profile.scheduleTemplates || []).forEach((template) => {
     (template.events || []).forEach((event) => {
-      if (event.imageId) used.add(event.imageId);
+      if (event.imageId) usedSet.add(event.imageId);
     });
   });
 
-  return used;
+  (profile.stories || []).forEach((story) => {
+    if (story.coverImageId) usedSet.add(story.coverImageId);
+    (story.slides || []).forEach((slide) => {
+      if (slide.imageId) usedSet.add(slide.imageId);
+      (slide.cards || []).forEach((card) => {
+        if (card.imageId) usedSet.add(card.imageId);
+      });
+    });
+  });
 }
 
-/**
- * Удаляет все изображения, которые не используются в профиле.
- * @param {Object} profile - профиль пользователя
- * @returns {Promise<number>} - количество удалённых изображений
- */
-export async function deleteUnusedImages(profile) {
-  if (!profile || !profile.id) {
-    throw new Error('Не передан валидный профиль');
-  }
+export async function deleteUnusedImages() {
+  // Получаем ВСЕ профили из состояния
+  const state = getState();
+  const profiles = state.profiles || [];
 
-  // Получаем все id из хранилища
   const allIds = await getAllImageIds();
   if (allIds.length === 0) return 0;
 
-  // Собираем используемые id
-  const usedIds = collectUsedImageIds(profile);
+  const usedIds = new Set();
+  // Собираем ID из всех профилей
+  profiles.forEach((profile) => collectUsedImageIdsFromProfile(profile, usedIds));
 
-  // Находим неиспользуемые
   const unused = allIds.filter((id) => !usedIds.has(id));
 
   if (unused.length === 0) {

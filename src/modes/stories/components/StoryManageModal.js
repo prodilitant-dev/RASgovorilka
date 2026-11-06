@@ -33,7 +33,7 @@ export function openStoryManageModal(story, onEdit, onDelete, onSaveCb) {
     entity,
     preview: true,
     previewSides: createColorPalette,
-    
+
     // Мгновенно применяем визуальные изменения (цвет и картинку)
     onChange: (key, value, workingEntity) => {
       if (['styleColor', 'imageId', 'imagePath'].includes(key)) {
@@ -50,7 +50,7 @@ export function openStoryManageModal(story, onEdit, onDelete, onSaveCb) {
       applyInstantSave(updated);
       done();
     },
-    
+
     onDelete: (deletedEntity, done) => {
       confirm('Удалить эту историю?', 'Подтверждение').then((ok) => {
         if (ok) {
@@ -59,7 +59,7 @@ export function openStoryManageModal(story, onEdit, onDelete, onSaveCb) {
         }
       });
     },
-    
+
     fields: [
       {
         id: 'title',
@@ -69,7 +69,7 @@ export function openStoryManageModal(story, onEdit, onDelete, onSaveCb) {
         placeholder: 'Название истории',
       },
     ],
-    
+
     extraActions: [
       {
         id: 'edit_slides',
@@ -78,10 +78,10 @@ export function openStoryManageModal(story, onEdit, onDelete, onSaveCb) {
           applyInstantSave(ent);
           closeModal();
           onEdit();
-        }
-      }
+        },
+      },
     ],
-    
+
     buttons: [
       {
         id: 'delete',

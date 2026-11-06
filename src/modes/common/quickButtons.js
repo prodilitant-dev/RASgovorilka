@@ -32,12 +32,12 @@ export function renderQuickButtons(container, profile, { onQuickClick, onReorder
     // Применяем акцентный цвет к самой кнопке (фон и внешняя рамка)
     if (btn.styleColor) {
       el.style.borderColor = btn.styleColor;
-      el.style.backgroundColor = `${btn.styleColor}33`; 
+      el.style.backgroundColor = `${btn.styleColor}33`;
     }
 
     // === АВАТАРКА (с акцентной обводкой) ===
     const avatarWrap = createElement('div', { className: 'quick-btn__avatar' });
-    
+
     if (btn.styleColor) {
       avatarWrap.style.borderColor = btn.styleColor;
       avatarWrap.style.borderWidth = '2px';
@@ -111,11 +111,11 @@ export function renderQuickButtons(container, profile, { onQuickClick, onReorder
       addImg.replaceWith(document.createTextNode('➕'));
     });
     addBtn.appendChild(addImg);
-    
+
     addBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       const newBtn = { id: uid(), text: '', emoji: '', imagePath: null, imageId: null };
-      
+
       openCardEditor(
         newBtn,
         (updated, done) => {

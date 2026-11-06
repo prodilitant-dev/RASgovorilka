@@ -49,7 +49,7 @@ export function renderCategories(
       el.style.backgroundColor = isActive ? `${cat.styleColor}80` : `${cat.styleColor}40`;
     } else if (isActive) {
       // Если акцента нет, убираем стандартную зеленую заливку для активной вкладки
-      el.style.backgroundColor = 'var(--surface)'; 
+      el.style.backgroundColor = 'var(--surface)';
     }
 
     if (isActive) {

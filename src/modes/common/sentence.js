@@ -68,29 +68,29 @@ export async function speakSentence(container) {
   speakSequence(fullText, {
     voiceSettings: vs,
     onWord: (charIndex) => {
-      const activeMapping = mapping.find(m => charIndex >= m.start && charIndex <= m.end);
+      const activeMapping = mapping.find((m) => charIndex >= m.start && charIndex <= m.end);
       if (activeMapping) {
         const el = wordEls[activeMapping.index];
         if (el && !el.classList.contains('sentence-word--active')) {
-          wordEls.forEach(w => {
+          wordEls.forEach((w) => {
             w.classList.remove('sentence-word--active');
             w.style.borderColor = ''; // Сбрасываем кастомный бордюр
           });
-          
+
           el.classList.add('sentence-word--active');
-          
+
           // Если у слова есть свой цвет, применяем его к бордюру
           const wordData = words[activeMapping.index];
           if (wordData && wordData.styleColor) {
             el.style.borderColor = wordData.styleColor;
           }
-          
+
           el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
       }
     },
     onEnd: () => {
-      wordEls.forEach(w => {
+      wordEls.forEach((w) => {
         w.classList.remove('sentence-word--active');
         w.style.borderColor = '';
       });
