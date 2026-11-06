@@ -5,6 +5,7 @@ import { openImageSourcePopup } from '@components/common/VerticalEditor/preview/
 import { openBankPicker } from '@components/common/VerticalEditor/BankPickerModal';
 import { openImageCropper } from '@components/common/ImageCropper';
 import { uploadImage } from '@services/image';
+import { toast } from '@utils/toast';
 import '@styles/components/image-picker.css';
 
 /**
@@ -59,18 +60,28 @@ export function createImagePicker(source, options = {}, onChange, onRemove) {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Вызываем кроппер (переиспользуем ваш)
-        const croppedBlob = await openImageCropper(file, { size: options.size || 512 });
-        if (croppedBlob) {
-          const imageId = await uploadImage(croppedBlob, {
-            size: options.size || 512,
-            showToast: true,
-          });
-          localSource.imageId = imageId;
-          localSource.imagePath = null;
-          localSource.emoji = '';
-          if (onChange) onChange(localSource);
-          render();
+        try {
+          // Вызываем кроппер (с защитой от утечек памяти внутри него)
+          const croppedBlob = await openImageCropper(file, { size: options.size || 512 });
+          
+          if (croppedBlob) {
+            const imageId = await uploadImage(croppedBlob, {
+              size: options.size || 512,
+              showToast: true,
+            });
+            localSource.imageId = imageId;
+            localSource.imagePath = null;
+            localSource.emoji = '';
+            if (onChange) onChange(localSource);
+            render();
+          }
+        } catch (err) {
+          console.error('Image processing error:', err);
+          toast('Упс, зарядил пленку, пробуй еще', 'error');
+        } finally {
+          // Всегда очищаем инпуты, чтобы браузер не держал файл в памяти
+          fileInput.value = '';
+          cameraInput.value = '';
         }
       };
 
@@ -111,7 +122,10 @@ export function createImagePicker(source, options = {}, onChange, onRemove) {
       );
 
       // Синхронизируем выбранную картинку с главной
-      if (!localSource.imagePath || !allImages.some((f) => localSource.imagePath.endsWith(f))) {
+      if (
+        !localSource.imagePath ||
+        !allImages.some((f) => localSource.imagePath.endsWith(f))
+      ) {
         localSource.imagePath = `cards/${localSource.category}/${allImages[0]}`;
       }
 
