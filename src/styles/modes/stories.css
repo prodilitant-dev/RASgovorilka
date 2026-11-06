@@ -1,0 +1,196 @@
+/* src/styles/modes/stories.css */
+
+.story-reader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1500; /* Поверх всего, кроме тостов */
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* Шапка */
+.story-reader-header {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  gap: var(--spacing-sm);
+}
+
+.story-reader-header-left,
+.story-reader-header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.story-reader-header-right {
+  justify-content: flex-end;
+}
+
+.story-reader-header-center {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.story-reader-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.story-reader-progress {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Кнопка Play/Pause */
+.story-reader-play {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: var(--primary);
+}
+
+.story-reader-play:hover {
+  background: var(--primary-light);
+}
+
+.story-reader-play.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+
+.story-reader-close {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 8px;
+  line-height: 1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+}
+.story-reader-close:hover {
+  background: var(--bg);
+}
+
+/* Контент */
+.story-reader-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: var(--spacing-md);
+  gap: var(--spacing-md);
+}
+
+.story-reader-image-wrap {
+  flex: 1;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: var(--spacing-sm);
+}
+
+.story-reader-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: calc(var(--radius) - 4px);
+}
+
+/* Лента карточек */
+.story-reader-cards-tray {
+  display: flex;
+  gap: var(--spacing-sm);
+  overflow-x: auto;
+  padding-bottom: var(--spacing-sm);
+  flex-shrink: 0;
+  scrollbar-width: thin; 
+}
+
+.story-reader-cards-tray::-webkit-scrollbar {
+  height: 6px;
+}
+.story-reader-cards-tray::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* Мини-карточки в читалке */
+.story-card-mini {
+  flex-shrink: 0;
+  width: 100px !important;
+  height: 125px !important;
+  cursor: pointer;
+  transition: transform 0.2s, outline 0.2s, box-shadow 0.2s;
+}
+
+.story-card-mini .card__label {
+  font-size: 0.8rem;
+  padding: 4px;
+}
+
+.story-card-mini .card__bg {
+  font-size: 2rem;
+}
+
+/* 
+ * Убираем кастомный класс .speaking, так как используем 
+ * родной .card--active для подсветки. 
+ * Он уже описан в card.css и автоматически сделает рамку и фон.
+ */
+
+/* Футер */
+.story-reader-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom, 0px));
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.story-nav-btn {
+  flex: 1;
+  min-height: 56px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.story-nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

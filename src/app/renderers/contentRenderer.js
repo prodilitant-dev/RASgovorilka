@@ -4,6 +4,7 @@ import { renderProfiles } from '@modes/profiles';
 import { renderGeneral } from '@modes/general';
 import { renderSay } from '@modes/say';
 import { renderWrite } from '@modes/write';
+import { renderStories } from '@modes/stories'; // <-- ИМПОРТ
 import { handleLearning } from '@modes/learning';
 import { handleGames } from '@modes/games';
 import { renderYesNo } from '@modes/yesno';
@@ -24,6 +25,11 @@ const modeRenderers = {
     const profile = getActiveProfile();
     if (profile) renderWrite(container, profile);
     else renderPlaceholder(container, 'write (нет профиля)');
+  },
+  stories: (container) => { // <-- НОВЫЙ РЕНДЕРЕР
+    const profile = getActiveProfile();
+    if (profile) renderStories(container, profile);
+    else renderPlaceholder(container, 'stories (нет профиля)');
   },
   learning: (container) => {
     const profile = getActiveProfile();
@@ -49,11 +55,8 @@ const modeRenderers = {
 
 export function renderContent(container, modeId) {
   logger.debug(`📱 Switching to mode: ${modeId}`);
-
-  // 1. Закрываем все модалки
   closeAllModals();
 
-  // 2. Снимаем cleanup предыдущего режима
   if (typeof container._modeCleanup === 'function') {
     try {
       container._modeCleanup();
@@ -63,7 +66,6 @@ export function renderContent(container, modeId) {
     container._modeCleanup = null;
   }
 
-  // 3. Рендерим новый режим
   const renderFn = modeRenderers[modeId];
   if (renderFn) {
     renderFn(container);

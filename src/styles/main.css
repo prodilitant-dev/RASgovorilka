@@ -30,6 +30,7 @@
 /* === Editors: крупные редакторы === */
 @import './editor/vertical-editor/index.css';
 @import './editor/image-cropper.css';
+@import './modes/stories-editor.css';
 
 /* === Common: общие компоненты === */
 @import './common/sentence-bar.css';
@@ -46,6 +47,7 @@
 @import './modes/learning/index.css';
 @import './modes/games.css';
 @import './modes/schedule.css';
+@import './modes/stories.css';
 
 html,
 body {

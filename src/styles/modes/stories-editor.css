@@ -1,0 +1,264 @@
+/* src/styles/modes/stories-editor.css */
+
+.story-editor-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg);
+}
+
+/* Шапка */
+.story-editor-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.story-title-input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.story-cover-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.story-cover-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Основная область */
+.story-editor-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  gap: var(--spacing-md);
+  overflow: hidden;
+}
+
+.story-editor-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+/* Навигация */
+.story-editor-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.slide-num {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Картинка */
+.story-editor-image-wrap {
+  flex: 1;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 2px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+.story-editor-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.story-editor-image:hover {
+  opacity: 0.8;
+}
+.img-placeholder {
+  color: var(--text-muted);
+}
+
+/* Лента карточек */
+.story-editor-cards-tray {
+  display: flex;
+  gap: var(--spacing-sm);
+  overflow-x: auto;
+  padding-bottom: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.editor-mini-card {
+  width: 90px;
+  height: 110px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.editor-mini-card-img {
+  flex: 1;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.editor-mini-card-label {
+  padding: 4px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+
+.editor-mini-card-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: white;
+  border: 2px solid var(--surface);
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.editor-add-card-btn {
+  width: 90px;
+  height: 110px;
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--border);
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Футер */
+.story-editor-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom, 0px));
+}
+
+/* --- Стили для модалки карточек в историях --- */
+.story-card-modal-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.story-card-modal-step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.slide-search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 1rem;
+}
+
+.slide-search-results-inline {
+  display: flex;
+  flex-direction: column;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.search-item {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.search-item:last-child {
+  border-bottom: none;
+}
+.search-item:hover {
+  background: var(--bg);
+}
+.search-create {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Превью редактируемой карточки */
+.story-card-edit-preview {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 2px dashed var(--border);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-size: 2rem;
+}
+
+.story-card-edit-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+.story-card-edit-actions .btn {
+  flex: 1;
+}
