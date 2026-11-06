@@ -211,16 +211,12 @@ export function openStoriesReader(story) {
     playbackState = 'playing';
     updatePlayBtnState();
     currentSlideIndex = startIndex;
-    
-    const vs = getVoiceSettings();
-    const delayMs = vs.slideDelay ?? 1500;
 
     const playNextSlide = async () => {
       if (playbackState !== 'playing') return;
       
       await renderSlideUI();
 
-      // Небольшая пауза перед стартом речи на новом слайде (чтобы DOM успел обновиться)
       waitTimeout = setTimeout(() => {
         if (playbackState !== 'playing') return;
         
@@ -228,18 +224,20 @@ export function openStoriesReader(story) {
           if (playbackState !== 'playing') return;
           
           if (currentSlideIndex < story.slides.length - 1) {
-            // Задержка перед следующим слайдом
+            // БЕРЕМ ПАУЗУ ИЗ ТЕКУЩЕГО СЛАЙДА
+            const currentSlide = story.slides[currentSlideIndex];
+            const delayMs = currentSlide.pauseAfter !== undefined ? currentSlide.pauseAfter : 1500;
+
             waitTimeout = setTimeout(() => {
               currentSlideIndex++;
               playNextSlide();
             }, delayMs);
           } else {
-            // Конец истории
             stopPlayback();
             btnNext.textContent = 'Готово';
           }
         });
-      }, 300); // 300мс на рендер DOM
+      }, 300);
     };
 
     playNextSlide();

@@ -4,12 +4,11 @@ import { uid } from '@utils/id';
 import { toast } from '@utils/toast';
 import { showCardImage } from '@utils/image/showCardImage';
 import { iconUrl } from '@utils/icon';
+import { confirm } from '@utils/dialog';
 import { openStoryImagePicker } from './utils/StoryImagePicker';
 import { openStoryCardModal } from './components/StoryCardModal';
-import { openStoriesReader } from './Stories.reader'; // Для кнопки "Просмотр"
+import { openStoriesReader } from './Stories.reader';
 import '@styles/modes/stories-editor.css';
-import { confirm } from '@utils/dialog';
-
 
 export function openStoriesEditor(container, story, onSave, onCancel) {
   const isNew = !story;
@@ -24,12 +23,9 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
   const renderEditor = () => {
     clear(root);
 
-    // ==========================================
-    // 1. ШАПКА (Сначала Картинка, потом Название)
-    // ==========================================
+    // 1. ШАПКА (Обложка + Название)
     const header = createElement('div', { className: 'story-editor-header' });
     
-    // Обложка
     const coverWrap = createElement('div', { className: 'story-cover-wrap' });
     const coverBtn = createElement('div', { className: 'story-cover-btn' });
     showCardImage(coverBtn, {
@@ -50,7 +46,6 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
     coverWrap.appendChild(coverBtn);
     header.appendChild(coverWrap);
 
-    // Название
     const titleWrap = createElement('div', { className: 'story-title-wrap' });
     const titleInput = createElement('input', {
       type: 'text',
@@ -64,20 +59,17 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
 
     root.appendChild(header);
 
-    // ==========================================
     // 2. ЦЕНТР (Слайды)
-    // ==========================================
     const main = createElement('div', { className: 'story-editor-main' });
 
     if (workingStory.slides.length === 0) {
-      // Если слайдов нет — показываем большую кнопку по центру
       const emptyBtn = createElement('button', { className: 'story-add-first-slide', type: 'button' });
       const emptyImg = createElement('img', { src: iconUrl('add'), alt: 'Добавить' });
       emptyBtn.appendChild(emptyImg);
       emptyBtn.appendChild(createElement('span', {}, 'Добавить первый слайд'));
       
       on(emptyBtn, 'click', () => {
-        workingStory.slides.push({ id: uid(), imageId: null, imagePath: null, cards: [] });
+        workingStory.slides.push({ id: uid(), imageId: null, imagePath: null, cards: [], pauseAfter: 1500 });
         currentSlideIndex = 0;
         renderEditor();
       });
@@ -85,10 +77,9 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
     } else {
       const slide = workingStory.slides[currentSlideIndex];
 
-      // --- Верхняя панель над превью (Точки и Удалить) ---
+      // --- Верхняя панель слайда (Точки + Удалить) ---
       const topBar = createElement('div', { className: 'story-slide-top-bar' });
       
-      // Точки
       const dotsWrap = createElement('div', { className: 'story-slide-dots' });
       workingStory.slides.forEach((_, idx) => {
         const dot = createElement('div', { 
@@ -99,14 +90,11 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
       });
       topBar.appendChild(dotsWrap);
 
-      // Удалить слайд
       const btnDel = createElement('button', { className: 'story-slide-del-btn', type: 'button', 'aria-label': 'Удалить слайд' });
       const delImg = createElement('img', { src: iconUrl('trash'), alt: '🗑' });
       delImg.onerror = () => { delImg.replaceWith(document.createTextNode('🗑')); };
       btnDel.appendChild(delImg);
-      
       on(btnDel, 'click', () => {
-        // ИСПОЛЬЗУЕМ ВАШ КАСТОМНЫЙ CONFIRM
         confirm('Удалить этот слайд?', 'Подтверждение').then((ok) => {
           if (ok) {
             workingStory.slides.splice(currentSlideIndex, 1);
@@ -122,19 +110,16 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
       // --- Центральная часть (Навигация + Превью) ---
       const centerRow = createElement('div', { className: 'story-slide-center-row' });
 
-      // Кнопка Назад
       const prevBtn = createElement('button', { className: 'story-nav-arrow', type: 'button', disabled: currentSlideIndex === 0 });
       const prevImg = createElement('img', { src: iconUrl('arrow-left'), alt: '⬅️' });
       prevImg.onerror = () => { prevImg.replaceWith(document.createTextNode('⬅️')); };
       prevBtn.appendChild(prevImg);
       on(prevBtn, 'click', () => { if(currentSlideIndex > 0) { currentSlideIndex--; renderEditor(); } });
 
-      // Превью картинки
       const imgWrap = createElement('div', { className: 'story-editor-image-wrap' });
       if (slide.imageId || slide.imagePath) {
         showCardImage(imgWrap, slide, { fontSize: '3em' });
       } else {
-        // Заглушка с add.webp
         const addImg = createElement('img', { src: iconUrl('add'), alt: 'Добавить картинку', className: 'story-placeholder-img' });
         addImg.onerror = () => { addImg.replaceWith(document.createTextNode('➕')); };
         imgWrap.appendChild(addImg);
@@ -146,7 +131,6 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
         });
       });
 
-      // Кнопка Вперед / Добавить
       const isLastSlide = currentSlideIndex === workingStory.slides.length - 1;
       const nextBtn = createElement('button', { className: `story-nav-arrow ${isLastSlide ? 'is-add' : ''}`, type: 'button' });
       const nextImg = createElement('img', { src: iconUrl(isLastSlide ? 'add' : 'arrow-right'), alt: isLastSlide ? '➕' : '➡️' });
@@ -155,8 +139,7 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
       
       on(nextBtn, 'click', () => {
         if (isLastSlide) {
-          // Создаем новый слайд
-          workingStory.slides.push({ id: uid(), imageId: null, imagePath: null, cards: [] });
+          workingStory.slides.push({ id: uid(), imageId: null, imagePath: null, cards: [], pauseAfter: 1500 });
           currentSlideIndex++;
         } else {
           currentSlideIndex++;
@@ -168,6 +151,35 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
       centerRow.appendChild(imgWrap);
       centerRow.appendChild(nextBtn);
       main.appendChild(centerRow);
+
+      // --- НАСТРОЙКА ПАУЗЫ ---
+      const pauseRow = createElement('div', { className: 'story-slide-pause-row' });
+      const pauseLabel = createElement('span', { className: 'story-pause-label' }, '⏱ Пауза:');
+      
+      // Если у слайда еще нет pauseAfter (старые данные), ставим 1500 по умолчанию
+      if (slide.pauseAfter === undefined) slide.pauseAfter = 1500;
+      
+      const pauseInput = createElement('input', {
+        type: 'range',
+        min: '0',
+        max: '5',
+        step: '0.5',
+        value: String(slide.pauseAfter / 1000),
+        className: 'story-pause-range'
+      });
+      
+      const pauseValue = createElement('span', { className: 'story-pause-value' }, `${(slide.pauseAfter / 1000).toFixed(1)} с`);
+
+      on(pauseInput, 'input', (e) => {
+        const valSec = parseFloat(e.target.value);
+        slide.pauseAfter = valSec * 1000;
+        pauseValue.textContent = `${valSec.toFixed(1)} с`;
+      });
+
+      pauseRow.appendChild(pauseLabel);
+      pauseRow.appendChild(pauseInput);
+      pauseRow.appendChild(pauseValue);
+      main.appendChild(pauseRow);
 
       // --- Нижняя панель (Лента карточек) ---
       const cardsTray = createElement('div', { className: 'story-editor-cards-tray' });
@@ -199,17 +211,7 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
         cardsTray.appendChild(cardEl);
       });
 
-      // Кнопка добавления карточки
       const addCardBtn = createElement('button', { className: 'editor-add-card-btn', type: 'button' }, 'Добавить');
-      on(addCardBtn, 'click', () => {
-        openStoryCardModal(null, (newCard) => {
-          slide.cards.push(newCard);
-          renderEditor();
-        });
-      });
-      
-      cardsTray.appendChild(addCardBtn);
-      
       on(addCardBtn, 'click', () => {
         openStoryCardModal(null, (newCard) => {
           slide.cards.push(newCard);
@@ -223,9 +225,7 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
 
     root.appendChild(main);
 
-    // ==========================================
-    // 3. ФУТЕР (Отмена, Просмотр, Сохранить)
-    // ==========================================
+    // 3. ФУТЕР
     const footer = createElement('div', { className: 'story-editor-footer' });
     
     const btnCancel = createElement('button', { className: 'btn btn-secondary', type: 'button' }, 'Отмена');
@@ -237,7 +237,6 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
         toast('Сначала добавьте слайды', 'error');
         return;
       }
-      // Открываем читалку, передавая текущий (несохраненный) объект
       openStoriesReader(workingStory);
     });
 
