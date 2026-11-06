@@ -3,6 +3,7 @@ import { createElement, on, clear } from '@utils/dom';
 import { getImageUrl } from '@services/imageService';
 import { createCard } from '@components/common/Card/Card';
 import { getState } from '@state/store';
+import { speakSequence, stopSequence, pauseSequence, resumeSequence } from '@services/speech/speechSequence';
 import { logger } from '@utils/logger';
 import '@styles/modes/stories.css';
 
@@ -21,7 +22,6 @@ export function openStoriesReader(story) {
   
   // Шапка
   const header = createElement('div', { className: 'story-reader-header' });
-  
   const btnPlay = createElement('button', { className: 'story-reader-play', 'aria-label': 'Воспроизвести' }, '▶️');
   const btnClose = createElement('button', { className: 'story-reader-close', 'aria-label': 'Закрыть' }, '✕');
   
@@ -76,7 +76,7 @@ export function openStoriesReader(story) {
   }
 
   function stopPlayback() {
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    stopSequence();
     if (waitTimeout) clearTimeout(waitTimeout);
     playbackState = 'stopped';
     updatePlayBtnState();
@@ -88,7 +88,6 @@ export function openStoriesReader(story) {
     return state.globalSettings?.voiceSettings || {};
   }
 
-  // Обновление интерфейса (без сброса состояния воспроизведения)
   async function renderSlideUI() {
     const slide = story.slides[currentSlideIndex];
     
@@ -98,7 +97,6 @@ export function openStoriesReader(story) {
       progressEl.textContent = '';
     }
 
-    // Картинка
     imageEl.src = '';
     imageEl.style.display = 'none';
     if (slide.imageId) {
@@ -110,18 +108,18 @@ export function openStoriesReader(story) {
       imageEl.style.display = 'block';
     }
 
-    // Лента карточек
     clear(cardsTray);
     if (slide.cards && slide.cards.length > 0) {
       slide.cards.forEach((cardData) => {
+        // Переиспользуем createCard с модификатором mini
         const cardEl = createCard({
           id: cardData.id,
           text: cardData.text,
           imageId: cardData.imageId,
           imagePath: cardData.imagePath,
-          emoji: cardData.emoji
+          emoji: cardData.emoji,
+          className: 'card--mini'
         });
-        cardEl.classList.add('story-card-mini');
         
         on(cardEl, 'click', () => {
           stopPlayback();
@@ -131,16 +129,10 @@ export function openStoriesReader(story) {
       });
     }
 
-    // Кнопки навигации
     btnPrev.disabled = currentSlideIndex === 0;
-    if (currentSlideIndex === story.slides.length - 1) {
-      btnNext.textContent = 'Готово';
-    } else {
-      btnNext.textContent = 'Далее >';
-    }
+    btnNext.textContent = currentSlideIndex === story.slides.length - 1 ? 'Готово' : 'Далее >';
   }
 
-  // Воспроизведение текущего слайда с коллбэком на завершение
   function playCurrentSlideAudio(onComplete) {
     const slide = story.slides[currentSlideIndex];
     if (!slide.cards || slide.cards.length === 0) {
@@ -150,6 +142,7 @@ export function openStoriesReader(story) {
 
     const vs = getVoiceSettings();
     
+    // Собираем текст и маппинг карточек
     let fullText = '';
     const mapping = [];
     slide.cards.forEach((card, index) => {
@@ -160,25 +153,12 @@ export function openStoriesReader(story) {
       if (index < slide.cards.length - 1) fullText += ' ';
     });
 
-    const utt = new SpeechSynthesisUtterance(fullText);
-    utt.lang = 'ru-RU';
-    utt.rate = vs.rate ?? 1;
-    utt.pitch = vs.pitch ?? 1;
-    utt.volume = vs.volume ?? 1;
+    const cardElements = Array.from(cardsTray.querySelectorAll('.card--mini'));
 
-    if (vs.voiceURI) {
-      const voices = window.speechSynthesis.getVoices();
-      const voice = voices.find(v => v.voiceURI === vs.voiceURI);
-      if (voice) utt.voice = voice;
-    }
-
-    const cardElements = Array.from(cardsTray.querySelectorAll('.story-card-mini'));
-
-    utt.onboundary = (event) => {
-      if (event.name === 'word' || event.name === 'sentence') {
-        const charIndex = event.charIndex;
+    speakSequence(fullText, {
+      voiceSettings: vs,
+      onWord: (charIndex) => {
         const activeMapping = mapping.find(m => charIndex >= m.start && charIndex <= m.end);
-        
         if (activeMapping) {
           const cardEl = cardElements[activeMapping.index];
           if (cardEl && !cardEl.classList.contains('card--active')) {
@@ -187,25 +167,31 @@ export function openStoriesReader(story) {
             cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
           }
         }
-      }
-    };
-
-    utt.onend = () => {
-      cardElements.forEach(c => c.classList.remove('card--active'));
-      if (onComplete) onComplete();
-    };
-
-    utt.onerror = (e) => {
-      if (e.error !== 'interrupted') {
+      },
+      onEnd: () => {
+        cardElements.forEach(c => c.classList.remove('card--active'));
+        if (onComplete) onComplete();
+      },
+      onError: () => {
         cardElements.forEach(c => c.classList.remove('card--active'));
         if (onComplete) onComplete();
       }
-    };
-
-    window.speechSynthesis.speak(utt);
+    });
   }
 
-  // Запуск всей истории (с задержками)
+  function speakSingle(text, cardEl) {
+    if (cardEl) {
+      cardEl.classList.add('card--active');
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+    
+    speakSequence(text, {
+      voiceSettings: getVoiceSettings(),
+      onEnd: () => { if (cardEl) cardEl.classList.remove('card--active'); },
+      onError: () => { if (cardEl) cardEl.classList.remove('card--active'); }
+    });
+  }
+
   function playEntireStory(startIndex = 0) {
     stopPlayback();
     playbackState = 'playing';
@@ -224,7 +210,6 @@ export function openStoriesReader(story) {
           if (playbackState !== 'playing') return;
           
           if (currentSlideIndex < story.slides.length - 1) {
-            // БЕРЕМ ПАУЗУ ИЗ ТЕКУЩЕГО СЛАЙДА
             const currentSlide = story.slides[currentSlideIndex];
             const delayMs = currentSlide.pauseAfter !== undefined ? currentSlide.pauseAfter : 1500;
 
@@ -243,31 +228,6 @@ export function openStoriesReader(story) {
     playNextSlide();
   }
 
-  function speakSingle(text, cardEl) {
-    if (cardEl) {
-      cardEl.classList.add('card--active');
-      cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-    }
-    
-    const vs = getVoiceSettings();
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = 'ru-RU';
-    utt.rate = vs.rate ?? 1;
-    utt.pitch = vs.pitch ?? 1;
-    utt.volume = vs.volume ?? 1;
-
-    if (vs.voiceURI) {
-      const voices = window.speechSynthesis.getVoices();
-      const voice = voices.find(v => v.voiceURI === vs.voiceURI);
-      if (voice) utt.voice = voice;
-    }
-
-    utt.onend = () => {
-      if (cardEl) cardEl.classList.remove('card--active');
-    };
-    window.speechSynthesis.speak(utt);
-  }
-
   // --- Управление интерфейсом ---
 
   function closeReader() {
@@ -283,30 +243,17 @@ export function openStoriesReader(story) {
       playEntireStory(currentSlideIndex);
     } else if (playbackState === 'playing') {
       playbackState = 'paused';
-      window.speechSynthesis.pause();
-      if (waitTimeout) clearTimeout(waitTimeout); // Останавливаем таймер ожидания
+      pauseSequence();
+      if (waitTimeout) clearTimeout(waitTimeout);
       updatePlayBtnState();
     } else if (playbackState === 'paused') {
       playbackState = 'playing';
       
       if (window.speechSynthesis.paused) {
-        window.speechSynthesis.resume();
+        resumeSequence();
       } else {
-        // Если мы были в паузе между слайдами (речь не играла), нужно запустить таймер заново
-        const vs = getVoiceSettings();
-        const delayMs = vs.slideDelay ?? 1500;
-        
-        // Продолжаем с того же слайда, где остановились
-        // Если пауза была во время речи, speechSynthesis.resume() поднимет её.
-        // Если пауза была во время задержки, нам нужно понять, чей это был таймер.
-        // Для простоты: если речь на паузе - resume, иначе просто запускаем playNextSlide
-        if (!window.speechSynthesis.speaking && !window.speechSynthesis.pending) {
-           // Если мы стояли на паузе, но ничего не говорили (т.е. это была пауза во время waitTimeout)
-           // Просто перезапускаем воспроизведение текущего слайда (или продолжаем ожидание)
-           // Самый простой и надежный путь - перезапустить playEntireStory с текущего индекса, но с флагом, 
-           // что это продолжение, чтобы не сбрасывать UI.
-           playEntireStory(currentSlideIndex);
-        }
+        // Если пауза была во время ожидания между слайдами
+        playEntireStory(currentSlideIndex);
       }
       updatePlayBtnState();
     }
@@ -330,6 +277,5 @@ export function openStoriesReader(story) {
     }
   });
 
-  // Инициализация
   renderSlideUI();
 }

@@ -2,14 +2,13 @@
 import { Modal } from '@components/common/Modal/Modal';
 import { createElement, on, clear } from '@utils/dom';
 import { findBankItem } from '@utils/cardBank';
-import { showCardImage } from '@utils/image/showCardImage';
-import { openStoryImagePicker } from '../utils/StoryImagePicker';
+import { createImagePicker } from '@components/common/ImagePicker/ImagePicker';
 import { uid } from '@utils/id';
 
-let isModalOpen = false; // <-- ЗАЩИТА ОТ ДУБЛЕЙ
+let isModalOpen = false;
 
 export function openStoryCardModal(existingCard, onSave) {
-  if (isModalOpen) return; // Если модалка уже открыта, игнорируем клик
+  if (isModalOpen) return;
   isModalOpen = true;
 
   const isEditing = !!existingCard;
@@ -19,7 +18,10 @@ export function openStoryCardModal(existingCard, onSave) {
     text: '', 
     imageId: null, 
     imagePath: null, 
-    emoji: '' 
+    emoji: '',
+    variants: [],
+    category: null,
+    filename: null
   });
 
   let workingCard = JSON.parse(JSON.stringify(existingCard || createEmptyCard()));
@@ -27,23 +29,35 @@ export function openStoryCardModal(existingCard, onSave) {
   let modalInstance = null;
   let contentWrap = null;
   let textInput = null;
-  let previewBox = null;
+  let pickerContainer = null;
 
   function render() {
     if (!contentWrap) return;
     clear(contentWrap);
 
-    previewBox = createElement('div', { className: 'story-card-edit-preview' });
-    showCardImage(previewBox, workingCard, { fontSize: '2.5em' });
-    previewBox.title = 'Нажмите, чтобы изменить картинку';
+    // Контейнер для картинки
+    pickerContainer = createElement('div', { className: 'story-card-picker-wrap' });
     
-    on(previewBox, 'click', () => {
-      openStoryImagePicker(previewBox, workingCard, (updatedMedia) => {
-        Object.assign(workingCard, updatedMedia);
+    // Используем новый глобальный ImagePicker
+    const picker = createImagePicker(
+      workingCard,
+      { showVariants: true, size: 512 },
+      (updatedSource) => {
+        Object.assign(workingCard, updatedSource);
+        // Перерисовываем превью, чтобы обновить фолбеки/картинки
+        render(); 
+      },
+      () => {
+        workingCard.imageId = null;
+        workingCard.imagePath = null;
+        workingCard.emoji = '';
+        workingCard.variants = [];
         render();
-      });
-    });
+      }
+    );
+    pickerContainer.appendChild(picker);
 
+    // Поле ввода
     textInput = createElement('input', {
       type: 'text',
       className: 'slide-search-input',
@@ -55,6 +69,7 @@ export function openStoryCardModal(existingCard, onSave) {
       const val = e.target.value;
       workingCard.text = val;
 
+      // Автопоиск в банке
       if (!workingCard.imageId) {
         if (val.trim()) {
           const bankItem = findBankItem(val);
@@ -62,19 +77,35 @@ export function openStoryCardModal(existingCard, onSave) {
             const newPath = `cards/${bankItem.category}/${bankItem.filename || bankItem.word + '.webp'}`;
             if (workingCard.imagePath !== newPath) {
               workingCard.imagePath = newPath;
-              showCardImage(previewBox, workingCard, { fontSize: '2.5em' });
+              workingCard.variants = bankItem.variants || [];
+              workingCard.category = bankItem.category;
+              workingCard.filename = bankItem.filename;
+              // Обновляем только пикер, чтобы не сбивать фокус
+              clear(pickerContainer);
+              const newPicker = createImagePicker(
+                workingCard,
+                { showVariants: true, size: 512 },
+                (updated) => { Object.assign(workingCard, updated); render(); },
+                () => { workingCard.imagePath = null; render(); }
+              );
+              pickerContainer.appendChild(newPicker);
             }
           } else {
-            if (workingCard.imagePath !== null) {
+            if (workingCard.imagePath !== null && !workingCard.imageId) {
               workingCard.imagePath = null;
-              showCardImage(previewBox, workingCard, { fontSize: '2.5em' });
+              workingCard.variants = [];
+              workingCard.category = null;
+              workingCard.filename = null;
+              clear(pickerContainer);
+              const newPicker = createImagePicker(
+                workingCard,
+                { showVariants: true, size: 512 },
+                (updated) => { Object.assign(workingCard, updated); render(); },
+                () => { workingCard.imagePath = null; render(); }
+              );
+              pickerContainer.appendChild(newPicker);
             }
           }
-        } else {
-           if (workingCard.imagePath !== null) {
-             workingCard.imagePath = null;
-             showCardImage(previewBox, workingCard, { fontSize: '2.5em' });
-           }
         }
       }
     });
@@ -88,7 +119,7 @@ export function openStoryCardModal(existingCard, onSave) {
       }
     });
 
-    contentWrap.appendChild(previewBox);
+    contentWrap.appendChild(pickerContainer);
     contentWrap.appendChild(textInput);
     
     setTimeout(() => textInput.focus(), 50);
@@ -104,9 +135,7 @@ export function openStoryCardModal(existingCard, onSave) {
   modalInstance = new Modal({
     title: isEditing ? 'Редактировать' : 'Добавить',
     showCloseButton: true,
-    onClose: () => {
-      isModalOpen = false; // <-- СНИМАЕМ БЛОКИРОВКУ ПРИ ЗАКРЫТИИ
-    },
+    onClose: () => { isModalOpen = false; },
     headerAction: {
       label: isEditing ? 'Сохранить' : 'Добавить',
       action: () => {

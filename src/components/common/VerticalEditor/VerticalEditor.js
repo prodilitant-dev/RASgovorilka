@@ -17,6 +17,7 @@ export function openVerticalEditor(config) {
     fields = [],
     extraActions = [],
     extraContent = null,
+    previewSides = null, // <-- Добавлено
     buttons = [],
     preview = null,
   } = config;
@@ -29,85 +30,92 @@ export function openVerticalEditor(config) {
   function renderContent() {
     if (!contentContainer) return;
 
+    // 1. Сначала создаем объект коллбэков
+    const currentCallbacks = {
+      onFieldChange: (key, value) => {
+        workingEntity[key] = value;
+        const field = fields.find((f) => f.id === key);
+        if (field && field.onChange) {
+          field.onChange(value, workingEntity);
+        }
+        renderContent();
+      },
+      onUploadImage: async (file) => {
+        try {
+          const croppedBlob = await openImageCropper(file, { size: 256 });
+          if (!croppedBlob) return;
+
+          const imageId = await uploadImage(croppedBlob, { size: 256, showToast: true });
+          workingEntity.imageId = imageId;
+          workingEntity.emoji = '';
+          toast('Фото загружено', 'success');
+          renderContent();
+        } catch (err) {
+          logger.error('Upload error:', err);
+        }
+      },
+      onRemoveImage: () => {
+        workingEntity.imageId = null;
+        workingEntity.imagePath = null;
+        workingEntity.emoji = '';
+        renderContent();
+      },
+      onExtraActionClick: (actionId) => {
+        const action = extraActions.find((a) => a.id === actionId);
+        if (action && action.onClick) {
+          action.onClick(workingEntity, () => modalInstance.close());
+        }
+      },
+      onSave: async () => {
+        if (isSaving) return;
+        isSaving = true;
+        try {
+          if (onSave) {
+            await new Promise((resolve, reject) => {
+              onSave(workingEntity, (err) => {
+                if (err) reject(err);
+                else resolve();
+              });
+            });
+          }
+          modalInstance.close();
+        } catch (err) {
+          logger.error('Save error:', err);
+          toast('Ошибка сохранения', 'error');
+        } finally {
+          isSaving = false;
+        }
+      },
+      onDelete: () => {
+        if (!onDelete) return;
+        confirm('Удалить этот элемент?', 'Подтверждение').then((ok) => {
+          if (ok) {
+            onDelete(workingEntity, () => modalInstance.close());
+          }
+        });
+      },
+      onClose: () => {
+        if (onClose) {
+          onClose(workingEntity, () => modalInstance.close());
+        } else {
+          modalInstance.close();
+        }
+      },
+    };
+
+    // 2. Теперь вызываем рендер, передавая currentCallbacks везде
     const { element, cleanup } = renderVerticalEditorContent({
       entity: workingEntity,
       title,
       fields,
       extraActions,
       extraContent,
+      previewSides: typeof previewSides === 'function' 
+        ? previewSides(workingEntity, currentCallbacks) 
+        : previewSides,
       buttons,
       preview,
-      callbacks: {
-        onFieldChange: (key, value) => {
-          workingEntity[key] = value;
-          const field = fields.find((f) => f.id === key);
-          if (field && field.onChange) {
-            field.onChange(value, workingEntity);
-          }
-          renderContent();
-        },
-        onUploadImage: async (file) => {
-          try {
-            const croppedBlob = await openImageCropper(file, { size: 256 });
-            if (!croppedBlob) return;
-
-            const imageId = await uploadImage(croppedBlob, { size: 256, showToast: true });
-            workingEntity.imageId = imageId;
-            workingEntity.emoji = '';
-            toast('Фото загружено', 'success');
-            renderContent();
-          } catch (err) {
-            logger.error('Upload error:', err);
-          }
-        },
-        onRemoveImage: () => {
-          workingEntity.imageId = null;
-          workingEntity.imagePath = null;
-          workingEntity.emoji = '';
-          renderContent();
-        },
-        onExtraActionClick: (actionId) => {
-          const action = extraActions.find((a) => a.id === actionId);
-          if (action && action.onClick) {
-            action.onClick(workingEntity, () => modalInstance.close());
-          }
-        },
-        onSave: async () => {
-          if (isSaving) return;
-          isSaving = true;
-          try {
-            if (onSave) {
-              await new Promise((resolve, reject) => {
-                onSave(workingEntity, (err) => {
-                  if (err) reject(err);
-                  else resolve();
-                });
-              });
-            }
-            modalInstance.close();
-          } catch (err) {
-            logger.error('Save error:', err);
-            toast('Ошибка сохранения', 'error');
-          } finally {
-            isSaving = false;
-          }
-        },
-        onDelete: () => {
-          if (!onDelete) return;
-          confirm('Удалить этот элемент?', 'Подтверждение').then((ok) => {
-            if (ok) {
-              onDelete(workingEntity, () => modalInstance.close());
-            }
-          });
-        },
-        onClose: () => {
-          if (onClose) {
-            onClose(workingEntity, () => modalInstance.close());
-          } else {
-            modalInstance.close();
-          }
-        },
-      },
+      callbacks: currentCallbacks,
     });
 
     contentContainer.innerHTML = '';

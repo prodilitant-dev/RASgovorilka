@@ -11,6 +11,7 @@ export function renderVerticalEditorContent({
   fields,
   extraActions,
   extraContent,
+  previewSides, // <-- ДОБАВЛЕНО СЮДА
   buttons,
   preview,
   callbacks,
@@ -42,7 +43,8 @@ export function renderVerticalEditorContent({
 
   // Превью (если нужно)
   if (preview !== false) {
-    const previewEl = renderPreview(entity, callbacks);
+    // Передаем previewSides в renderPreview
+    const previewEl = renderPreview(entity, callbacks, previewSides);
     root.appendChild(previewEl);
   }
 
