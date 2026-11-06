@@ -11,14 +11,13 @@ export function renderVerticalEditorContent({
   fields,
   extraActions,
   extraContent,
-  previewSides, // <-- ДОБАВЛЕНО СЮДА
+  previewSides,
   buttons,
   preview,
   callbacks,
 }) {
   const root = createElement('div', { className: 'vertical-editor' });
 
-  // Шапка
   const header = createElement('div', { className: 've-header' });
   const headerTitle = createElement('span', { className: 've-title' }, title);
   const closeBtn = createElement('button', {
@@ -41,18 +40,14 @@ export function renderVerticalEditorContent({
   header.appendChild(closeBtn);
   root.appendChild(header);
 
-  // Превью (если нужно)
   if (preview !== false) {
-    // Передаем previewSides в renderPreview
     const previewEl = renderPreview(entity, callbacks, previewSides);
     root.appendChild(previewEl);
   }
 
-  // Поля формы
   const fieldsEl = renderFields(entity, fields, callbacks);
   root.appendChild(fieldsEl);
 
-  // Дополнительный контент (например, палитра цветов)
   if (extraContent) {
     const contentEl = extraContent(entity, callbacks);
     if (contentEl) {
@@ -60,7 +55,6 @@ export function renderVerticalEditorContent({
     }
   }
 
-  // Дополнительные действия (например, «Падежи»)
   if (extraActions && extraActions.length > 0) {
     const actionsBlock = createElement('div', { className: 've-extra-actions' });
     extraActions.forEach((action) => {
@@ -80,7 +74,6 @@ export function renderVerticalEditorContent({
     root.appendChild(actionsBlock);
   }
 
-  // Футер с кнопками
   const footerEl = renderFooter(entity, buttons, callbacks);
   root.appendChild(footerEl);
 

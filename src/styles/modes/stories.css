@@ -71,11 +71,9 @@
   transition: all 0.2s;
   color: var(--primary);
 }
-
 .story-reader-play:hover {
   background: var(--primary-light);
 }
-
 .story-reader-play.active {
   background: var(--primary-light);
   border-color: var(--primary);
@@ -130,19 +128,19 @@
 }
 
 /* 
- * ИСПРАВЛЕНИЕ: Лента карточек 
+ * ЛЕНТА КАРТОЧЕК (Исправлена обрезка при увеличении) 
  */
 .story-reader-cards-tray {
   display: flex;
   gap: var(--spacing-sm);
   overflow-x: auto;
-  padding-bottom: var(--spacing-sm);
+  overflow-y: visible; /* Разрешаем карточке вылезать за границы по вертикали при scale */
+  padding: 16px 0; /* Добавили отступы сверху и снизу, чтобы было куда расти */
   flex-shrink: 0;
   scrollbar-width: thin; 
-  min-height: 135px; /* Фиксируем высоту, чтобы карточки не прыгали */
-  align-items: flex-start; /* Карточки не растягиваются по высоте контейнера */
+  min-height: 140px;
+  align-items: center;
 }
-
 .story-reader-cards-tray::-webkit-scrollbar {
   height: 6px;
 }
@@ -151,15 +149,13 @@
   border-radius: 3px;
 }
 
-/* 
- * ИСПРАВЛЕНИЕ: Стили для мини-карточек (заменили .story-card-mini на .card--mini)
- */
+/* Стили для мини-карточек */
 .card--mini {
   flex-shrink: 0;
   width: 100px !important;
   height: 125px !important;
   cursor: pointer;
-  transition: transform 0.2s, outline 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .card--mini .card__label {
@@ -177,7 +173,7 @@
   font-size: 2rem;
 }
 
-/* Стиль для активной карточки во время воспроизведения */
+/* Активная карточка во время воспроизведения */
 .card--mini.card--active {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);

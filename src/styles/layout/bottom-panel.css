@@ -45,7 +45,7 @@
   /* Высота кнопки 24px */
   height: 1.5rem;
 
-  /* Оставляем место под текст */
+  /* Оставляем место под текст (слева отступ под аватарку) */
   padding: 0 var(--spacing-sm) 0 2.25rem;
 
   white-space: nowrap;
@@ -54,17 +54,18 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  transition: background var(--transition);
-  /* overflow: visible; — не поможет, если родитель обрезает */
+  
+  /* Анимация нажатия */
+  transition: transform 0.1s ease, background 0.2s, border-color 0.2s, box-shadow 0.1s;
 }
 
+/* Анимация нажатия (пружинка) */
 .quick-btn:active {
-  background: #e9ecef;
+  transform: scale(0.95);
 }
 
-/* Иконка: идеальный круг поверх кнопки */
-.quick-btn img,
-.quick-btn__icon {
+/* Контейнер для аватарки (вылезает за края кнопки) */
+.quick-btn__avatar {
   position: absolute;
   left: -2px;
   top: 50%;
@@ -75,18 +76,43 @@
   height: 2.25rem;
 
   border-radius: 50%;
-  background: #ffffff; /* БЕЛЫЙ ФОН, как ты просил */
+  background: #ffffff; /* Белый фон по умолчанию */
   object-fit: cover;
 
-  display: block;
-  pointer-events: none;
-  -webkit-user-drag: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   /* Легкая тень, чтобы белый кружок было видно на белой кнопке */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  border: 1px solid var(--border); /* Тонкая рамка для четкости */
+  border: 1px solid var(--border);
   box-sizing: border-box;
   z-index: 1;
+  overflow: hidden;
+  
+  /* Плавная анимация при нажатии */
+  transition: transform 0.1s ease, border-color 0.2s;
+}
+
+/* Уменьшаем аватарку при нажатии на кнопку (для эффекта глубины) */
+.quick-btn:active .quick-btn__avatar {
+  transform: translateY(-50%) scale(0.9);
+}
+
+/* Картинка внутри аватарки */
+.quick-btn__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/* Эмодзи внутри аватарки */
+.quick-btn__avatar span {
+  font-size: 1.2rem;
+  line-height: 1;
 }
 
 /* Кнопка "Добавить" (плюсик) */
@@ -98,4 +124,14 @@
   height: 1.5rem;
   padding: 0 var(--spacing-md);
   border-radius: 0.75rem;
+}
+
+/* Иконка плюсика внутри кнопки добавления */
+.quick-btn--add .quick-btn__icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
 }

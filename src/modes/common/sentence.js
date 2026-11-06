@@ -21,6 +21,7 @@ export function addWord(text, sourceItem = null) {
     wordType: sourceItem?.wordType || 'noun',
     forms: sourceItem?.forms || null,
     animate: sourceItem?.animate,
+    styleColor: sourceItem?.styleColor || null, // <-- ДОБАВЛЕНО
   };
   setState({ sentenceWords: [...words, newWord] });
 }
@@ -67,21 +68,32 @@ export async function speakSentence(container) {
   speakSequence(fullText, {
     voiceSettings: vs,
     onWord: (charIndex) => {
-      const activeMapping = mapping.find((m) => charIndex >= m.start && charIndex <= m.end);
+      const activeMapping = mapping.find(m => charIndex >= m.start && charIndex <= m.end);
       if (activeMapping) {
         const el = wordEls[activeMapping.index];
         if (el && !el.classList.contains('sentence-word--active')) {
-          wordEls.forEach((w) => w.classList.remove('sentence-word--active'));
+          wordEls.forEach(w => {
+            w.classList.remove('sentence-word--active');
+            w.style.borderColor = ''; // Сбрасываем кастомный бордюр
+          });
+          
           el.classList.add('sentence-word--active');
+          
+          // Если у слова есть свой цвет, применяем его к бордюру
+          const wordData = words[activeMapping.index];
+          if (wordData && wordData.styleColor) {
+            el.style.borderColor = wordData.styleColor;
+          }
+          
           el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
       }
     },
     onEnd: () => {
-      wordEls.forEach((w) => w.classList.remove('sentence-word--active'));
-    },
-    onError: () => {
-      wordEls.forEach((w) => w.classList.remove('sentence-word--active'));
+      wordEls.forEach(w => {
+        w.classList.remove('sentence-word--active');
+        w.style.borderColor = '';
+      });
     },
   });
 }

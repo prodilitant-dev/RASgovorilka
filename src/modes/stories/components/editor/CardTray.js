@@ -1,6 +1,7 @@
 // src/modes/stories/components/editor/CardTray.js
-import { createElement, on } from '@utils/dom'; // <-- Возвращаем импорты
+import { createElement, on } from '@utils/dom';
 import { createCard } from '@components/common/Card/Card';
+import { iconUrl } from '@utils/icon';
 import { openStoryCardModal } from '../StoryCardModal';
 
 export function createCardTray(slide, onUpdate) {
@@ -16,7 +17,17 @@ export function createCardTray(slide, onUpdate) {
       className: 'story-card-tray-item'
     });
     
-    const removeBtn = createElement('button', { className: 'editor-mini-card-remove', type: 'button' }, '✕');
+    // Кнопка удаления (крестик с иконкой delete)
+    const removeBtn = createElement('button', { 
+      className: 'story-tray-remove-btn', 
+      type: 'button',
+      'aria-label': 'Удалить карточку'
+    });
+    
+    const delImg = createElement('img', { src: iconUrl('delete'), alt: '✕' });
+    delImg.onerror = () => delImg.replaceWith(document.createTextNode('✕'));
+    removeBtn.appendChild(delImg);
+    
     on(removeBtn, 'click', (e) => {
       e.stopPropagation();
       slide.cards.splice(idx, 1);

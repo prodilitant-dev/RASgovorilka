@@ -17,7 +17,7 @@ export function openVerticalEditor(config) {
     fields = [],
     extraActions = [],
     extraContent = null,
-    previewSides = null, // <-- Добавлено
+    previewSides = null,
     buttons = [],
     preview = null,
   } = config;
@@ -30,7 +30,6 @@ export function openVerticalEditor(config) {
   function renderContent() {
     if (!contentContainer) return;
 
-    // 1. Сначала создаем объект коллбэков
     const currentCallbacks = {
       onFieldChange: (key, value) => {
         workingEntity[key] = value;
@@ -44,7 +43,6 @@ export function openVerticalEditor(config) {
         try {
           const croppedBlob = await openImageCropper(file, { size: 256 });
           if (!croppedBlob) return;
-
           const imageId = await uploadImage(croppedBlob, { size: 256, showToast: true });
           workingEntity.imageId = imageId;
           workingEntity.emoji = '';
@@ -103,17 +101,15 @@ export function openVerticalEditor(config) {
       },
     };
 
-    // 2. Теперь вызываем рендер, передавая currentCallbacks везде
     const { element, cleanup } = renderVerticalEditorContent({
       entity: workingEntity,
       title,
       fields,
       extraActions,
       extraContent,
-      previewSides:
-        typeof previewSides === 'function'
-          ? previewSides(workingEntity, currentCallbacks)
-          : previewSides,
+      previewSides: typeof previewSides === 'function' 
+        ? previewSides(workingEntity, currentCallbacks) 
+        : previewSides,
       buttons,
       preview,
       callbacks: currentCallbacks,

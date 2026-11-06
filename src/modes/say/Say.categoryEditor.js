@@ -2,6 +2,7 @@
 import { openVerticalEditor } from '@components/common/VerticalEditor';
 import { toast } from '@utils/toast';
 import { findCardImage } from '@utils/cardBank';
+import { createColorPalette } from '@components/common/VerticalEditor/preview/colorPalette'; // <-- ДОБАВИТЬ ИМПОРТ
 
 export function openCategoryEditor(category, onSave, onDelete) {
   const entity = { ...category };
@@ -11,6 +12,7 @@ export function openCategoryEditor(category, onSave, onDelete) {
     entity,
     editorType: 'category',
     preview: true,
+    previewSides: createColorPalette, // <-- ДОБАВИТЬ ВОТ ЭТУ СТРОКУ
     onSave: (updated, done) => {
       if (!updated.name || !updated.name.trim()) {
         toast('Введите название', 'error');
@@ -20,7 +22,6 @@ export function openCategoryEditor(category, onSave, onDelete) {
       Object.assign(category, updated);
       onSave(category, done);
     },
-    // Передаем обработчик удаления в редактор
     onDelete: onDelete ? (deletedEntity, done) => onDelete(deletedEntity, done) : null,
     fields: [
       {
@@ -51,7 +52,6 @@ export function openCategoryEditor(category, onSave, onDelete) {
         label: '💾 Сохранить',
         variant: 'primary',
       },
-      // Добавляем кнопку удаления. VerticalEditor сам повесит на нее клик и стиль danger.
       {
         id: 'delete',
         label: '🗑️ Удалить',

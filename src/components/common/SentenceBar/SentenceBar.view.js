@@ -43,6 +43,16 @@ export function renderSentenceBar(container, words, onRemove, onSpeak, onClear) 
       displayText
     );
 
+    // Если у слова есть акцентный цвет, применяем его через CSS-переменную
+    if (wordObj.styleColor) {
+      wordEl.classList.add('sentence-word--accented');
+      wordEl.style.setProperty('--word-color', wordObj.styleColor);
+      // Для фона создаем полупрозрачный HEX (20% opacity)
+      wordEl.style.setProperty('--word-bg', `${wordObj.styleColor}33`);
+      // Для активного состояния (40% opacity)
+      wordEl.style.setProperty('--word-bg-active', `${wordObj.styleColor}66`);
+    }
+
     on(wordEl, 'click', (e) => {
       e.stopPropagation();
       if (onRemove) onRemove(index);

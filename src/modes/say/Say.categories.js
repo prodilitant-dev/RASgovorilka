@@ -1,3 +1,4 @@
+// src/modes/say/Say.categories.js
 import { createElement, clear } from '@utils/dom';
 import { makeSortable } from '@utils/dragdrop';
 import { openCategoryCreateModal } from './Say.categoryCreate';
@@ -17,7 +18,6 @@ export function renderCategories(
 ) {
   logger.debug('🔄 Rendering Categories');
 
-  // Снимаем предыдущий cleanup категорий
   if (typeof container._categoriesCleanup === 'function') {
     container._categoriesCleanup();
     container._categoriesCleanup = null;
@@ -31,8 +31,9 @@ export function renderCategories(
   const categories = editing ? profile.categories : profile.categories.filter((c) => !c.hidden);
 
   categories.forEach((cat) => {
+    const isActive = cat.id === activeId;
     const classes = ['category'];
-    if (cat.id === activeId) classes.push('active');
+    if (isActive) classes.push('active');
     if (cat.hidden && editing) classes.push('category-hidden');
     if (editing) classes.push('edit-mode');
 
@@ -42,13 +43,34 @@ export function renderCategories(
       'data-category-id': cat.id,
     });
 
+    // === ПРИМЕНЯЕМ АКЦЕНТНЫЙ ЦВЕТ И ОБВОДКИ ===
+    if (cat.styleColor) {
+      // Если есть акцент, заливаем фон (50% для активной, 25% для неактивной)
+      el.style.backgroundColor = isActive ? `${cat.styleColor}80` : `${cat.styleColor}40`;
+    } else if (isActive) {
+      // Если акцента нет, убираем стандартную зеленую заливку для активной вкладки
+      el.style.backgroundColor = 'var(--surface)'; 
+    }
+
+    if (isActive) {
+      // Черная обводка для активной вкладки
+      el.style.border = '1px solid #000000';
+    } else if (cat.styleColor) {
+      // Убираем цветную обводку с самой вкладки, если она неактивна
+      el.style.borderColor = 'transparent';
+    }
+
     // === Аватарка категории ===
     if (showImages) {
-      el.classList.add('category--has-avatar'); // <- Добавляем класс
-      el.appendChild(createCategoryAvatar(cat));
+      el.classList.add('category--has-avatar');
+      el.appendChild(createCategoryAvatar(cat, isActive)); // <-- Передаем isActive
     }
 
     const nameEl = createElement('span', { className: 'cat-name' }, cat.name);
+    // Текст всегда черный, чтобы читался на цветном фоне и при активном состоянии
+    if (cat.styleColor || isActive) {
+      nameEl.style.color = '#000000';
+    }
     el.appendChild(nameEl);
 
     if (editing && onEdit) {
@@ -120,7 +142,6 @@ export function renderCategories(
     container.appendChild(addBtn);
   }
 
-  // === Drag&drop + cleanup ===
   let dragCleanup = null;
   if (editing && onReorder) {
     dragCleanup = makeSortable(container, {
@@ -135,14 +156,22 @@ export function renderCategories(
   };
 }
 
-/**
- * Кружок-аватарка для категории.
- * Если есть imageId — подгружает URL асинхронно и подменяет контент.
- * Если нет — серый круг с первой буквой названия.
- */
-function createCategoryAvatar(cat) {
+function createCategoryAvatar(cat, isActive) {
   const avatar = createElement('div', { className: 'cat-avatar' });
   const letter = (cat.name || '?').trim().charAt(0).toUpperCase();
+
+  // Применяем обводку к аватарке
+  if (isActive) {
+    // Если вкладка активна, обводка черная
+    avatar.style.borderColor = '#000000';
+    avatar.style.borderWidth = '2px';
+    avatar.style.borderStyle = 'solid';
+  } else if (cat.styleColor) {
+    // Если неактивна, но есть цвет, используем его
+    avatar.style.borderColor = cat.styleColor;
+    avatar.style.borderWidth = '2px';
+    avatar.style.borderStyle = 'solid';
+  }
 
   if (cat.imageId) {
     avatar.classList.add('cat-avatar--fallback');

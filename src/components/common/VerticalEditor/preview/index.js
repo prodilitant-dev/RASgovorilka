@@ -4,16 +4,12 @@ import { createImagePicker } from '@components/common/ImagePicker/ImagePicker';
 
 export function renderPreview(entity, callbacks, previewSides) {
   const block = createElement('div', { className: 've-preview-block' });
-
-  // Создаем контейнер для картинки и боковых палитр
   const row = createElement('div', { className: 've-preview-row' });
 
-  // Левая колонка (если есть)
   if (previewSides && previewSides.left) {
     row.appendChild(previewSides.left);
   }
 
-  // Сам пикер (картинка)
   const picker = createImagePicker(
     entity,
     { showVariants: true, className: 've-preview-picker' },
@@ -29,9 +25,18 @@ export function renderPreview(entity, callbacks, previewSides) {
       if (callbacks.onRemoveImage) callbacks.onRemoveImage();
     }
   );
+
+  if (entity.styleColor) {
+    const box = picker.querySelector('.image-picker-box');
+    if (box) {
+      box.style.borderColor = entity.styleColor;
+      box.style.borderStyle = 'solid';
+      box.style.borderWidth = '3px';
+    }
+  }
+
   row.appendChild(picker);
 
-  // Правая колонка (если есть)
   if (previewSides && previewSides.right) {
     row.appendChild(previewSides.right);
   }

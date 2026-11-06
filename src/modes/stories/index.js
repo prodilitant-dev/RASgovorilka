@@ -6,6 +6,7 @@ import { createCard } from '@components/common/Card/Card';
 import { openStoriesReader } from './reader/Stories.reader'; // <-- ПРАВИЛЬНЫЙ ПУТЬ
 import { openStoriesEditor } from './Stories.editor';
 import { createEmptyState } from '@components/common/EmptyState/EmptyState';
+import { openStoryManageModal } from './components/StoryManageModal';
 
 export function renderStories(container, profile) {
   clear(container);
@@ -52,16 +53,29 @@ export function renderStories(container, profile) {
 
     cardEl.addEventListener('click', () => {
       if (editing) {
-        openStoriesEditor(
-          container,
+        // ОТКРЫВАЕМ МОДАЛКУ УПРАВЛЕНИЯ
+        openStoryManageModal(
           story,
-          (updatedStory) => {
-            const idx = profile.stories.findIndex((s) => s.id === updatedStory.id);
-            if (idx !== -1) profile.stories[idx] = updatedStory;
+          // On Edit
+          () => {
+            openStoriesEditor(
+              container,
+              story,
+              (updatedStory) => {
+                const idx = profile.stories.findIndex((s) => s.id === updatedStory.id);
+                if (idx !== -1) profile.stories[idx] = updatedStory;
+                saveProfile(profile);
+                renderStories(container, profile);
+              },
+              () => renderStories(container, profile)
+            );
+          },
+          // On Delete
+          () => {
+            profile.stories = profile.stories.filter(s => s.id !== story.id);
             saveProfile(profile);
             renderStories(container, profile);
-          },
-          () => renderStories(container, profile)
+          }
         );
       } else {
         openStoriesReader(story);
