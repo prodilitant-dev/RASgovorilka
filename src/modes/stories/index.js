@@ -5,13 +5,14 @@ import { saveProfile } from '@storage/appStorage';
 import { createCard } from '@components/common/Card/Card';
 import { openStoriesReader } from './reader/Stories.reader'; // <-- ПРАВИЛЬНЫЙ ПУТЬ
 import { openStoriesEditor } from './Stories.editor';
+import { createEmptyState } from '@components/common/EmptyState/EmptyState';
 
 export function renderStories(container, profile) {
   clear(container);
 
   const state = getState();
   const editing = state.editingMode || false;
-  
+
   if (!profile.stories) {
     profile.stories = [];
   }
@@ -21,10 +22,9 @@ export function renderStories(container, profile) {
 
   if (stories.length === 0 && !editing) {
     wrapper.appendChild(
-      createElement(
-        'div',
-        { style: 'text-align:center; padding: 40px; color: var(--text-muted); font-size: 1.1rem; width: 100%;' },
-        'Историй пока нет. Включите режим редактирования, чтобы создать первую.'
+      createEmptyState(
+        'Историй пока нет. Включите режим редактирования, чтобы создать первую.',
+        '📖'
       )
     );
     container.appendChild(wrapper);
@@ -47,7 +47,7 @@ export function renderStories(container, profile) {
       imageId: coverId,
       imagePath: coverPath,
       emoji: '📖',
-      className: 'story-main-card'
+      className: 'story-main-card',
     });
 
     cardEl.addEventListener('click', () => {
@@ -76,9 +76,9 @@ export function renderStories(container, profile) {
       id: 'add',
       text: 'Создать',
       emoji: '➕',
-      isAdd: true
+      isAdd: true,
     });
-    
+
     addCardEl.addEventListener('click', () => {
       openStoriesEditor(
         container,
@@ -92,7 +92,7 @@ export function renderStories(container, profile) {
         () => renderStories(container, profile)
       );
     });
-    
+
     grid.appendChild(addCardEl);
   }
 

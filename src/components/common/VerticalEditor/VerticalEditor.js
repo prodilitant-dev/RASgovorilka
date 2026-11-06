@@ -110,9 +110,10 @@ export function openVerticalEditor(config) {
       fields,
       extraActions,
       extraContent,
-      previewSides: typeof previewSides === 'function' 
-        ? previewSides(workingEntity, currentCallbacks) 
-        : previewSides,
+      previewSides:
+        typeof previewSides === 'function'
+          ? previewSides(workingEntity, currentCallbacks)
+          : previewSides,
       buttons,
       preview,
       callbacks: currentCallbacks,

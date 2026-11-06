@@ -12,16 +12,16 @@ export function openStoryCardModal(existingCard, onSave) {
   isModalOpen = true;
 
   const isEditing = !!existingCard;
-  
-  const createEmptyCard = () => ({ 
-    id: uid(), 
-    text: '', 
-    imageId: null, 
-    imagePath: null, 
+
+  const createEmptyCard = () => ({
+    id: uid(),
+    text: '',
+    imageId: null,
+    imagePath: null,
     emoji: '',
     variants: [],
     category: null,
-    filename: null
+    filename: null,
   });
 
   let workingCard = JSON.parse(JSON.stringify(existingCard || createEmptyCard()));
@@ -37,7 +37,7 @@ export function openStoryCardModal(existingCard, onSave) {
 
     // Контейнер для картинки
     pickerContainer = createElement('div', { className: 'story-card-picker-wrap' });
-    
+
     // Используем новый глобальный ImagePicker
     const picker = createImagePicker(
       workingCard,
@@ -45,7 +45,7 @@ export function openStoryCardModal(existingCard, onSave) {
       (updatedSource) => {
         Object.assign(workingCard, updatedSource);
         // Перерисовываем превью, чтобы обновить фолбеки/картинки
-        render(); 
+        render();
       },
       () => {
         workingCard.imageId = null;
@@ -62,7 +62,7 @@ export function openStoryCardModal(existingCard, onSave) {
       type: 'text',
       className: 'slide-search-input',
       placeholder: 'Текст карточки...',
-      value: workingCard.text || ''
+      value: workingCard.text || '',
     });
 
     on(textInput, 'input', (e) => {
@@ -85,8 +85,14 @@ export function openStoryCardModal(existingCard, onSave) {
               const newPicker = createImagePicker(
                 workingCard,
                 { showVariants: true, size: 512 },
-                (updated) => { Object.assign(workingCard, updated); render(); },
-                () => { workingCard.imagePath = null; render(); }
+                (updated) => {
+                  Object.assign(workingCard, updated);
+                  render();
+                },
+                () => {
+                  workingCard.imagePath = null;
+                  render();
+                }
               );
               pickerContainer.appendChild(newPicker);
             }
@@ -100,8 +106,14 @@ export function openStoryCardModal(existingCard, onSave) {
               const newPicker = createImagePicker(
                 workingCard,
                 { showVariants: true, size: 512 },
-                (updated) => { Object.assign(workingCard, updated); render(); },
-                () => { workingCard.imagePath = null; render(); }
+                (updated) => {
+                  Object.assign(workingCard, updated);
+                  render();
+                },
+                () => {
+                  workingCard.imagePath = null;
+                  render();
+                }
               );
               pickerContainer.appendChild(newPicker);
             }
@@ -121,7 +133,7 @@ export function openStoryCardModal(existingCard, onSave) {
 
     contentWrap.appendChild(pickerContainer);
     contentWrap.appendChild(textInput);
-    
+
     setTimeout(() => textInput.focus(), 50);
   }
 
@@ -135,7 +147,9 @@ export function openStoryCardModal(existingCard, onSave) {
   modalInstance = new Modal({
     title: isEditing ? 'Редактировать' : 'Добавить',
     showCloseButton: true,
-    onClose: () => { isModalOpen = false; },
+    onClose: () => {
+      isModalOpen = false;
+    },
     headerAction: {
       label: isEditing ? 'Сохранить' : 'Добавить',
       action: () => {
@@ -146,14 +160,14 @@ export function openStoryCardModal(existingCard, onSave) {
         } else {
           handleAddAndContinue();
         }
-      }
+      },
     },
     body: () => {
       contentWrap = createElement('div', { className: 'story-card-modal-wrap' });
       render();
       return contentWrap;
     },
-    buttons: []
+    buttons: [],
   });
 
   modalInstance.open();

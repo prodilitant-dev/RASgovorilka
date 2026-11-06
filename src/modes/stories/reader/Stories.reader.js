@@ -3,7 +3,12 @@ import { createElement, on, clear } from '@utils/dom';
 import { getImageUrl } from '@services/imageService';
 import { createCard } from '@components/common/Card/Card';
 import { getState } from '@state/store';
-import { speakSequence, stopSequence, pauseSequence, resumeSequence } from '@services/speech/speechSequence';
+import {
+  speakSequence,
+  stopSequence,
+  pauseSequence,
+  resumeSequence,
+} from '@services/speech/speechSequence';
 import { logger } from '@utils/logger';
 import '@styles/modes/stories.css';
 
@@ -19,17 +24,32 @@ export function openStoriesReader(story) {
 
   // Создаем оверлей
   const overlay = createElement('div', { className: 'story-reader-overlay' });
-  
+
   // Шапка
   const header = createElement('div', { className: 'story-reader-header' });
-  const btnPlay = createElement('button', { className: 'story-reader-play', 'aria-label': 'Воспроизвести' }, '▶️');
-  const btnClose = createElement('button', { className: 'story-reader-close', 'aria-label': 'Закрыть' }, '✕');
-  
-  const titleEl = createElement('div', { className: 'story-reader-title' }, story.title || 'История');
+  const btnPlay = createElement(
+    'button',
+    { className: 'story-reader-play', 'aria-label': 'Воспроизвести' },
+    '▶️'
+  );
+  const btnClose = createElement(
+    'button',
+    { className: 'story-reader-close', 'aria-label': 'Закрыть' },
+    '✕'
+  );
+
+  const titleEl = createElement(
+    'div',
+    { className: 'story-reader-title' },
+    story.title || 'История'
+  );
   const progressEl = createElement('div', { className: 'story-reader-progress' });
 
   const headerLeft = createElement('div', { className: 'story-reader-header-left' }, [btnPlay]);
-  const headerCenter = createElement('div', { className: 'story-reader-header-center' }, [titleEl, progressEl]);
+  const headerCenter = createElement('div', { className: 'story-reader-header-center' }, [
+    titleEl,
+    progressEl,
+  ]);
   const headerRight = createElement('div', { className: 'story-reader-header-right' }, [btnClose]);
 
   header.appendChild(headerLeft);
@@ -41,16 +61,24 @@ export function openStoriesReader(story) {
   const imageWrap = createElement('div', { className: 'story-reader-image-wrap' });
   const imageEl = createElement('img', { className: 'story-reader-image', alt: '' });
   imageWrap.appendChild(imageEl);
-  
+
   const cardsTray = createElement('div', { className: 'story-reader-cards-tray' });
-  
+
   contentArea.appendChild(imageWrap);
   contentArea.appendChild(cardsTray);
 
   // Футер
   const footer = createElement('div', { className: 'story-reader-footer' });
-  const btnPrev = createElement('button', { className: 'btn btn-secondary story-nav-btn' }, '< Назад');
-  const btnNext = createElement('button', { className: 'btn btn-primary story-nav-btn' }, 'Далее >');
+  const btnPrev = createElement(
+    'button',
+    { className: 'btn btn-secondary story-nav-btn' },
+    '< Назад'
+  );
+  const btnNext = createElement(
+    'button',
+    { className: 'btn btn-primary story-nav-btn' },
+    'Далее >'
+  );
   footer.appendChild(btnPrev);
   footer.appendChild(btnNext);
 
@@ -80,7 +108,7 @@ export function openStoriesReader(story) {
     if (waitTimeout) clearTimeout(waitTimeout);
     playbackState = 'stopped';
     updatePlayBtnState();
-    cardsTray.querySelectorAll('.card--active').forEach(c => c.classList.remove('card--active'));
+    cardsTray.querySelectorAll('.card--active').forEach((c) => c.classList.remove('card--active'));
   }
 
   function getVoiceSettings() {
@@ -90,7 +118,7 @@ export function openStoriesReader(story) {
 
   async function renderSlideUI() {
     const slide = story.slides[currentSlideIndex];
-    
+
     if (story.slides.length > 1) {
       progressEl.textContent = `${currentSlideIndex + 1} / ${story.slides.length}`;
     } else {
@@ -101,7 +129,10 @@ export function openStoriesReader(story) {
     imageEl.style.display = 'none';
     if (slide.imageId) {
       const url = await getImageUrl(slide.imageId);
-      if (url) { imageEl.src = url; imageEl.style.display = 'block'; }
+      if (url) {
+        imageEl.src = url;
+        imageEl.style.display = 'block';
+      }
     } else if (slide.imagePath) {
       const base = import.meta.env.BASE_URL || '/';
       imageEl.src = base.endsWith('/') ? `${base}${slide.imagePath}` : `${base}/${slide.imagePath}`;
@@ -118,9 +149,9 @@ export function openStoriesReader(story) {
           imageId: cardData.imageId,
           imagePath: cardData.imagePath,
           emoji: cardData.emoji,
-          className: 'card--mini'
+          className: 'card--mini',
         });
-        
+
         on(cardEl, 'click', () => {
           stopPlayback();
           speakSingle(cardData.text, cardEl);
@@ -141,7 +172,7 @@ export function openStoriesReader(story) {
     }
 
     const vs = getVoiceSettings();
-    
+
     // Собираем текст и маппинг карточек
     let fullText = '';
     const mapping = [];
@@ -158,24 +189,24 @@ export function openStoriesReader(story) {
     speakSequence(fullText, {
       voiceSettings: vs,
       onWord: (charIndex) => {
-        const activeMapping = mapping.find(m => charIndex >= m.start && charIndex <= m.end);
+        const activeMapping = mapping.find((m) => charIndex >= m.start && charIndex <= m.end);
         if (activeMapping) {
           const cardEl = cardElements[activeMapping.index];
           if (cardEl && !cardEl.classList.contains('card--active')) {
-            cardElements.forEach(c => c.classList.remove('card--active'));
+            cardElements.forEach((c) => c.classList.remove('card--active'));
             cardEl.classList.add('card--active');
             cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
           }
         }
       },
       onEnd: () => {
-        cardElements.forEach(c => c.classList.remove('card--active'));
+        cardElements.forEach((c) => c.classList.remove('card--active'));
         if (onComplete) onComplete();
       },
       onError: () => {
-        cardElements.forEach(c => c.classList.remove('card--active'));
+        cardElements.forEach((c) => c.classList.remove('card--active'));
         if (onComplete) onComplete();
-      }
+      },
     });
   }
 
@@ -184,11 +215,15 @@ export function openStoriesReader(story) {
       cardEl.classList.add('card--active');
       cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
-    
+
     speakSequence(text, {
       voiceSettings: getVoiceSettings(),
-      onEnd: () => { if (cardEl) cardEl.classList.remove('card--active'); },
-      onError: () => { if (cardEl) cardEl.classList.remove('card--active'); }
+      onEnd: () => {
+        if (cardEl) cardEl.classList.remove('card--active');
+      },
+      onError: () => {
+        if (cardEl) cardEl.classList.remove('card--active');
+      },
     });
   }
 
@@ -200,15 +235,15 @@ export function openStoriesReader(story) {
 
     const playNextSlide = async () => {
       if (playbackState !== 'playing') return;
-      
+
       await renderSlideUI();
 
       waitTimeout = setTimeout(() => {
         if (playbackState !== 'playing') return;
-        
+
         playCurrentSlideAudio(() => {
           if (playbackState !== 'playing') return;
-          
+
           if (currentSlideIndex < story.slides.length - 1) {
             const currentSlide = story.slides[currentSlideIndex];
             const delayMs = currentSlide.pauseAfter !== undefined ? currentSlide.pauseAfter : 1500;
@@ -248,7 +283,7 @@ export function openStoriesReader(story) {
       updatePlayBtnState();
     } else if (playbackState === 'paused') {
       playbackState = 'playing';
-      
+
       if (window.speechSynthesis.paused) {
         resumeSequence();
       } else {

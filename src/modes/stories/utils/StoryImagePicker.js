@@ -28,8 +28,8 @@ export function openStoryImagePicker(anchorEl, currentSource, onUpdate) {
       const croppedBlob = await openImageCropper(file, { size: 512 });
       if (!croppedBlob) return;
       const imageId = await uploadImage(croppedBlob, { size: 512, showToast: true });
-      onUpdate({ imageId, imagePath: null, emoji: '' }); // Сбрасываем эмодзи и старый путь
-    } catch (err) {
+      onUpdate({ imageId, imagePath: null, emoji: '' });
+    } catch { // <-- Убрали (err)
       toast('Ошибка загрузки фото', 'error');
     } finally {
       fileInput.value = '';
@@ -48,6 +48,6 @@ export function openStoryImagePicker(anchorEl, currentSource, onUpdate) {
         const imagePath = `cards/${bankItem.category}/${bankItem.filename || bankItem.word + '.webp'}`;
         onUpdate({ imageId: null, imagePath, emoji: '' }); // Берем из банка
       });
-    }
+    },
   });
 }

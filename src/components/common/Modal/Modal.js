@@ -18,7 +18,14 @@ export function closeAllModals() {
 }
 
 export class Modal {
-  constructor({ title, body, buttons = [], onClose = null, showCloseButton = true, headerAction = null }) {
+  constructor({
+    title,
+    body,
+    buttons = [],
+    onClose = null,
+    showCloseButton = true,
+    headerAction = null,
+  }) {
     this.title = title;
     this.body = body;
     this.buttons = buttons;
@@ -43,15 +50,19 @@ export class Modal {
     const showHeader = !!this.title || this.showCloseButton || this.headerAction;
     if (showHeader) {
       const header = createElement('div', { className: 'modal-header' });
-      
+
       // --- ЛЕВАЯ ЧАСТЬ (Кнопка действия) ---
       const leftSide = createElement('div', { className: 'modal-header-left' });
       if (this.headerAction) {
-        const actionBtn = createElement('button', { 
-          type: 'button', 
-          className: 'modal-header-action' 
-        }, this.headerAction.label);
-        
+        const actionBtn = createElement(
+          'button',
+          {
+            type: 'button',
+            className: 'modal-header-action',
+          },
+          this.headerAction.label
+        );
+
         actionBtn.addEventListener('click', () => {
           if (this.headerAction.action) this.headerAction.action();
         });

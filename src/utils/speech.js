@@ -3,8 +3,6 @@ import { logger } from './logger';
 import { getState } from '@state/store';
 
 let currentUtterance = null;
-
-// Кэш голосов и выбранного голоса
 let cachedVoices = [];
 let cachedVoice = null;
 let cachedVoiceURI = '';
@@ -18,20 +16,13 @@ export function getVoices() {
   return cachedVoices;
 }
 
-/**
- * Инициализация модуля синтеза речи.
- * Вызывается один раз при старте приложения.
- * Слушает voiceschanged, чтобы обновлять кэш при появлении/изменении голосов.
- */
 export function initSpeech() {
   if (!window.speechSynthesis) {
     logger.warn('Speech synthesis not supported');
     return;
   }
-
   cachedVoices = window.speechSynthesis.getVoices() || [];
   logger.debug(`Speech init: ${cachedVoices.length} голосов`);
-
   window.speechSynthesis.addEventListener('voiceschanged', () => {
     cachedVoices = window.speechSynthesis.getVoices() || [];
     logger.debug(`Speech voices updated: ${cachedVoices.length}`);
@@ -39,16 +30,11 @@ export function initSpeech() {
   });
 }
 
-/**
- * Ждёт загрузку голосов. Не блокирует UI — можно вызывать в фоне.
- */
 export function ensureVoicesLoaded() {
   return new Promise((resolve) => {
     if (!window.speechSynthesis) return resolve([]);
-
     const voices = getVoices();
     if (voices.length > 0) return resolve(voices);
-
     const onVoicesChanged = () => {
       const newVoices = window.speechSynthesis.getVoices() || [];
       if (newVoices.length > 0) {
@@ -57,7 +43,6 @@ export function ensureVoicesLoaded() {
         resolve(newVoices);
       }
     };
-
     window.speechSynthesis.addEventListener('voiceschanged', onVoicesChanged);
     setTimeout(() => {
       window.speechSynthesis.removeEventListener('voiceschanged', onVoicesChanged);
@@ -67,14 +52,6 @@ export function ensureVoicesLoaded() {
   });
 }
 
-/**
- * Прогрев движка синтеза. Делает тихий короткий speak, чтобы движок
- * загрузил сэмплы в память. Без прогрева первый реальный speak тормозит
- * (особенно на Android).
- *
- * ВАЖНО: вызывать только из user gesture (первый touch/click).
- * На Android Chrome speech без user gesture игнорируется.
- */
 export function warmUpSpeech() {
   if (warmUpDone || !window.speechSynthesis) return;
   warmUpDone = true;
@@ -89,7 +66,7 @@ export function warmUpSpeech() {
         window.speechSynthesis.cancel();
       } catch {
         /* ignore */
-      }
+      } // <-- добавили комментарий
     }, 50);
     logger.debug('Speech warm-up triggered');
   } catch (err) {
@@ -99,13 +76,16 @@ export function warmUpSpeech() {
 
 export function stopSpeech() {
   if (currentUtterance) {
-    logger.debug('Stopping speech');
     window.speechSynthesis.cancel();
     currentUtterance = null;
   }
 }
 
-function resolveVoice(voiceURI) {
+/**
+ * ЭКСПОРТИРУЕМ: Поиск голоса по URI или выбор русского по умолчанию.
+ * Используется в speechSequence.js, чтобы не дублировать код.
+ */
+export function resolveVoice(voiceURI) {
   if (cachedVoice && cachedVoiceURI === voiceURI) return cachedVoice;
 
   const voices = getVoices();
@@ -125,6 +105,19 @@ function resolveVoice(voiceURI) {
   return found;
 }
 
+/**
+ * Настраивает объект utterance на основе настроек голоса.
+ */
+export function applyVoiceSettings(utterance, vs) {
+  utterance.lang = 'ru-RU';
+  utterance.rate = vs.rate ?? 1;
+  utterance.pitch = vs.pitch ?? 1;
+  utterance.volume = vs.volume ?? 1;
+
+  const voice = resolveVoice(vs.voiceURI ?? '');
+  if (voice) utterance.voice = voice;
+}
+
 export function speak(text, rate = 1, pitch = 1, volume = 1, voiceURI = '') {
   if (!window.speechSynthesis) {
     logger.warn('Speech synthesis not supported');
@@ -140,17 +133,12 @@ export function speak(text, rate = 1, pitch = 1, volume = 1, voiceURI = '') {
 
   logger.debug(`Speak: "${text}"`, { rate, pitch, volume, voiceURI });
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'ru-RU';
-  utterance.rate = rate;
-  utterance.pitch = pitch;
-  utterance.volume = volume;
 
-  const voice = resolveVoice(voiceURI);
-  if (voice) utterance.voice = voice;
+  // Используем общую функцию настройки
+  applyVoiceSettings(utterance, { rate, pitch, volume, voiceURI });
 
   utterance.onend = () => {
     currentUtterance = null;
-    logger.debug('Speech ended');
   };
   utterance.onerror = (e) => {
     currentUtterance = null;

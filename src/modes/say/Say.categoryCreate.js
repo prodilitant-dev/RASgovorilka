@@ -5,24 +5,16 @@ import { toast } from '@utils/toast';
 import { uid } from '@utils/id';
 import { saveProfile } from '@storage/appStorage';
 import { setState } from '@state/store';
-import { openImageCropper } from '@components/common/ImageCropper';
-import { uploadImage, getImageUrl, deleteImage } from '@services/image';
+import { deleteImage } from '@services/image';
 import { findCardImage } from '@utils/cardBank';
-import { logger } from '@utils/logger';
-
-// Импортируем справочник и банк
-import { KNOWN_CATEGORIES } from '@config/defaultData/categories';
-import { CARD_BANK } from '@config/cardBank';
-import { autoDetectCard } from '@utils/inflect';
-import { confirm } from '@utils/dialog';
+import { createImagePicker } from '@components/common/ImagePicker/ImagePicker';
+import { applyStandardCards } from './utils/CategoryPresets';
 
 export function openCategoryCreateModal(profile, onCreated) {
   let nameInput = null;
   let wordTypeSelect = null;
-  let imageId = null;
-  let imagePath = null;
-  let previewAvatar = null;
-  let removeBtn = null;
+  const currentImage = { imageId: null, imagePath: null };
+  let isUserSelectedImage = false;
 
   const wordTypeOptions = [
     { value: 'noun', label: 'Существительное' },
@@ -33,198 +25,109 @@ export function openCategoryCreateModal(profile, onCreated) {
     { value: 'other', label: 'Другое' },
   ];
 
-  async function updatePreviewAvatar() {
-    if (!previewAvatar) return;
-
-    const name = nameInput?.value?.trim() || '';
-    const letter = name.charAt(0).toUpperCase() || '?';
-
-    previewAvatar.innerHTML = '';
-    previewAvatar.classList.remove('cat-avatar--fallback');
-
-    if (imageId) {
-      try {
-        const url = await getImageUrl(imageId);
-        if (url) {
-          const img = createElement('img', {
-            src: url,
-            alt: '',
-            className: 'cat-avatar__img',
-            draggable: 'false',
-          });
-          previewAvatar.appendChild(img);
-          if (removeBtn) removeBtn.style.display = 'inline-flex';
-          return;
-        }
-      } catch (err) {
-        logger.warn('categoryCreate: getImageUrl failed', err);
-      }
-    }
-
-    if (imagePath) {
-      const base = import.meta.env.BASE_URL || '/';
-      const url = base.endsWith('/') ? `${base}${imagePath}` : `${base}/${imagePath}`;
-      const img = createElement('img', {
-        src: url,
-        alt: '',
-        className: 'cat-avatar__img',
-        draggable: 'false',
-      });
-      previewAvatar.appendChild(img);
-      if (removeBtn) removeBtn.style.display = 'inline-flex';
-      return;
-    }
-
-    previewAvatar.classList.add('cat-avatar--fallback');
-    previewAvatar.textContent = name ? letter : '📷';
-    if (removeBtn) removeBtn.style.display = 'none';
-  }
-
-  async function handleFileSelected(file) {
-    try {
-      const croppedBlob = await openImageCropper(file, { size: 256 });
-      if (!croppedBlob) return;
-
-      if (imageId) {
-        try {
-          await deleteImage(imageId);
-        } catch {
-          /* ignore */
-        }
-      }
-
-      imageId = await uploadImage(croppedBlob, { size: 256, showToast: false });
-      imagePath = null;
-      await updatePreviewAvatar();
-    } catch (err) {
-      logger.error('categoryCreate: upload failed', err);
-      toast('Не удалось загрузить изображение', 'error');
-    }
-  }
-
   const modal = new Modal({
     title: 'Новая категория',
     body: () => {
       const wrap = createElement('div', { className: 've-fields' });
 
+      // --- 1. Аватарка ---
       const avatarRow = createElement('div', {
         className: 've-field',
         style: 'align-items: center;',
       });
-      const avatarLabel = createElement('label', { className: 've-field-label' }, 'Изображение');
+      avatarRow.appendChild(createElement('label', { className: 've-field-label' }, 'Изображение'));
 
-      previewAvatar = createElement('div', {
-        className: 'cat-avatar cat-avatar--upload',
-        style: 'width: 72px; height: 72px; cursor: pointer; font-size: 24px;',
-        title: 'Нажмите, чтобы выбрать изображение',
-      });
-      previewAvatar.textContent = '📷';
-
-      const fileInput = createElement('input', {
-        type: 'file',
-        accept: 'image/*',
-        style: 'display: none;',
-      });
-      on(fileInput, 'change', async (e) => {
-        const file = e.target.files?.[0];
-        if (file) await handleFileSelected(file);
-        fileInput.value = '';
-      });
-
-      on(previewAvatar, 'click', () => fileInput.click());
-
-      removeBtn = createElement(
-        'button',
-        {
-          type: 'button',
-          className: 'cat-action-btn',
-          style: 'margin-left: 8px; display: none;',
-          'aria-label': 'Удалить изображение',
-          title: 'Удалить',
-        },
-        '✕'
-      );
-      on(removeBtn, 'click', async (e) => {
-        e.stopPropagation();
-        if (imageId) {
-          try {
-            await deleteImage(imageId);
-          } catch {
-            /* ignore */
+      const renderPicker = () => {
+        const picker = createImagePicker(
+          { imageId: currentImage.imageId, imagePath: currentImage.imagePath, text: 'Категория' },
+          { size: 256, showVariants: false, className: 'category-avatar-picker' },
+          (updated) => {
+            if (updated.imageId || updated.imagePath) {
+              isUserSelectedImage = true;
+            }
+            currentImage.imageId = updated.imageId;
+            currentImage.imagePath = updated.imagePath;
+          },
+          async () => {
+            isUserSelectedImage = false;
+            if (currentImage.imageId) {
+              try {
+                await deleteImage(currentImage.imageId);
+              } catch {
+                /* ignore */
+              }
+              currentImage.imageId = null;
+            }
+            currentImage.imagePath = null;
           }
-          imageId = null;
+        );
+
+        const oldPicker = avatarRow.querySelector('.image-picker-wrap');
+        if (oldPicker) {
+          avatarRow.replaceChild(picker, oldPicker);
+        } else {
+          avatarRow.appendChild(picker);
         }
-        imagePath = null;
-        await updatePreviewAvatar();
-      });
+      };
 
-      const avatarRowInner = createElement('div', {
-        style: 'display: flex; align-items: center;',
-      });
-      avatarRowInner.appendChild(previewAvatar);
-      avatarRowInner.appendChild(removeBtn);
-      avatarRowInner.appendChild(fileInput);
-
-      avatarRow.appendChild(avatarLabel);
-      avatarRow.appendChild(avatarRowInner);
+      renderPicker();
       wrap.appendChild(avatarRow);
 
+      // --- 2. Название ---
       const nameRow = createElement('div', { className: 've-field' });
-      const nameLabel = createElement('label', { className: 've-field-label' }, 'Название');
+      nameRow.appendChild(createElement('label', { className: 've-field-label' }, 'Название'));
       nameInput = createElement('input', {
         type: 'text',
         placeholder: 'Например: Одежда',
         autofocus: true,
       });
 
-      on(nameInput, 'input', () => {
-        if (!imageId) {
-          const found = findCardImage(nameInput.value);
-          imagePath = found || null;
+      on(nameInput, 'input', (e) => {
+        if (isUserSelectedImage) return;
+
+        const val = e.target.value;
+        const foundPath = findCardImage(val);
+
+        if (foundPath !== currentImage.imagePath) {
+          currentImage.imagePath = foundPath;
+          currentImage.imageId = null;
+          renderPicker();
         }
-        updatePreviewAvatar();
       });
 
-      nameRow.appendChild(nameLabel);
-      nameRow.appendChild(nameInput);
-      wrap.appendChild(nameRow);
-
-      const typeRow = createElement('div', { className: 've-field' });
-      const typeLabel = createElement('label', { className: 've-field-label' }, 'Тип слова');
-      wordTypeSelect = createElement('select', {});
-      wordTypeOptions.forEach(({ value, label }) => {
-        const option = createElement('option', { value }, label);
-        wordTypeSelect.appendChild(option);
-      });
-      typeRow.appendChild(typeLabel);
-      typeRow.appendChild(wordTypeSelect);
-      wrap.appendChild(typeRow);
-
-      setTimeout(() => nameInput && nameInput.focus(), 100);
       on(nameInput, 'keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
           handleCreate();
         }
       });
+      nameRow.appendChild(nameInput);
+      wrap.appendChild(nameRow);
 
+      // --- 3. Тип слова ---
+      const typeRow = createElement('div', { className: 've-field' });
+      typeRow.appendChild(createElement('label', { className: 've-field-label' }, 'Тип слова'));
+      wordTypeSelect = createElement('select', {});
+      wordTypeOptions.forEach(({ value, label }) => {
+        wordTypeSelect.appendChild(createElement('option', { value }, label));
+      });
+      typeRow.appendChild(wordTypeSelect);
+      wrap.appendChild(typeRow);
+
+      setTimeout(() => nameInput && nameInput.focus(), 100);
       return wrap;
     },
     buttons: [
-      {
-        label: 'Отмена',
-        action: () => modal.close(),
-      },
-      {
-        label: 'Создать',
-        primary: true,
-        action: () => handleCreate(),
-      },
+      { label: 'Отмена', action: () => modal.close() },
+      { label: 'Создать', primary: true, action: () => handleCreate() },
     ],
     onClose: async () => {
-      if (imageId) {
+      if (
+        currentImage.imageId &&
+        !profile.categories.some((c) => c.imageId === currentImage.imageId)
+      ) {
         try {
-          await deleteImage(imageId);
+          await deleteImage(currentImage.imageId);
         } catch {
           /* ignore */
         }
@@ -242,10 +145,7 @@ export function openCategoryCreateModal(profile, onCreated) {
       return;
     }
 
-    const exists = profile.categories.some(
-      (c) => c.name.trim().toLowerCase() === name.toLowerCase()
-    );
-    if (exists) {
+    if (profile.categories.some((c) => c.name.trim().toLowerCase() === name.toLowerCase())) {
       toast('Категория с таким названием уже есть', 'error');
       nameInput.focus();
       nameInput.select();
@@ -257,67 +157,20 @@ export function openCategoryCreateModal(profile, onCreated) {
       name,
       wordType: wordTypeSelect.value,
       hidden: false,
-      imageId: imageId || null,
-      imagePath: imagePath || null,
+      imageId: currentImage.imageId,
+      imagePath: currentImage.imagePath,
     };
 
-    // --- ПРОВЕРКА НА СТАНДАРТНЫЕ КАРТОЧКИ ---
-    let cardsAdded = false;
-
-    // Ищем совпадение в справочнике KNOWN_CATEGORIES
-    const matchedCategory = KNOWN_CATEGORIES.find(
-      (c) => c.name.toLowerCase() === name.toLowerCase()
-    );
-
-    if (matchedCategory) {
-      // Ищем карточки в банке (без учета регистра ID, чтобы Semiy и semiy совпали)
-      const stockCards = CARD_BANK.filter(
-        (item) => item.category.toLowerCase() === matchedCategory.id.toLowerCase()
-      );
-
-      if (stockCards.length > 0) {
-        const ok = await confirm(
-          `В приложении есть готовые карточки для категории «${matchedCategory.name}» (${stockCards.length} шт.). Добавить их?`,
-          'Стандартные карточки'
-        );
-
-        if (ok) {
-          profile.cards[newCategory.id] = stockCards.map((raw) => {
-            const card = {
-              id: uid(),
-              text: raw.word.charAt(0).toUpperCase() + raw.word.slice(1),
-              emoji: raw.emoji || '🖼️',
-              wordType: raw.wordType || newCategory.wordType,
-              gender: raw.gender || null,
-              animate: false,
-              imageId: null,
-              imagePath: `cards/${raw.category}/${raw.filename || raw.word + '.webp'}`,
-              forms: null,
-              variants: raw.variants || [],
-            };
-
-            if (['noun', 'pronoun', 'adjective'].includes(card.wordType)) {
-              autoDetectCard(card);
-            }
-            return card;
-          });
-          cardsAdded = true;
-        }
-      }
-    }
-
-    if (!cardsAdded) {
-      profile.cards[newCategory.id] = [];
-    }
-    // --- КОНЕЦ ПРОВЕРКИ ---
+    const { cards, added } = await applyStandardCards(name, newCategory.wordType);
+    profile.cards[newCategory.id] = cards;
 
     profile.categories.push(newCategory);
     saveProfile(profile);
     setState({ currentCategoryId: newCategory.id });
 
-    toast(cardsAdded ? 'Категория создана с карточками' : 'Категория создана');
+    toast(added ? 'Категория создана с карточками' : 'Категория создана');
 
-    imageId = null;
+    currentImage.imageId = null;
     modal.close();
     if (onCreated) onCreated(newCategory.id);
   }

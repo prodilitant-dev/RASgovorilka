@@ -3,7 +3,7 @@
 .story-reader-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1500; /* Поверх всего, кроме тостов */
+  z-index: 1500;
   background: var(--bg);
   display: flex;
   flex-direction: column;
@@ -129,7 +129,9 @@
   border-radius: calc(var(--radius) - 4px);
 }
 
-/* Лента карточек */
+/* 
+ * ИСПРАВЛЕНИЕ: Лента карточек 
+ */
 .story-reader-cards-tray {
   display: flex;
   gap: var(--spacing-sm);
@@ -137,6 +139,8 @@
   padding-bottom: var(--spacing-sm);
   flex-shrink: 0;
   scrollbar-width: thin; 
+  min-height: 135px; /* Фиксируем высоту, чтобы карточки не прыгали */
+  align-items: flex-start; /* Карточки не растягиваются по высоте контейнера */
 }
 
 .story-reader-cards-tray::-webkit-scrollbar {
@@ -147,8 +151,10 @@
   border-radius: 3px;
 }
 
-/* Мини-карточки в читалке */
-.story-card-mini {
+/* 
+ * ИСПРАВЛЕНИЕ: Стили для мини-карточек (заменили .story-card-mini на .card--mini)
+ */
+.card--mini {
   flex-shrink: 0;
   width: 100px !important;
   height: 125px !important;
@@ -156,20 +162,28 @@
   transition: transform 0.2s, outline 0.2s, box-shadow 0.2s;
 }
 
-.story-card-mini .card__label {
+.card--mini .card__label {
   font-size: 0.8rem;
   padding: 4px;
+  line-height: 1.1;
+  height: auto;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.story-card-mini .card__bg {
+.card--mini .card__bg {
   font-size: 2rem;
 }
 
-/* 
- * Убираем кастомный класс .speaking, так как используем 
- * родной .card--active для подсветки. 
- * Он уже описан в card.css и автоматически сделает рамку и фон.
- */
+/* Стиль для активной карточки во время воспроизведения */
+.card--mini.card--active {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  z-index: 2;
+  position: relative;
+}
 
 /* Футер */
 .story-reader-footer {

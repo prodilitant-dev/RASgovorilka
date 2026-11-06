@@ -10,11 +10,12 @@ import { createEditorFooter } from './components/editor/EditorFooter';
 import '@styles/modes/stories-editor.css';
 
 export function openStoriesEditor(container, story, onSave, onCancel) {
-  const isNew = !story;
   const workingStory = JSON.parse(
-    JSON.stringify(story || { id: uid(), title: '', coverImageId: null, coverImagePath: null, slides: [] })
+    JSON.stringify(
+      story || { id: uid(), title: '', coverImageId: null, coverImagePath: null, slides: [] }
+    )
   );
-  
+
   let currentSlideIndex = workingStory.slides.length > 0 ? 0 : -1;
   const root = createElement('div', { className: 'story-editor-root' });
 
@@ -28,9 +29,19 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
     const main = createElement('div', { className: 'story-editor-main' });
 
     if (workingStory.slides.length === 0) {
-      const emptyBtn = createElement('button', { className: 'story-add-first-slide', type: 'button' }, 'Добавить первый слайд');
+      const emptyBtn = createElement(
+        'button',
+        { className: 'story-add-first-slide', type: 'button' },
+        'Добавить первый слайд'
+      );
       emptyBtn.addEventListener('click', () => {
-        workingStory.slides.push({ id: uid(), imageId: null, imagePath: null, cards: [], pauseAfter: 1500 });
+        workingStory.slides.push({
+          id: uid(),
+          imageId: null,
+          imagePath: null,
+          cards: [],
+          pauseAfter: 1500,
+        });
         currentSlideIndex = 0;
         renderEditor();
       });
@@ -41,35 +52,51 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
       const isLast = currentSlideIndex === workingStory.slides.length - 1;
 
       // Навигация (точки)
-      main.appendChild(createSlideNavigation(
-        workingStory, 
-        currentSlideIndex, 
-        (idx) => { currentSlideIndex = idx; renderEditor(); },
-        () => {
-          workingStory.slides.splice(currentSlideIndex, 1);
-          currentSlideIndex = Math.max(0, currentSlideIndex - 1);
-          if (workingStory.slides.length === 0) currentSlideIndex = -1;
-          renderEditor();
-        }
-      ));
+      main.appendChild(
+        createSlideNavigation(
+          workingStory,
+          currentSlideIndex,
+          (idx) => {
+            currentSlideIndex = idx;
+            renderEditor();
+          },
+          () => {
+            workingStory.slides.splice(currentSlideIndex, 1);
+            currentSlideIndex = Math.max(0, currentSlideIndex - 1);
+            if (workingStory.slides.length === 0) currentSlideIndex = -1;
+            renderEditor();
+          }
+        )
+      );
 
       // Контент (стрелки + картинка + пауза)
-      main.appendChild(createSlideContent(
-        slide,
-        isFirst,
-        isLast,
-        () => { currentSlideIndex--; renderEditor(); },
-        () => {
-          if (isLast) {
-            workingStory.slides.push({ id: uid(), imageId: null, imagePath: null, cards: [], pauseAfter: 1500 });
-            currentSlideIndex++;
-          } else {
-            currentSlideIndex++;
-          }
-          renderEditor();
-        },
-        renderEditor
-      ));
+      main.appendChild(
+        createSlideContent(
+          slide,
+          isFirst,
+          isLast,
+          () => {
+            currentSlideIndex--;
+            renderEditor();
+          },
+          () => {
+            if (isLast) {
+              workingStory.slides.push({
+                id: uid(),
+                imageId: null,
+                imagePath: null,
+                cards: [],
+                pauseAfter: 1500,
+              });
+              currentSlideIndex++;
+            } else {
+              currentSlideIndex++;
+            }
+            renderEditor();
+          },
+          renderEditor
+        )
+      );
 
       // Лента карточек
       main.appendChild(createCardTray(slide, renderEditor));
@@ -78,12 +105,14 @@ export function openStoriesEditor(container, story, onSave, onCancel) {
     root.appendChild(main);
 
     // 3. Футер
-    root.appendChild(createEditorFooter(
-      workingStory,
-      onCancel,
-      () => openStoriesReader(workingStory),
-      () => onSave(workingStory)
-    ));
+    root.appendChild(
+      createEditorFooter(
+        workingStory,
+        onCancel,
+        () => openStoriesReader(workingStory),
+        () => onSave(workingStory)
+      )
+    );
   };
 
   renderEditor();

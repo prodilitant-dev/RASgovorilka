@@ -3,6 +3,7 @@ import { createElement, clear, on } from '@utils/dom';
 import { getActiveProfile } from '@state/actions';
 import { getImageUrl } from '@services/imageService';
 import { logger } from '@utils/logger';
+import { createEmptyState } from '@components/common/EmptyState/EmptyState'; // <-- ДОБАВЛЕН ИМПОРТ
 import '@styles/components/print.css';
 
 // Импорт вынесенных модулей
@@ -131,13 +132,8 @@ export function openPrintView(onClose) {
     });
 
     if (cardsToPrint.length === 0) {
-      scrollArea.appendChild(
-        createElement(
-          'div',
-          { style: 'text-align:center; padding:40px; color:#888; width:100%;' },
-          'Нет карточек с картинками для печати'
-        )
-      );
+      // <-- ЗАМЕНА ЗДЕСЬ
+      scrollArea.appendChild(createEmptyState('Нет карточек с картинками для печати', '🖨️'));
       return;
     }
 

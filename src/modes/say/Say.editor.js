@@ -131,33 +131,33 @@ export function openCardEditor(cardData, onSave, onDelete) {
       },
     ],
 
-        previewSides: (ent, callbacks) => {
+    previewSides: (ent, callbacks) => {
       // Функция для создания колонки с кнопками
       const createColorColumn = (colors) => {
         const col = createElement('div', { className: 've-color-col' });
-        
+
         colors.forEach((c) => {
           const btn = createElement('button', {
             type: 'button',
             className: `ve-color-btn ${ent.styleColor === c.value ? 'active' : ''}`,
             title: c.name,
           });
-          
+
           btn.style.backgroundColor = c.bg;
           if (c.border) btn.style.border = c.border;
-          
+
           btn.addEventListener('click', () => {
             // Обновляем состояние через коллбэк редактора
             callbacks.onFieldChange('styleColor', c.value);
-            
+
             // Визуально обновляем активную кнопку
-            col.querySelectorAll('.ve-color-btn').forEach(b => b.classList.remove('active'));
+            col.querySelectorAll('.ve-color-btn').forEach((b) => b.classList.remove('active'));
             btn.classList.add('active');
           });
-          
+
           col.appendChild(btn);
         });
-        
+
         return col;
       };
 
@@ -184,7 +184,7 @@ export function openCardEditor(cardData, onSave, onDelete) {
         right: createColorColumn(rightColors),
       };
     },
-    
+
     buttons: [
       {
         id: 'delete',

@@ -9,7 +9,11 @@ export function createSlideContent(slide, isFirst, isLast, onPrev, onNext, onUpd
   // 1. Навигация (Стрелки + Превью)
   const centerRow = createElement('div', { className: 'story-slide-center-row' });
 
-  const prevBtn = createElement('button', { className: 'story-nav-arrow', type: 'button', disabled: isFirst });
+  const prevBtn = createElement('button', {
+    className: 'story-nav-arrow',
+    type: 'button',
+    disabled: isFirst,
+  });
   const prevImg = createElement('img', { src: iconUrl('arrow-left'), alt: '⬅️' });
   prevImg.onerror = () => prevImg.replaceWith(document.createTextNode('⬅️'));
   prevBtn.appendChild(prevImg);
@@ -24,8 +28,14 @@ export function createSlideContent(slide, isFirst, isLast, onPrev, onNext, onUpd
     }
   );
 
-  const nextBtn = createElement('button', { className: `story-nav-arrow ${isLast ? 'is-add' : ''}`, type: 'button' });
-  const nextImg = createElement('img', { src: iconUrl(isLast ? 'add' : 'arrow-right'), alt: isLast ? '➕' : '➡️' });
+  const nextBtn = createElement('button', {
+    className: `story-nav-arrow ${isLast ? 'is-add' : ''}`,
+    type: 'button',
+  });
+  const nextImg = createElement('img', {
+    src: iconUrl(isLast ? 'add' : 'arrow-right'),
+    alt: isLast ? '➕' : '➡️',
+  });
   nextImg.onerror = () => nextImg.replaceWith(document.createTextNode(isLast ? '➕' : '➡️'));
   nextBtn.appendChild(nextImg);
   on(nextBtn, 'click', onNext);
@@ -38,16 +48,23 @@ export function createSlideContent(slide, isFirst, isLast, onPrev, onNext, onUpd
   // 2. Пауза
   const pauseRow = createElement('div', { className: 'story-slide-pause-row' });
   pauseRow.appendChild(createElement('span', { className: 'story-pause-label' }, '⏱ Пауза:'));
-  
+
   if (slide.pauseAfter === undefined) slide.pauseAfter = 1500;
-  
+
   const pauseInput = createElement('input', {
-    type: 'range', min: '0', max: '5', step: '0.5',
+    type: 'range',
+    min: '0',
+    max: '5',
+    step: '0.5',
     value: String(slide.pauseAfter / 1000),
-    className: 'story-pause-range'
+    className: 'story-pause-range',
   });
-  
-  const pauseValue = createElement('span', { className: 'story-pause-value' }, `${(slide.pauseAfter / 1000).toFixed(1)} с`);
+
+  const pauseValue = createElement(
+    'span',
+    { className: 'story-pause-value' },
+    `${(slide.pauseAfter / 1000).toFixed(1)} с`
+  );
 
   on(pauseInput, 'input', (e) => {
     const valSec = parseFloat(e.target.value);

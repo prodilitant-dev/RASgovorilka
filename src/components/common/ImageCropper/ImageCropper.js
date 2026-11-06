@@ -101,7 +101,7 @@ function exportCroppedBlob(bitmap, imgW, imgH, state, previewSize, outputSize, q
 export async function openImageCropper(file, options = {}) {
   const {
     size: outputSize = 512,
-    quality = 0.85,
+    quality = 0.5,
     title = 'Настройка изображения',
     frameSize = 320,
   } = options;

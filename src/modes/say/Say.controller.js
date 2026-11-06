@@ -89,7 +89,8 @@ export function renderSay(container, profile) {
       clearSentence();
       renderSentence(sentenceContainer);
     },
-    onSpeak: speakSentence,
+    // Передаем контейнер для поиска слов
+    onSpeak: () => speakSentence(sentenceContainer),
   });
 
   // Свайп — только вне режима редактирования

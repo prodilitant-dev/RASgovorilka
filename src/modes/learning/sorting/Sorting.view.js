@@ -1,6 +1,7 @@
 // src/modes/learning/sorting/Sorting.view.js
 import { createElement, clear } from '@utils/dom';
 import { createCard } from '@components/common/Card/Card';
+import { createEmptyState } from '@components/common/EmptyState/EmptyState'; // <-- ДОБАВЛЕН ИМПОРТ
 import { logger } from '@utils/logger';
 
 export function renderSortingGame(container, state, onDrop) {
@@ -14,14 +15,8 @@ export function renderSortingGame(container, state, onDrop) {
   const cardsWrap = createElement('div', { className: 'sorting-cards-horizontal' });
 
   if (state.remainingCards.length === 0) {
-    const emptyMsg = createElement(
-      'div',
-      {
-        style: 'text-align:center; padding:20px; color: var(--text-muted); width:100%;',
-      },
-      '✅ Все карточки отсортированы!'
-    );
-    cardsWrap.appendChild(emptyMsg);
+    // <-- ЗАМЕНА ЗДЕСЬ
+    cardsWrap.appendChild(createEmptyState('Все карточки отсортированы!', '✅'));
   } else {
     state.remainingCards.forEach((card) => {
       const cardEl = createCard({
@@ -69,7 +64,6 @@ export function renderSortingGame(container, state, onDrop) {
 
     const itemsWrap = createElement('div', { className: 'zone-items' });
     zone.items.forEach((item) => {
-      // ✅ Только текст, без эмодзи
       const itemEl = createElement(
         'span',
         {

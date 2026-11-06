@@ -102,3 +102,15 @@
   align-items: center;
   justify-content: center;
 }
+
+/* Подсветка активного слова во время озвучки предложения */
+.sentence-word--active,
+.sentence-btn--active {
+  background-color: var(--primary-light) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary-dark) !important;
+  transform: scale(1.05);
+  transition: all 0.2s ease;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+  z-index: 2;
+}

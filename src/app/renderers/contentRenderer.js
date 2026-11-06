@@ -26,7 +26,8 @@ const modeRenderers = {
     if (profile) renderWrite(container, profile);
     else renderPlaceholder(container, 'write (нет профиля)');
   },
-  stories: (container) => { // <-- НОВЫЙ РЕНДЕРЕР
+  stories: (container) => {
+    // <-- НОВЫЙ РЕНДЕРЕР
     const profile = getActiveProfile();
     if (profile) renderStories(container, profile);
     else renderPlaceholder(container, 'stories (нет профиля)');
