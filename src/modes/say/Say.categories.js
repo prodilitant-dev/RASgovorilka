@@ -14,7 +14,8 @@ export function renderCategories(
   onSelect,
   onEdit,
   onReorder,
-  onCreated
+  onCreated,
+  onLongPress // <-- НОВЫЙ КОЛЛБЭК
 ) {
   logger.debug('🔄 Rendering Categories');
 
@@ -43,31 +44,24 @@ export function renderCategories(
       'data-category-id': cat.id,
     });
 
-    // === ПРИМЕНЯЕМ АКЦЕНТНЫЙ ЦВЕТ И ОБВОДКИ ===
     if (cat.styleColor) {
-      // Если есть акцент, заливаем фон (50% для активной, 25% для неактивной)
       el.style.backgroundColor = isActive ? `${cat.styleColor}80` : `${cat.styleColor}40`;
     } else if (isActive) {
-      // Если акцента нет, убираем стандартную зеленую заливку для активной вкладки
       el.style.backgroundColor = 'var(--surface)';
     }
 
     if (isActive) {
-      // Черная обводка для активной вкладки
       el.style.border = '1px solid #000000';
     } else if (cat.styleColor) {
-      // Убираем цветную обводку с самой вкладки, если она неактивна
       el.style.borderColor = 'transparent';
     }
 
-    // === Аватарка категории ===
     if (showImages) {
       el.classList.add('category--has-avatar');
-      el.appendChild(createCategoryAvatar(cat, isActive)); // <-- Передаем isActive
+      el.appendChild(createCategoryAvatar(cat, isActive));
     }
 
     const nameEl = createElement('span', { className: 'cat-name' }, cat.name);
-    // Текст всегда черный, чтобы читался на цветном фоне и при активном состоянии
     if (cat.styleColor || isActive) {
       nameEl.style.color = '#000000';
     }
@@ -94,16 +88,61 @@ export function renderCategories(
 
       editBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        logger.debug(`Category edit clicked: ${cat.id}`);
         onEdit(cat);
       });
       actionsEl.appendChild(editBtn);
       el.appendChild(actionsEl);
     }
 
+    // --- ЛОГИКА ДОЛГОГО ТАПА ---
+    if (!editing && onLongPress) {
+      let pressTimer = null;
+      let startX = 0;
+      let startY = 0;
+
+      const startPress = (e) => {
+        if (e.target.closest('.cat-action-btn')) return;
+        const touch = e.touches ? e.touches[0] : e;
+        startX = touch.clientX;
+        startY = touch.clientY;
+
+        pressTimer = setTimeout(() => {
+          pressTimer = null;
+          if (navigator.vibrate) navigator.vibrate(50);
+          onLongPress(cat.id);
+        }, 600);
+      };
+
+      const cancelPress = () => {
+        if (pressTimer) {
+          clearTimeout(pressTimer);
+          pressTimer = null;
+        }
+      };
+
+      const movePress = (e) => {
+        if (!pressTimer) return;
+        const touch = e.touches ? e.touches[0] : e;
+        const dx = touch.clientX - startX;
+        const dy = touch.clientY - startY;
+        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+          cancelPress();
+        }
+      };
+
+      el.addEventListener('touchstart', startPress, { passive: true });
+      el.addEventListener('touchmove', movePress, { passive: true });
+      el.addEventListener('touchend', cancelPress);
+      el.addEventListener('touchcancel', cancelPress);
+
+      el.addEventListener('mousedown', startPress);
+      el.addEventListener('mousemove', movePress);
+      el.addEventListener('mouseup', cancelPress);
+      el.addEventListener('mouseleave', cancelPress);
+    }
+
     el.addEventListener('click', (e) => {
       e.stopPropagation();
-      logger.debug(`Category clicked: ${cat.id}`);
       onSelect(cat.id);
     });
 
@@ -127,15 +166,7 @@ export function renderCategories(
         if (onCreated) {
           onCreated(newCategoryId);
         } else {
-          renderCategories(
-            container,
-            profile,
-            newCategoryId,
-            onSelect,
-            onEdit,
-            onReorder,
-            onCreated
-          );
+          renderCategories(container, profile, newCategoryId, onSelect, onEdit, onReorder, onCreated, onLongPress);
         }
       });
     });
@@ -160,14 +191,11 @@ function createCategoryAvatar(cat, isActive) {
   const avatar = createElement('div', { className: 'cat-avatar' });
   const letter = (cat.name || '?').trim().charAt(0).toUpperCase();
 
-  // Применяем обводку к аватарке
   if (isActive) {
-    // Если вкладка активна, обводка черная
     avatar.style.borderColor = '#000000';
     avatar.style.borderWidth = '2px';
     avatar.style.borderStyle = 'solid';
   } else if (cat.styleColor) {
-    // Если неактивна, но есть цвет, используем его
     avatar.style.borderColor = cat.styleColor;
     avatar.style.borderWidth = '2px';
     avatar.style.borderStyle = 'solid';
@@ -180,28 +208,16 @@ function createCategoryAvatar(cat, isActive) {
     getImageUrl(cat.imageId)
       .then((url) => {
         if (!url) return;
-        const img = createElement('img', {
-          src: url,
-          alt: '',
-          className: 'cat-avatar__img',
-          draggable: 'false',
-        });
+        const img = createElement('img', { src: url, alt: '', className: 'cat-avatar__img', draggable: 'false' });
         avatar.textContent = '';
         avatar.classList.remove('cat-avatar--fallback');
         avatar.appendChild(img);
       })
-      .catch(() => {
-        /* остаётся fallback */
-      });
+      .catch(() => {});
   } else if (cat.imagePath) {
     const base = import.meta.env.BASE_URL || '/';
     const url = base.endsWith('/') ? `${base}${cat.imagePath}` : `${base}/${cat.imagePath}`;
-    const img = createElement('img', {
-      src: url,
-      alt: '',
-      className: 'cat-avatar__img',
-      draggable: 'false',
-    });
+    const img = createElement('img', { src: url, alt: '', className: 'cat-avatar__img', draggable: 'false' });
     avatar.appendChild(img);
   } else {
     avatar.classList.add('cat-avatar--fallback');

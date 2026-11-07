@@ -6,10 +6,10 @@ import { openDeclensionModal } from '@components/common/DeclensionModal/Declensi
 import { getState } from '@state/store';
 import { getActiveProfile } from '@state/actions';
 import { findBankItem } from '@utils/cardBank';
-import { createColorPalette } from '@components/common/VerticalEditor/preview/colorPalette'; // <-- ИМПОРТ
+import { createColorPalette } from '@components/common/VerticalEditor/preview/colorPalette';
 
 export function openCardEditor(cardData, onSave, onDelete, options = {}) {
-  const { skipDuplicateCheck = false } = options;
+  const { skipDuplicateCheck = false, targetCategoryId = null } = options; // <-- ДОБАВЛЕНО
 
   const isNew = !cardData.id;
   if (isNew) {
@@ -35,13 +35,14 @@ export function openCardEditor(cardData, onSave, onDelete, options = {}) {
 
   const state = getState();
   const profile = getActiveProfile();
-  const categoryId = state.currentCategoryId;
+  // Используем переданную категорию для проверки дубликатов
+  const categoryId = targetCategoryId || state.currentCategoryId;
   const existingCards = profile?.cards?.[categoryId] || [];
 
   openVerticalEditor({
     title: isNew ? 'Новая карточка' : 'Редактировать карточку',
     entity,
-    previewSides: createColorPalette, // <-- ДОБАВЛЕНА ПАЛИТРА
+    previewSides: createColorPalette,
     onSave: (updated, done) => {
       if (!updated.text || !updated.text.trim()) {
         toast('Введите текст', 'error');
@@ -53,7 +54,8 @@ export function openCardEditor(cardData, onSave, onDelete, options = {}) {
         const trimmedText = updated.text.trim();
         const isDuplicate = existingCards.some(
           (card) =>
-            card.id !== updated.id && card.text.trim().toLowerCase() === trimmedText.toLowerCase()
+            card.id !== updated.id &&
+            card.text.trim().toLowerCase() === trimmedText.toLowerCase()
         );
 
         if (isDuplicate) {

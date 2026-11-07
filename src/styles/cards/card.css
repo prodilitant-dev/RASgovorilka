@@ -43,7 +43,10 @@
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+  padding: var(--spacing-xs, 1px); 
+  box-sizing: border-box;
 }
+
 .card__label {
   padding: var(--spacing-xs);
   text-align: center;
@@ -98,8 +101,8 @@ body.editing-mode .card:not(.card--add) {
 }
 
 .card__icon {
-  width: 90%;
-  height: 90%;
+  width: 95%;
+  height: 95%;
   object-fit: contain;
   pointer-events: none;
   -webkit-user-drag: none;
