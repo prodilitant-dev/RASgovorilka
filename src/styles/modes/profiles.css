@@ -6,3 +6,21 @@
   flex: 1;
   align-content: start;
 }
+
+/* --- Бледные неактивные профили --- */
+
+/* Плавный переход при переключении */
+.profile-card {
+  transition: opacity 0.3s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+/* Применяем прозрачность к неактивным карточкам профилей */
+.profile-card:not(.card--active) {
+  opacity: 0.6;
+}
+
+/* Возвращаем полную непрозрачность при наведении или нажатии (для десктопа и тача) */
+.profile-card:not(.card--active):hover,
+.profile-card:not(.card--active):active {
+  opacity: 1;
+}

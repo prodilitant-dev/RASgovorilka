@@ -26,21 +26,14 @@ function applyImage(container, url, className) {
   container.appendChild(img);
 }
 
-/**
- * Рендерит иконку профиля в контейнер.
- * Приоритет: imageId → icon (WebP или эмодзи) → первая буква имени → fallbackEmoji.
- *
- * @param {HTMLElement} container
- * @param {Object|null} profile
- * @param {Object} [options]
- * @param {boolean} [options.isEditing] — если true, показываем ✕ (выход из редактирования)
- * @param {string} [options.iconClassName='profile-fab__icon']
- * @param {string} [options.fallbackEmoji='👤']
- */
 export function renderProfileIcon(container, profile, options = {}) {
   const { isEditing = false, iconClassName = 'profile-fab__icon', fallbackEmoji = '👤' } = options;
 
-  // Режим редактирования → крестик close
+  // Сбрасываем старые стили (на всякий случай, если они были установлены)
+  container.style.borderColor = '';
+  container.style.borderStyle = '';
+  container.style.borderWidth = '';
+
   if (isEditing) {
     clear(container);
     const img = createElement('img', {
@@ -59,7 +52,8 @@ export function renderProfileIcon(container, profile, options = {}) {
     return;
   }
 
-  // 1. Фото пользователя
+  // УБРАЛИ БЛОК С ПРИМЕНЕНИЕМ ЦВЕТА
+
   if (profile.imageId) {
     clear(container);
     getImageUrl(profile.imageId).then((url) => {
@@ -76,7 +70,21 @@ export function renderProfileIcon(container, profile, options = {}) {
     clear(container);
     const base = import.meta.env.BASE_URL || '/';
     const url = base.endsWith('/') ? `${base}${profile.imagePath}` : `${base}/${profile.imagePath}`;
-    applyImage(container, url, iconClassName);
+    
+    const probe = new Image();
+    probe.onload = () => applyImage(container, url, iconClassName);
+    probe.onerror = () => applyFallback(container, profile, iconClassName, fallbackEmoji);
+    probe.src = url;
+    return;
+  }
+
+  if (!profile.icon || profile.icon === 'profile-default') {
+    const base = import.meta.env.BASE_URL || '/';
+    const defaultUrl = `${base}icons/profiles.webp`;
+    const probe = new Image();
+    probe.onload = () => applyImage(container, defaultUrl, iconClassName);
+    probe.onerror = () => applyFallback(container, profile, iconClassName, fallbackEmoji);
+    probe.src = defaultUrl;
     return;
   }
 
@@ -87,7 +95,6 @@ function applyFallback(container, profile, iconClassName, fallbackEmoji) {
   const icon = profile.icon || '';
   const name = profile.name || '';
 
-  // 2. WebP-иконка по имени
   if (icon && isIconName(icon)) {
     clear(container);
     const img = createElement('img', {
@@ -103,13 +110,11 @@ function applyFallback(container, profile, iconClassName, fallbackEmoji) {
     return;
   }
 
-  // 3. Эмодзи
   if (icon) {
     applyText(container, icon);
     return;
   }
 
-  // 4. Первая буква имени
   const letter = firstLetter(name);
   if (letter) {
     applyText(container, letter);
@@ -117,6 +122,5 @@ function applyFallback(container, profile, iconClassName, fallbackEmoji) {
     return;
   }
 
-  // 5. Fallback
   applyText(container, fallbackEmoji);
 }

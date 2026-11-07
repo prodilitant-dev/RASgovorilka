@@ -46,11 +46,12 @@ export function renderUniversalList(container, config) {
         text: item.text || '',
         emoji: item.emoji || '',
         imageId: item.imageId,
-        imagePath: item.imagePath, // ← NEW
+        imagePath: item.imagePath,
         isActive: item.active || false,
         isAdd: item.isAdd || false,
         draggable: !!onReorder,
         className: item.className || '',
+        styleColor: item.styleColor || null, // <-- ДОБАВЛЕНО
         ...cardOptions,
       });
     }

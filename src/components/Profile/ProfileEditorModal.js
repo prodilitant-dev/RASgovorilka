@@ -1,31 +1,47 @@
 // src/components/Profile/ProfileEditorModal.js
 import { openVerticalEditor } from '@components/common/VerticalEditor';
+import { createColorPalette } from '@components/common/VerticalEditor/preview/colorPalette';
 import { toast } from '@utils/toast';
 import { uid } from '@utils/id';
 
 export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel }) {
   const isNew = !profile?.id;
-  // imageId: null по умолчанию
-  const entity = profile || { id: uid(), name: '', icon: 'profile-default', imageId: null };
+  
+  // Создаем сущность с дефолтной иконкой, если нет своей картинки
+  const entity = profile || { 
+    id: uid(), 
+    name: '', 
+    icon: 'profile-default', 
+    imageId: null,
+    imagePath: 'icons/profiles.webp', // <-- ДЕФОЛТНАЯ ИКОНКА
+    styleColor: null 
+  };
+  
   const workingEntity = { ...entity };
+
+  // Если у профиля нет картинки, но есть imageId (старый формат) - оставляем как есть
+  if (!workingEntity.imageId && !workingEntity.imagePath) {
+    workingEntity.imagePath = 'icons/profiles.webp';
+  }
 
   const config = {
     title: isNew ? 'Новый профиль' : 'Редактировать профиль',
     entity: workingEntity,
+    preview: true,
+    previewSides: createColorPalette, // <-- ДОБАВЛЕНА ПАЛИТРА
     onSave: (updated, done) => {
       if (!updated.name || !updated.name.trim()) {
         toast('Введите имя профиля', 'error');
         return done(new Error('Validation'));
       }
-      // Передаем обновленные данные
       onSave(updated, done);
     },
-    onDelete: (entity, close) => {
+    onDelete: (ent, close) => {
       if (!isNew && onDelete) {
-        onDelete(entity.id, close);
+        onDelete(ent.id, close);
       }
     },
-    onClose: (entity, close) => {
+    onClose: (ent, close) => {
       if (onCancel) onCancel();
       close();
     },
@@ -37,8 +53,6 @@ export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel 
         required: true,
         placeholder: 'Введите имя профиля...',
       },
-      // Поле 'icon' (Иконка эмодзи) полностью удалено.
-      // Остается только загрузка фото через превью.
     ],
     extraActions: [],
     buttons: (() => {
@@ -48,8 +62,8 @@ export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel 
           id: 'copy',
           label: '📋 Копировать',
           variant: 'secondary',
-          action: (entity, close) => {
-            onCopy(entity);
+          action: (ent, close) => {
+            onCopy(ent);
             close();
           },
         });
@@ -68,7 +82,6 @@ export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel 
       });
       return btns;
     })(),
-    preview: true,
   };
 
   return openVerticalEditor(config);
