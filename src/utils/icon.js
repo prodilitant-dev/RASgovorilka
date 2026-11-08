@@ -20,7 +20,10 @@ export function iconUrl(name) {
  * @param {string} [opts.className=''] - доп. класс
  * @param {string} [opts.alt=''] - alt для a11y
  */
-export function createIcon(name, { fallback = '', size, className = '', alt = '' } = {}) {
+export function createIcon(
+  name,
+  { fallback = '', size, fallbackFontSize, className = '', alt = '' } = {}
+) {
   const sizeStyle = size ? `width:${size}px;height:${size}px;object-fit:contain;` : '';
   const img = createElement('img', {
     src: iconUrl(name),
@@ -31,12 +34,13 @@ export function createIcon(name, { fallback = '', size, className = '', alt = ''
   });
 
   if (fallback) {
+    const fontSize = fallbackFontSize ?? (size ? Math.round(size * 0.85) : undefined);
     const showFallback = () => {
       const span = createElement(
         'span',
         {
           className: ['ui-icon', 'ui-icon--fallback', className].filter(Boolean).join(' '),
-          style: size ? `font-size:${Math.round(size * 0.85)}px;line-height:1;` : '',
+          style: fontSize ? `font-size:${fontSize}px;line-height:1;` : '',
         },
         fallback
       );
