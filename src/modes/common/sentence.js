@@ -21,7 +21,7 @@ export function addWord(text, sourceItem = null) {
     wordType: sourceItem?.wordType || 'noun',
     forms: sourceItem?.forms || null,
     animate: sourceItem?.animate,
-    styleColor: sourceItem?.styleColor || null, // <-- ДОБАВЛЕНО
+    styleColor: sourceItem?.styleColor || null,
   };
   setState({ sentenceWords: [...words, newWord] });
 }
@@ -47,6 +47,10 @@ export async function speakSentence(container) {
     return;
   }
 
+  // ЗАЩИТА: Если вместо контейнера пришел объект события (клик) или ничего,
+  // то просто не ищем DOM-элементы для подсветки.
+  const isContainer = container && typeof container.querySelectorAll === 'function';
+
   const autoInflect = state.globalSettings?.autoInflect === true;
   const displayWords = autoInflect ? getInflectedWords(words, true) : words.map((w) => w.text);
 
@@ -60,40 +64,33 @@ export async function speakSentence(container) {
     if (index < displayWords.length - 1) fullText += ' ';
   });
 
-  // ИЩЕМ ТОЛЬКО СЛОВА (убрали .sentence-btn)
-  const wordEls = container ? Array.from(container.querySelectorAll('.sentence-word')) : [];
+  // Если контейнер есть, ищем слова. Если нет — массив пустой.
+  const wordEls = isContainer ? Array.from(container.querySelectorAll('.sentence-word')) : [];
 
   const vs = state.globalSettings?.voiceSettings || {};
 
   speakSequence(fullText, {
     voiceSettings: vs,
     onWord: (charIndex) => {
+      if (!isContainer) return; // Если контейнера нет, подсветку не делаем
+
       const activeMapping = mapping.find((m) => charIndex >= m.start && charIndex <= m.end);
       if (activeMapping) {
         const el = wordEls[activeMapping.index];
         if (el && !el.classList.contains('sentence-word--active')) {
-          wordEls.forEach((w) => {
-            w.classList.remove('sentence-word--active');
-            w.style.borderColor = ''; // Сбрасываем кастомный бордюр
-          });
-
+          wordEls.forEach((w) => w.classList.remove('sentence-word--active'));
           el.classList.add('sentence-word--active');
-
-          // Если у слова есть свой цвет, применяем его к бордюру
-          const wordData = words[activeMapping.index];
-          if (wordData && wordData.styleColor) {
-            el.style.borderColor = wordData.styleColor;
-          }
-
           el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
       }
     },
     onEnd: () => {
-      wordEls.forEach((w) => {
-        w.classList.remove('sentence-word--active');
-        w.style.borderColor = '';
-      });
+      if (!isContainer) return;
+      wordEls.forEach((w) => w.classList.remove('sentence-word--active'));
+    },
+    onError: () => {
+      if (!isContainer) return;
+      wordEls.forEach((w) => w.classList.remove('sentence-word--active'));
     },
   });
 }
@@ -111,7 +108,7 @@ export function renderSentence(container, options = {}) {
   const callbacks = {
     onRemove: lastCallbacks.onRemove || removeWord,
     onClear: lastCallbacks.onClear || clearSentence,
-    // Передаем container в speakSentence
+    // Передаем контейнер в speakSentence, чтобы работала подсветка
     onSpeak: lastCallbacks.onSpeak || (() => speakSentence(container)),
   };
 
