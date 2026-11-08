@@ -6,17 +6,17 @@ import { uid } from '@utils/id';
 
 export function openProfileEditor(profile, { onSave, onDelete, onCopy, onCancel }) {
   const isNew = !profile?.id;
-  
+
   // Создаем сущность с дефолтной иконкой, если нет своей картинки
-  const entity = profile || { 
-    id: uid(), 
-    name: '', 
-    icon: 'profile-default', 
+  const entity = profile || {
+    id: uid(),
+    name: '',
+    icon: 'profile-default',
     imageId: null,
     imagePath: 'icons/profiles.webp', // <-- ДЕФОЛТНАЯ ИКОНКА
-    styleColor: null 
+    styleColor: null,
   };
-  
+
   const workingEntity = { ...entity };
 
   // Если у профиля нет картинки, но есть imageId (старый формат) - оставляем как есть

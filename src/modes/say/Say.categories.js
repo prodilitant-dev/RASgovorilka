@@ -166,7 +166,16 @@ export function renderCategories(
         if (onCreated) {
           onCreated(newCategoryId);
         } else {
-          renderCategories(container, profile, newCategoryId, onSelect, onEdit, onReorder, onCreated, onLongPress);
+          renderCategories(
+            container,
+            profile,
+            newCategoryId,
+            onSelect,
+            onEdit,
+            onReorder,
+            onCreated,
+            onLongPress
+          );
         }
       });
     });
@@ -208,7 +217,12 @@ function createCategoryAvatar(cat, isActive) {
     getImageUrl(cat.imageId)
       .then((url) => {
         if (!url) return;
-        const img = createElement('img', { src: url, alt: '', className: 'cat-avatar__img', draggable: 'false' });
+        const img = createElement('img', {
+          src: url,
+          alt: '',
+          className: 'cat-avatar__img',
+          draggable: 'false',
+        });
         avatar.textContent = '';
         avatar.classList.remove('cat-avatar--fallback');
         avatar.appendChild(img);
@@ -217,7 +231,12 @@ function createCategoryAvatar(cat, isActive) {
   } else if (cat.imagePath) {
     const base = import.meta.env.BASE_URL || '/';
     const url = base.endsWith('/') ? `${base}${cat.imagePath}` : `${base}/${cat.imagePath}`;
-    const img = createElement('img', { src: url, alt: '', className: 'cat-avatar__img', draggable: 'false' });
+    const img = createElement('img', {
+      src: url,
+      alt: '',
+      className: 'cat-avatar__img',
+      draggable: 'false',
+    });
     avatar.appendChild(img);
   } else {
     avatar.classList.add('cat-avatar--fallback');

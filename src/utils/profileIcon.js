@@ -70,7 +70,7 @@ export function renderProfileIcon(container, profile, options = {}) {
     clear(container);
     const base = import.meta.env.BASE_URL || '/';
     const url = base.endsWith('/') ? `${base}${profile.imagePath}` : `${base}/${profile.imagePath}`;
-    
+
     const probe = new Image();
     probe.onload = () => applyImage(container, url, iconClassName);
     probe.onerror = () => applyFallback(container, profile, iconClassName, fallbackEmoji);

@@ -20,7 +20,7 @@
 .mode-btn {
   position: relative;
   /* Уменьшили паддинги: сверху/снизу 4px, справа 12px, слева 2.5rem (под иконку) */
-  padding: 4px 12px 4px 2.5rem; 
+  padding: 4px 12px 4px 2.5rem;
   border-radius: 1.5rem; /* Делаем скругление чуть больше для эффекта таблетки */
   background: #e9ecef;
   border: none;
@@ -42,21 +42,21 @@
 /* Иконка режима (без подложки, просто картинка) */
 .mode-btn__icon {
   position: absolute;
-  left: -6px; 
+  left: -6px;
   top: 50%;
   transform: translateY(-50%);
-  
-  width: 2.85rem; 
-  height: 2.85rem; 
-  
+
+  width: 2.85rem;
+  height: 2.85rem;
+
   /* Убрали background, border и box-shadow */
   object-fit: contain;
   padding: 0; /* Убрали внутренний отступ, чтобы картинка была крупнее */
-  
+
   box-sizing: border-box;
   flex-shrink: 0;
   z-index: 1;
-  
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -64,7 +64,6 @@
   line-height: 1;
   text-align: center;
 }
-
 
 .mode-btn__label {
   display: inline-block;

@@ -39,7 +39,7 @@ export function openProfileSwitchModal(onProfileSwitched) {
             imagePath: prof.imagePath || 'icons/profiles.webp',
             active: isActive,
             // Цвет передаем ТОЛЬКО для активного профиля
-            styleColor: isActive ? (prof.styleColor || null) : null,
+            styleColor: isActive ? prof.styleColor || null : null,
             className: 'profile-card',
           };
         });

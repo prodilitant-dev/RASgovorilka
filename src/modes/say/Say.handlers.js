@@ -7,7 +7,6 @@ import { renderCategories } from './Say.categories';
 import { renderCards } from './Say.cards';
 import { renderQuickButtons } from '@modes/common/quickButtons';
 import { openCategoryEditor } from './Say.categoryEditor';
-import { openCategoryCreateModal } from './Say.categoryCreate';
 import { openCardEditor } from './Say.editor';
 import { addWord, removeWord, clearSentence, speakSentence } from '@modes/common/sentence';
 
@@ -28,13 +27,7 @@ export function createSayHandlers(ctx) {
   }
 
   function renderCardsWrapper(activeId) {
-    renderCards(
-      containers.cardsContainer,
-      profile,
-      activeId,
-      onCardClick,
-      handleCardReorder
-    );
+    renderCards(containers.cardsContainer, profile, activeId, onCardClick, handleCardReorder);
   }
 
   function renderQuickWrapper() {
@@ -63,7 +56,7 @@ export function createSayHandlers(ctx) {
     setState({ currentCategoryId: categoryId });
     renderCategoriesWrapper(categoryId);
     renderCardsWrapper(categoryId);
-    
+
     const el = containers.categoriesContainer.querySelector(`[data-category-id="${categoryId}"]`);
     if (el && el.scrollIntoView) {
       el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
@@ -132,7 +125,7 @@ export function createSayHandlers(ctx) {
     }
 
     const newCard = { id: uid(), text: '', emoji: '', wordType: 'noun', forms: {} };
-    
+
     openCardEditor(
       newCard,
       (savedCard, done) => {
@@ -188,6 +181,6 @@ export function createSayHandlers(ctx) {
     navigateCategory,
     removeWord: (index) => removeWord(index),
     clearSentence: () => clearSentence(),
-    speakSentence: () => speakSentence(containers.sentenceContainer)
+    speakSentence: () => speakSentence(containers.sentenceContainer),
   };
 }

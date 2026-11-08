@@ -18,7 +18,7 @@ export function renderProfileList(
       imagePath: p.imagePath || null,
       active: isActive,
       // Цвет передаем ТОЛЬКО для активного профиля
-      styleColor: isActive ? (p.styleColor || null) : null,
+      styleColor: isActive ? p.styleColor || null : null,
       className: 'profile-card',
     };
   });

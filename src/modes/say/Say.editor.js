@@ -54,8 +54,7 @@ export function openCardEditor(cardData, onSave, onDelete, options = {}) {
         const trimmedText = updated.text.trim();
         const isDuplicate = existingCards.some(
           (card) =>
-            card.id !== updated.id &&
-            card.text.trim().toLowerCase() === trimmedText.toLowerCase()
+            card.id !== updated.id && card.text.trim().toLowerCase() === trimmedText.toLowerCase()
         );
 
         if (isDuplicate) {

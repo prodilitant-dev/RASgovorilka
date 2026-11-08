@@ -43,7 +43,7 @@
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  padding: var(--spacing-xs, 1px); 
+  padding: var(--spacing-xs, 1px);
   box-sizing: border-box;
 }
 
