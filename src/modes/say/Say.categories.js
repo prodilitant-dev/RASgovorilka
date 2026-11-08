@@ -75,7 +75,9 @@ export function renderCategories(
         'aria-label': 'Редактировать категорию',
         title: 'Редактировать',
       });
-      const editIcon = createIcon('edit', { fallback: '✏️', className: 'cat-action-btn__icon' });
+      editBtn.appendChild(
+        createIcon('edit', { fallback: '✏️', className: 'cat-action-btn__icon' })
+      );
       editBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         onEdit(cat);
@@ -141,7 +143,7 @@ export function renderCategories(
 
   if (editing) {
     const addBtn = createElement('div', { className: 'category category-add' });
-    const addIcon = createIcon('add', { fallback: '+', className: 'cat-action-btn__icon' });
+    addBtn.appendChild(createIcon('add', { fallback: '+', className: 'cat-action-btn__icon' }));
     addBtn.addEventListener('click', () => {
       openCategoryCreateModal(profile, (newCategoryId) => {
         if (onCreated) {

@@ -86,7 +86,9 @@ export class Modal {
           'aria-label': 'Закрыть',
           'data-log': 'modal-close',
         });
-        closeBtn.appendChild(createIcon('close', { fallback: '✕', className: 'modal-close-btn__icon' }));
+        closeBtn.appendChild(
+          createIcon('close', { fallback: '✕', className: 'modal-close-btn__icon' })
+        );
         closeBtn.addEventListener('click', () => this.close());
         rightSide.appendChild(closeBtn);
       }

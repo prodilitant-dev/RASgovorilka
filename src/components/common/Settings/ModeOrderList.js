@@ -21,11 +21,11 @@ export function ModeOrderList({ modes, onReorder, onToggleVisibility }) {
 
     // Иконка режима
     chip.appendChild(
-  createIcon(mode.id, {
-    fallback: mode.emoji || mode.icon || mode.label || '',
-    className: 'mode-order-chip__icon',
-  })
-);
+      createIcon(mode.id, {
+        fallback: mode.emoji || mode.icon || mode.label || '',
+        className: 'mode-order-chip__icon',
+      })
+    );
 
     // Название
     const name = createElement('span', { className: 'mode-name' }, mode.label);

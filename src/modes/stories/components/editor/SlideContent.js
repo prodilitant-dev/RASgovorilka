@@ -30,11 +30,11 @@ export function createSlideContent(slide, isFirst, isLast, onPrev, onNext, onUpd
     type: 'button',
   });
   nextBtn.appendChild(
-  createIcon(isLast ? 'add' : 'arrow-right', {
-    fallback: isLast ? '➕' : '➡️',
-    size: isLast ? 32 : undefined,
-  })
-);
+    createIcon(isLast ? 'add' : 'arrow-right', {
+      fallback: isLast ? '➕' : '➡️',
+      size: isLast ? 32 : undefined,
+    })
+  );
   on(nextBtn, 'click', onNext);
 
   centerRow.appendChild(prevBtn);

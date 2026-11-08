@@ -60,7 +60,9 @@ export function renderSentenceBar(container, words, onRemove, onSpeak, onClear) 
     'aria-label': 'Озвучить предложение',
     'data-log': 'sentence-speak',
   });
-  speakBtn.appendChild(createIcon('say-small', { fallback: '🗣️', className: 'sentence-btn__icon' }));
+  speakBtn.appendChild(
+    createIcon('say-small', { fallback: '🗣️', className: 'sentence-btn__icon' })
+  );
   on(speakBtn, 'click', onSpeak);
   bar.appendChild(speakBtn);
 

@@ -39,7 +39,9 @@ export function renderScheduleNav(
       'aria-label': 'Шаблоны',
       title: 'Шаблоны',
     });
-    manageBtn.appendChild(createIcon('edit', { fallback: '📋', className: 'cat-action-btn__icon' }));
+    manageBtn.appendChild(
+      createIcon('edit', { fallback: '📋', className: 'cat-action-btn__icon' })
+    );
     on(manageBtn, 'click', onManageTemplates);
     nav.appendChild(manageBtn);
   }

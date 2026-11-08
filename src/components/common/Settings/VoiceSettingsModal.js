@@ -93,7 +93,9 @@ export function openVoiceSettings(voiceSettings, onSave) {
         className: 'voice-test-btn',
         'aria-label': 'Проверить',
       });
-      testBtn.appendChild(createIcon('say-small', { fallback: '🔊', className: 'voice-test-btn__icon' }));
+      testBtn.appendChild(
+        createIcon('say-small', { fallback: '🔊', className: 'voice-test-btn__icon' })
+      );
       const testLabel = createElement('span', {}, 'Проверить');
       testBtn.appendChild(testLabel);
       testBtn.addEventListener('click', () => {
