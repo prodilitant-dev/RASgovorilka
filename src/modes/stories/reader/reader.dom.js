@@ -1,6 +1,6 @@
 // src/modes/stories/reader/reader.dom.js
 import { createElement, clear } from '@utils/dom';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 
 /**
  * Собирает DOM читалки истории: overlay, шапку, контент, футер.
@@ -19,25 +19,17 @@ export function createReaderDOM(story) {
     className: 'story-reader-play',
     'aria-label': 'Воспроизвести',
   });
-  const playImg = createElement('img', {
-    src: iconUrl('play'),
-    alt: '',
-    className: 'story-reader-icon',
-  });
-  playImg.onerror = () => playImg.replaceWith(document.createTextNode('▶️'));
-  btnPlay.appendChild(playImg);
+  btnPlay.appendChild(
+    createIcon('play', { fallback: '▶️', size: 36, className: 'story-reader-icon' })
+  );
 
   const btnClose = createElement('button', {
     className: 'story-reader-close',
     'aria-label': 'Закрыть',
   });
-  const closeImg = createElement('img', {
-    src: iconUrl('close'),
-    alt: '',
-    className: 'story-reader-icon',
-  });
-  closeImg.onerror = () => closeImg.replaceWith(document.createTextNode('✕'));
-  btnClose.appendChild(closeImg);
+  btnClose.appendChild(
+    createIcon('close', { fallback: '✕', size: 36, className: 'story-reader-icon' })
+  );
 
   const titleEl = createElement(
     'div',
@@ -115,23 +107,15 @@ export function updatePlayButton(btnPlay, state) {
   clear(btnPlay);
 
   if (state === 'playing') {
-    const img = createElement('img', {
-      src: iconUrl('pause'),
-      alt: '',
-      className: 'story-reader-icon',
-    });
-    img.onerror = () => img.replaceWith(document.createTextNode('⏸'));
-    btnPlay.appendChild(img);
+    btnPlay.appendChild(
+      createIcon('pause', { fallback: '⏸', size: 36, className: 'story-reader-icon' })
+    );
     btnPlay.classList.add('active');
     btnPlay.setAttribute('aria-label', 'Пауза');
   } else {
-    const img = createElement('img', {
-      src: iconUrl('play'),
-      alt: '',
-      className: 'story-reader-icon',
-    });
-    img.onerror = () => img.replaceWith(document.createTextNode('▶️'));
-    btnPlay.appendChild(img);
+    btnPlay.appendChild(
+      createIcon('play', { fallback: '▶️', size: 36, className: 'story-reader-icon' })
+    );
     btnPlay.classList.remove('active');
     btnPlay.setAttribute('aria-label', 'Воспроизвести');
   }
