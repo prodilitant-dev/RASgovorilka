@@ -55,3 +55,4 @@ scripts/
 src/config/backups/
 *.backup.json
 scripts/cards_hints.json
+.inspect/
