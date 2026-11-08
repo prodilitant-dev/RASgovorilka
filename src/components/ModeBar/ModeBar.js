@@ -1,7 +1,7 @@
 // src/components/ModeBar/ModeBar.js
 import { createElement, clear } from '@utils/dom';
+import { createIcon } from '@utils/icon';
 import { MODES } from '@config/modes';
-import { iconUrl } from '@utils/icon';
 import { logger } from '@utils/logger';
 
 export function renderModeBar(
@@ -41,17 +41,9 @@ export function renderModeBar(
     });
 
     // Иконка WebP с fallback на эмодзи
-    const iconEl = createElement('img', {
-      src: iconUrl(mode.icon),
-      alt: '',
-      className: 'mode-btn__icon',
-      draggable: 'false',
-    });
-    iconEl.addEventListener('error', () => {
-      const span = createElement('span', { className: 'mode-btn__icon' }, mode.emoji || '');
-      iconEl.replaceWith(span);
-    });
-    btn.appendChild(iconEl);
+    btn.appendChild(
+      createIcon(mode.icon, { fallback: mode.emoji || '', size: 45, className: 'mode-btn__icon' })
+    );
 
     // Текст кнопки
     const labelEl = createElement('span', { className: 'mode-btn__label' }, mode.label);
