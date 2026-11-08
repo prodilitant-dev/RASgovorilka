@@ -73,7 +73,6 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         // 3. SPA-навигация: если интернет пропал и страница не найдена — отдаем index.html
         navigateFallback: `${base}index.html`,
-        navigateFallbackDenylist: [/^\/api\//],
         // 4. Чистим старый кэш при обновлении
         cleanupOutdatedCaches: true,
         skipWaiting: false,

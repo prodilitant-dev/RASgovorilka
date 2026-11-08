@@ -12,13 +12,6 @@ import { initSpeech, ensureVoicesLoaded } from '@utils/speech';
 import { applyUISize } from '@utils/uiSize';
 import { mountStartScreen, markStartScreenReady } from './startScreen';
 
-/**
- * Обработка открытия файла .rasbackup через файловый менеджер.
- * Работает только в установленной PWA (Chrome/Edge, Android/Desktop).
- *
- * JSZip и модуль импорта подгружаются динамически — только когда
- * реально открыли файл. Это экономит ~30 KB gzip в стартовом бандле.
- */
 async function handleLaunchFile(file) {
   try {
     const { importFromZip } = await import('@services/backup/import');
@@ -30,10 +23,6 @@ async function handleLaunchFile(file) {
   }
 }
 
-/**
- * Регистрирует обработчик launchQueue — срабатывает, когда
- * пользователь открывает .rasbackup через файловый менеджер.
- */
 function setupFileHandler() {
   if (!('launchQueue' in window)) {
     logger.debug('File Handling API не поддерживается');
@@ -70,18 +59,14 @@ export async function initApp() {
       logger.error('resetDatabaseIfPending error:', e);
     }
 
-    initKeyboardHandler();
     initSpeech();
     setupFileHandler();
-
-    // Не блокируем старт — голоса подгрузятся в фоне,
-    // если getVoices() изначально пуст.
     ensureVoicesLoaded().catch(() => {});
 
     await loadInitialState();
 
-    // Применяем размер интерфейса (small/medium/large) до рендера,
-    // чтобы не было «мигания» при переключении.
+    initKeyboardHandler();
+
     const state = getState();
     applyUISize(state.globalSettings?.uiSize || 'small');
 

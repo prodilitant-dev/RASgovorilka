@@ -9,7 +9,7 @@ export async function loadInitialState() {
   logger.debug('Loading initial state');
   const data = await loadAppData();
 
-  if (data) {
+  if (data && data.profiles?.length) {
     setState({
       currentProfileId: data.activeProfileId || null,
       globalSettings: { ...DEFAULT_GLOBAL_SETTINGS, ...(data.globalSettings || {}) },
