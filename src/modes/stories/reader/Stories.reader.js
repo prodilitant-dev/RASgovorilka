@@ -9,6 +9,7 @@ import {
   pauseSequence,
   resumeSequence,
 } from '@services/speech/speechSequence';
+import { iconUrl } from '@utils/icon'; // <-- ДОБАВЛЕН ИМПОРТ
 import { logger } from '@utils/logger';
 import '@styles/modes/stories.css';
 
@@ -19,24 +20,40 @@ export function openStoriesReader(story) {
   }
 
   let currentSlideIndex = 0;
-  let playbackState = 'stopped';
+  let playbackState = 'stopped'; // 'stopped' | 'playing' | 'paused'
   let waitTimeout = null;
 
   const overlay = createElement('div', { className: 'story-reader-overlay' });
 
-  // ... (создание шапки, контента и футера без изменений) ...
-
+  // Шапка
   const header = createElement('div', { className: 'story-reader-header' });
-  const btnPlay = createElement(
-    'button',
-    { className: 'story-reader-play', 'aria-label': 'Воспроизвести' },
-    '▶️'
-  );
-  const btnClose = createElement(
-    'button',
-    { className: 'story-reader-close', 'aria-label': 'Закрыть' },
-    '✕'
-  );
+
+  // Кнопка Play/Pause (с иконкой)
+  const btnPlay = createElement('button', {
+    className: 'story-reader-play',
+    'aria-label': 'Воспроизвести',
+  });
+  const playImg = createElement('img', {
+    src: iconUrl('play'),
+    alt: '',
+    className: 'story-reader-icon',
+  });
+  playImg.onerror = () => playImg.replaceWith(document.createTextNode('▶️'));
+  btnPlay.appendChild(playImg);
+
+  // Кнопка Закрыть (с иконкой)
+  const btnClose = createElement('button', {
+    className: 'story-reader-close',
+    'aria-label': 'Закрыть',
+  });
+  const closeImg = createElement('img', {
+    src: iconUrl('close'),
+    alt: '',
+    className: 'story-reader-icon',
+  });
+  closeImg.onerror = () => closeImg.replaceWith(document.createTextNode('✕'));
+  btnClose.appendChild(closeImg);
+
   const titleEl = createElement(
     'div',
     { className: 'story-reader-title' },
@@ -55,14 +72,18 @@ export function openStoriesReader(story) {
   header.appendChild(headerCenter);
   header.appendChild(headerRight);
 
+  // Контент
   const contentArea = createElement('div', { className: 'story-reader-content' });
   const imageWrap = createElement('div', { className: 'story-reader-image-wrap' });
   const imageEl = createElement('img', { className: 'story-reader-image', alt: '' });
   imageWrap.appendChild(imageEl);
+
   const cardsTray = createElement('div', { className: 'story-reader-cards-tray' });
+
   contentArea.appendChild(imageWrap);
   contentArea.appendChild(cardsTray);
 
+  // Футер
   const footer = createElement('div', { className: 'story-reader-footer' });
   const btnPrev = createElement(
     'button',
@@ -77,19 +98,37 @@ export function openStoriesReader(story) {
   footer.appendChild(btnPrev);
   footer.appendChild(btnNext);
 
+  // Сборка
   overlay.appendChild(header);
   overlay.appendChild(contentArea);
   overlay.appendChild(footer);
   document.body.appendChild(overlay);
   document.body.style.overflow = 'hidden';
 
+  // --- Логика ---
+
   function updatePlayBtnState() {
+    // Очищаем кнопку
+    clear(btnPlay);
+
     if (playbackState === 'playing') {
-      btnPlay.textContent = '⏸';
+      const img = createElement('img', {
+        src: iconUrl('pause'),
+        alt: '',
+        className: 'story-reader-icon',
+      });
+      img.onerror = () => img.replaceWith(document.createTextNode('⏸'));
+      btnPlay.appendChild(img);
       btnPlay.classList.add('active');
       btnPlay.setAttribute('aria-label', 'Пауза');
     } else {
-      btnPlay.textContent = '▶️';
+      const img = createElement('img', {
+        src: iconUrl('play'),
+        alt: '',
+        className: 'story-reader-icon',
+      });
+      img.onerror = () => img.replaceWith(document.createTextNode('▶️'));
+      btnPlay.appendChild(img);
       btnPlay.classList.remove('active');
       btnPlay.setAttribute('aria-label', 'Воспроизвести');
     }
@@ -103,7 +142,6 @@ export function openStoriesReader(story) {
     cardsTray.querySelectorAll('.card--active').forEach((c) => c.classList.remove('card--active'));
   }
 
-  // ФИКС: Остановка при сворачивании приложения
   const handleVisibilityChange = () => {
     if (document.hidden && playbackState === 'playing') {
       stopPlayback();
@@ -259,8 +297,8 @@ export function openStoriesReader(story) {
 
   function closeReader() {
     stopPlayback();
-    document.removeEventListener('visibilitychange', handleVisibilityChange); // <-- ОЧИСТКА
     document.body.style.overflow = '';
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
     overlay.remove();
   }
 

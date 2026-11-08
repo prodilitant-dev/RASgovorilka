@@ -77,12 +77,41 @@
   color: var(--text-muted);
 }
 
-/* Кнопка Play/Pause */
+/* =========================================
+   Кнопки Play / Close в читалке (без подложки)
+   ========================================= */
+
 .story-reader-play {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 50%;
+  background: transparent; /* Убираем фон */
+  border: none; /* Убираем рамку */
   font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 44px; /* Оставляем размер тач-мишени для удобства */
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.1s ease,
+    opacity 0.2s;
+  color: var(--primary);
+}
+
+.story-reader-play:hover,
+.story-reader-play.active {
+  background: transparent; /* Принудительно прозрачный фон */
+  border-color: transparent;
+}
+
+.story-reader-play:active {
+  transform: scale(0.92); /* Пружинка при нажатии */
+  opacity: 0.8;
+}
+
+.story-reader-close {
+  background: transparent;
+  border: none;
   cursor: pointer;
   padding: 0;
   width: 44px;
@@ -90,34 +119,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  color: var(--primary);
-}
-.story-reader-play:hover {
-  background: var(--primary-light);
-}
-.story-reader-play.active {
-  background: var(--primary-light);
-  border-color: var(--primary);
+  transition:
+    transform 0.1s ease,
+    opacity 0.2s;
 }
 
-.story-reader-close {
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 8px;
-  line-height: 1;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
+.story-reader-close:active {
+  transform: scale(0.92);
+  opacity: 0.8;
 }
-.story-reader-close:hover {
-  background: var(--bg);
+
+/* Размер самих иконок */
+.story-reader-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
 
 /* Контент */
