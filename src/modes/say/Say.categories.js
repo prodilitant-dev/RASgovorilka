@@ -5,7 +5,7 @@ import { openCategoryCreateModal } from './Say.categoryCreate';
 import { getState } from '@state/store';
 import { getImageUrl } from '@services/image';
 import { logger } from '@utils/logger';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 
 export function renderCategories(
   container,
@@ -75,17 +75,7 @@ export function renderCategories(
         'aria-label': 'Редактировать категорию',
         title: 'Редактировать',
       });
-      const editImg = createElement('img', {
-        src: iconUrl('edit'),
-        alt: '',
-        className: 'cat-action-btn__icon',
-        draggable: 'false',
-      });
-      editImg.addEventListener('error', () => {
-        editImg.replaceWith(document.createTextNode('✏️'));
-      });
-      editBtn.appendChild(editImg);
-
+      const editIcon = createIcon('edit', { fallback: '✏️', className: 'cat-action-btn__icon' });
       editBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         onEdit(cat);
@@ -151,16 +141,7 @@ export function renderCategories(
 
   if (editing) {
     const addBtn = createElement('div', { className: 'category category-add' });
-    const addImg = createElement('img', {
-      src: iconUrl('add'),
-      alt: '',
-      className: 'cat-action-btn__icon',
-      draggable: 'false',
-    });
-    addImg.addEventListener('error', () => {
-      addImg.replaceWith(document.createTextNode('+'));
-    });
-    addBtn.appendChild(addImg);
+    const addIcon = createIcon('add', { fallback: '+', className: 'cat-action-btn__icon' });
     addBtn.addEventListener('click', () => {
       openCategoryCreateModal(profile, (newCategoryId) => {
         if (onCreated) {

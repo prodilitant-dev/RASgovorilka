@@ -1,7 +1,7 @@
 // src/modes/stories/components/editor/SlideContent.js
 import { createElement, on } from '@utils/dom';
 import { createImagePicker } from '@components/common/ImagePicker/ImagePicker';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 
 export function createSlideContent(slide, isFirst, isLast, onPrev, onNext, onUpdate) {
   const fragment = document.createDocumentFragment();
@@ -13,9 +13,7 @@ export function createSlideContent(slide, isFirst, isLast, onPrev, onNext, onUpd
     type: 'button',
     disabled: isFirst,
   });
-  const prevImg = createElement('img', { src: iconUrl('arrow-left'), alt: '⬅️' });
-  prevImg.onerror = () => prevImg.replaceWith(document.createTextNode('⬅️'));
-  prevBtn.appendChild(prevImg);
+  prevBtn.appendChild(createIcon('arrow-left', { fallback: '⬅️' }));
   on(prevBtn, 'click', onPrev);
 
   const slidePicker = createImagePicker(
@@ -31,13 +29,12 @@ export function createSlideContent(slide, isFirst, isLast, onPrev, onNext, onUpd
     className: `story-nav-arrow ${isLast ? 'is-add' : ''}`,
     type: 'button',
   });
-  const nextImg = createElement('img', {
-    src: iconUrl(isLast ? 'add' : 'arrow-right'),
-    alt: isLast ? '➕' : '➡️',
-    style: isLast ? 'width: 32px; height: 32px;' : '', // Увеличиваем плюс
-  });
-  nextImg.onerror = () => nextImg.replaceWith(document.createTextNode(isLast ? '➕' : '➡️'));
-  nextBtn.appendChild(nextImg);
+  nextBtn.appendChild(
+  createIcon(isLast ? 'add' : 'arrow-right', {
+    fallback: isLast ? '➕' : '➡️',
+    size: isLast ? 32 : undefined,
+  })
+);
   on(nextBtn, 'click', onNext);
 
   centerRow.appendChild(prevBtn);

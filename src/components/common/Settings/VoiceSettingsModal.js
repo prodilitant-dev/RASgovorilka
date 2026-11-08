@@ -2,7 +2,7 @@
 import { Modal } from '../Modal/Modal';
 import { createElement } from '@utils/dom';
 import { speak } from '@utils/speech';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 import { logger } from '@utils/logger';
 
 export function openVoiceSettings(voiceSettings, onSave) {
@@ -93,16 +93,7 @@ export function openVoiceSettings(voiceSettings, onSave) {
         className: 'voice-test-btn',
         'aria-label': 'Проверить',
       });
-      const testImg = createElement('img', {
-        src: iconUrl('say-small'),
-        alt: '',
-        className: 'voice-test-btn__icon',
-        draggable: 'false',
-      });
-      testImg.addEventListener('error', () => {
-        testImg.replaceWith(document.createTextNode('🔊'));
-      });
-      testBtn.appendChild(testImg);
+      testBtn.appendChild(createIcon('say-small', { fallback: '🔊', className: 'voice-test-btn__icon' }));
       const testLabel = createElement('span', {}, 'Проверить');
       testBtn.appendChild(testLabel);
       testBtn.addEventListener('click', () => {

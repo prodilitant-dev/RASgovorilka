@@ -1,7 +1,7 @@
 // src/components/common/Settings/ModeOrderList.js
 import { createElement } from '@utils/dom';
 import { makeSortable } from '@utils/dragdrop';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 import { logger } from '@utils/logger';
 
 export function ModeOrderList({ modes, onReorder, onToggleVisibility }) {
@@ -20,16 +20,12 @@ export function ModeOrderList({ modes, onReorder, onToggleVisibility }) {
     });
 
     // Иконка режима
-    const iconImg = createElement('img', {
-      src: iconUrl(mode.id),
-      alt: '',
-      className: 'mode-order-chip__icon',
-      draggable: 'false',
-    });
-    iconImg.addEventListener('error', () => {
-      iconImg.replaceWith(document.createTextNode(mode.icon || ''));
-    });
-    chip.appendChild(iconImg);
+    chip.appendChild(
+  createIcon(mode.id, {
+    fallback: mode.emoji || mode.icon || mode.label || '',
+    className: 'mode-order-chip__icon',
+  })
+);
 
     // Название
     const name = createElement('span', { className: 'mode-name' }, mode.label);

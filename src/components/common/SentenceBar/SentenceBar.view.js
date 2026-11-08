@@ -1,6 +1,6 @@
 // src/components/common/SentenceBar/SentenceBar.view.js
 import { createElement, clear, on } from '@utils/dom';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 import { logger } from '@utils/logger';
 
 export function renderSentenceBar(container, words, onRemove, onSpeak, onClear) {
@@ -15,16 +15,7 @@ export function renderSentenceBar(container, words, onRemove, onSpeak, onClear) 
     'aria-label': 'Очистить предложение',
     'data-log': 'sentence-clear',
   });
-  const clearImg = createElement('img', {
-    src: iconUrl('delete'),
-    alt: '',
-    className: 'sentence-btn__icon',
-    draggable: 'false',
-  });
-  clearImg.addEventListener('error', () => {
-    clearImg.replaceWith(document.createTextNode('❌'));
-  });
-  clearBtn.appendChild(clearImg);
+  clearBtn.appendChild(createIcon('delete', { fallback: '❌', className: 'sentence-btn__icon' }));
   on(clearBtn, 'click', onClear);
   bar.appendChild(clearBtn);
 
@@ -69,16 +60,7 @@ export function renderSentenceBar(container, words, onRemove, onSpeak, onClear) 
     'aria-label': 'Озвучить предложение',
     'data-log': 'sentence-speak',
   });
-  const speakImg = createElement('img', {
-    src: iconUrl('say-small'),
-    alt: '',
-    className: 'sentence-btn__icon',
-    draggable: 'false',
-  });
-  speakImg.addEventListener('error', () => {
-    speakImg.replaceWith(document.createTextNode('🗣️'));
-  });
-  speakBtn.appendChild(speakImg);
+  speakBtn.appendChild(createIcon('say-small', { fallback: '🗣️', className: 'sentence-btn__icon' }));
   on(speakBtn, 'click', onSpeak);
   bar.appendChild(speakBtn);
 

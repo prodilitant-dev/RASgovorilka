@@ -6,7 +6,7 @@ import { uid, toast } from '@utils';
 import { saveProfile } from '@storage/appStorage';
 import { openCardEditor } from '@modes/say/Say.editor';
 import { getImageUrl } from '@services/imageService';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 
 export function renderQuickButtons(container, profile, { onQuickClick, onReorder }) {
   if (typeof container._quickCleanup === 'function') {
@@ -101,17 +101,7 @@ export function renderQuickButtons(container, profile, { onQuickClick, onReorder
 
   if (editing) {
     const addBtn = createElement('div', { className: 'quick-btn quick-btn--add' });
-    const addImg = createElement('img', {
-      src: iconUrl('add'),
-      alt: '',
-      className: 'quick-btn__icon',
-      draggable: 'false',
-    });
-    addImg.addEventListener('error', () => {
-      addImg.replaceWith(document.createTextNode('➕'));
-    });
-    addBtn.appendChild(addImg);
-
+    addBtn.appendChild(createIcon('add', { fallback: '➕', className: 'quick-btn__icon' }));
     addBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       const newBtn = { id: uid(), text: '', emoji: '', imagePath: null, imageId: null };

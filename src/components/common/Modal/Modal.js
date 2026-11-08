@@ -1,6 +1,6 @@
 // src/components/common/Modal/Modal.js
 import { createElement } from '@utils/dom';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 import { logger } from '@utils/logger';
 
 const openModals = new Set();
@@ -86,16 +86,7 @@ export class Modal {
           'aria-label': 'Закрыть',
           'data-log': 'modal-close',
         });
-        const closeImg = createElement('img', {
-          src: iconUrl('close'),
-          alt: '',
-          className: 'modal-close-btn__icon',
-          draggable: 'false',
-        });
-        closeImg.addEventListener('error', () => {
-          closeImg.replaceWith(document.createTextNode('✕'));
-        });
-        closeBtn.appendChild(closeImg);
+        closeBtn.appendChild(createIcon('close', { fallback: '✕', className: 'modal-close-btn__icon' }));
         closeBtn.addEventListener('click', () => this.close());
         rightSide.appendChild(closeBtn);
       }

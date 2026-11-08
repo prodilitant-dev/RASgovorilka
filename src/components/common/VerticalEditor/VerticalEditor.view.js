@@ -3,7 +3,7 @@ import { createElement } from '@utils/dom';
 import { renderFields } from './fields/index.js';
 import { renderPreview } from './preview/index.js';
 import { renderFooter } from './VerticalEditor.footer';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 
 export function renderVerticalEditorContent({
   entity,
@@ -25,16 +25,7 @@ export function renderVerticalEditorContent({
     className: 've-close-btn',
     'aria-label': 'Закрыть',
   });
-  const closeImg = createElement('img', {
-    src: iconUrl('close'),
-    alt: '',
-    className: 've-close-btn__icon',
-    draggable: 'false',
-  });
-  closeImg.addEventListener('error', () => {
-    closeImg.replaceWith(document.createTextNode('✕'));
-  });
-  closeBtn.appendChild(closeImg);
+  closeBtn.appendChild(createIcon('close', { fallback: '✕', className: 've-close-btn__icon' }));
   closeBtn.addEventListener('click', callbacks.onClose);
   header.appendChild(headerTitle);
   header.appendChild(closeBtn);

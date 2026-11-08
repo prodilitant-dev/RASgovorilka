@@ -5,7 +5,7 @@ import { toast } from '@utils/toast';
 import { confirm } from '@utils/dialog';
 import { openEventEditor } from './Schedule.editor';
 import { saveProfile } from '@storage/appStorage';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 
 const DAY_ORDER = [
   { name: 'Понедельник', dow: 1 },
@@ -17,20 +17,12 @@ const DAY_ORDER = [
   { name: 'Воскресенье', dow: 0 },
 ];
 
-/** Хелпер: создаёт кнопку-иконку с fallback на эмодзи. */
 function createIconButton({ iconName, fallbackEmoji, className, onClick, title, ariaLabel }) {
   const btn = createElement('div', { className, title, 'aria-label': ariaLabel });
-  const img = createElement('img', {
-    src: iconUrl(iconName),
-    alt: '',
-    className: 'cat-action-btn__icon',
-    draggable: 'false',
-  });
-  img.addEventListener('error', () => {
-    img.replaceWith(document.createTextNode(fallbackEmoji));
-  });
-  btn.appendChild(img);
-  on(btn, 'click', onClick);
+  btn.appendChild(
+    createIcon(iconName, { fallback: fallbackEmoji, className: 'cat-action-btn__icon' })
+  );
+  if (onClick) btn.addEventListener('click', onClick);
   return btn;
 }
 

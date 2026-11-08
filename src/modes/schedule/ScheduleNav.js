@@ -1,7 +1,7 @@
 // src/modes/schedule/ScheduleNav.js
 import { createElement, clear, on } from '@utils/dom';
 import { formatDate } from '@utils/string';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 
 export function renderScheduleNav(
   container,
@@ -39,16 +39,7 @@ export function renderScheduleNav(
       'aria-label': 'Шаблоны',
       title: 'Шаблоны',
     });
-    const icon = createElement('img', {
-      src: iconUrl('edit'),
-      alt: '',
-      className: 'cat-action-btn__icon',
-      draggable: 'false',
-    });
-    icon.addEventListener('error', () => {
-      icon.replaceWith(document.createTextNode('📋'));
-    });
-    manageBtn.appendChild(icon);
+    manageBtn.appendChild(createIcon('edit', { fallback: '📋', className: 'cat-action-btn__icon' }));
     on(manageBtn, 'click', onManageTemplates);
     nav.appendChild(manageBtn);
   }
