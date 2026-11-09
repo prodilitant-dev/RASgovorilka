@@ -9,6 +9,7 @@ import { resetDatabaseIfPending, markForReset } from '@storage/db';
 import { logger } from '@utils/logger';
 import { toast } from '@utils/toast';
 import { initSpeech, ensureVoicesLoaded } from '@utils/speech';
+import { ensurePersistentStorage } from '@services/pwa/storagePersistence';
 import { applyUISize } from '@utils/uiSize';
 import { mountStartScreen, markStartScreenReady } from './startScreen';
 import { confirm } from '@utils/dialog';
@@ -112,6 +113,10 @@ export async function initApp() {
   logger.debug('Initializing app');
 
   mountStartScreen();
+
+  ensurePersistentStorage().catch((e) => {
+    logger.warn('ensurePersistentStorage failed:', e);
+  });
 
   try {
     try {
