@@ -1,25 +1,16 @@
 // src/services/image/deleteImage.js
-
-import { deleteImage as deleteFromStorage } from '@storage/imageStorage';
-import { revokeImageUrl } from './revokeImageUrl';
+import { deleteImage as deleteFromDB } from '@storage/imageStorage';
+import { revokeImageUrl } from './revokeImageUrl'; // <-- ДОБАВЛЕНО
 import { logger } from '@utils/logger';
 
-/**
- * Удаляет изображение из хранилища и из кеша.
- * @param {string} id
- * @returns {Promise<boolean>}
- */
 export async function deleteImage(id) {
-  if (!id) return false;
-
-  // Удаляем из кеша (отзываем URL)
-  revokeImageUrl(id);
-
-  // Удаляем из IndexedDB
   try {
-    await deleteFromStorage(id);
-    logger.debug(`Изображение ${id} удалено`);
-    return true;
+    // 1. Удаляем из кэша URL (освобождаем память)
+    revokeImageUrl(id);
+
+    // 2. Удаляем из IndexedDB
+    const success = await deleteFromDB(id);
+    return success;
   } catch (err) {
     logger.error(`Ошибка удаления изображения ${id}:`, err);
     return false;

@@ -83,6 +83,52 @@
 }
 
 /* ============================================================
+   РЯДНАЯ РАСКЛАДКА ПРЕВЬЮ (превью + колонка цветов)
+   ============================================================ */
+
+.ve-preview-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.ve-color-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Кнопки выбора цвета (активная — зелёная обводка через --primary) */
+.ve-color-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition:
+    transform 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.ve-color-btn:hover {
+  transform: scale(1.1);
+}
+
+.ve-color-btn.active {
+  border-color: var(--primary);
+  transform: scale(1.15);
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--primary);
+}
+
+/* ============================================================
    ВЫБОР ВАРИАНТОВ КАРТИНКИ (Кружочки)
    ============================================================ */
 
@@ -100,7 +146,7 @@
   height: 44px;
   border-radius: 50%;
   border: 3px solid transparent; /* Место под активную обводку */
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   background-color: var(--bg, #f0f0f0);
@@ -222,4 +268,47 @@
   font-size: 12px;
   text-align: center;
   word-break: break-word;
+}
+
+/* Добавьте в конец src/styles/editor/vertical-editor/preview.css */
+
+.ve-preview-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.ve-color-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ve-color-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition:
+    transform 0.15s,
+    border-color 0.15s,
+    box-shadow 0.15s;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.ve-color-btn:hover {
+  transform: scale(1.1);
+}
+
+.ve-color-btn.active {
+  border-color: var(--primary);
+  transform: scale(1.15);
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--primary);
 }

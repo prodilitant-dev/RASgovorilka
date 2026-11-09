@@ -158,6 +158,52 @@ export const EXPORT_COMPONENTS = {
     },
   },
 
+  stories: {
+    label: 'Социальные истории',
+    export: async (profile) => {
+      const data = profile.stories || [];
+      const imageIds = new Set();
+
+      data.forEach((story) => {
+        if (story.coverImageId) imageIds.add(story.coverImageId);
+        if (story.slides) {
+          story.slides.forEach((slide) => {
+            if (slide.imageId) imageIds.add(slide.imageId);
+            if (slide.cards) {
+              slide.cards.forEach((card) => {
+                if (card.imageId) imageIds.add(card.imageId);
+              });
+            }
+          });
+        }
+      });
+
+      return { data, imageIds };
+    },
+    import: async (profile, data, strategy) => {
+      const imported = data || [];
+      if (!profile.stories) profile.stories = [];
+
+      const mapStory = (story) => ({
+        ...story,
+        id: uid(),
+        slides: (story.slides || []).map((s) => ({
+          ...s,
+          id: uid(),
+          cards: (s.cards || []).map((c) => ({ ...c, id: uid() })),
+        })),
+      });
+
+      if (strategy === 'overwrite') {
+        profile.stories = imported.map(mapStory);
+      } else if (strategy === 'add') {
+        imported.forEach((story) => {
+          profile.stories.push(mapStory(story));
+        });
+      }
+    },
+  },
+
   settings: {
     label: 'Настройки (полноэкран, автосклонение, скрытые режимы)',
     export: async (profile, globalData) => {

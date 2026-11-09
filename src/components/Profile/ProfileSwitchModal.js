@@ -29,14 +29,20 @@ export function openProfileSwitchModal(onProfileSwitched) {
 
         const activeId = data.activeProfileId;
 
-        const items = data.profiles.map((prof) => ({
-          id: prof.id,
-          text: prof.name,
-          emoji: prof.icon || '',
-          imageId: prof.imageId || null,
-          imagePath: prof.imagePath || null,
-          active: prof.id === activeId,
-        }));
+        const items = data.profiles.map((prof) => {
+          const isActive = prof.id === activeId;
+          return {
+            id: prof.id,
+            text: prof.name,
+            emoji: prof.icon || '',
+            imageId: prof.imageId || null,
+            imagePath: prof.imagePath || 'icons/profiles.webp',
+            active: isActive,
+            // Цвет передаем ТОЛЬКО для активного профиля
+            styleColor: isActive ? prof.styleColor || null : null,
+            className: 'profile-card',
+          };
+        });
 
         const { cleanup: listCleanup } = renderUniversalList(listContainer, {
           items,

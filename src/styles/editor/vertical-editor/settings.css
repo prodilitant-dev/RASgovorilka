@@ -42,7 +42,7 @@
 }
 
 .interface-settings__option.active {
-  border-color: #4caf50;
+  border-color: var(--primary);
   background: rgba(76, 175, 80, 0.08);
 }
 

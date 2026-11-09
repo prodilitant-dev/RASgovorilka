@@ -43,7 +43,13 @@ export const DEFAULT_GAMES_SETTINGS = {
 // Глобальные настройки приложения (сохраняются в IndexedDB в appData.globalSettings)
 export const DEFAULT_GLOBAL_SETTINGS = {
   autoInflect: true,
-  voiceSettings: { rate: 1, pitch: 1, volume: 1, voiceURI: '' },
+  voiceSettings: {
+    rate: 1,
+    pitch: 1,
+    volume: 1,
+    voiceURI: '',
+    slideDelay: 1500, // <-- Задержка между слайдами (1.5 сек)
+  },
   fullscreen: false,
   sentenceBarPosition: 'bottom',
   categoriesShowImages: true,

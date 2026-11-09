@@ -1,7 +1,7 @@
 {
   "name": "rasgovorilka",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "license": "GPL-3.0-or-later",
   "description": "РАСговорилка — бесплатный коммуникатор для детей с РАС",
@@ -30,10 +30,7 @@
     "vite-plugin-pwa": "^2.0.0"
   },
   "dependencies": {
-    "@zumer/snapdom": "^3.5.0",
     "html-to-image": "^1.11.13",
-    "html2pdf.js": "^0.14.0",
-    "iconv-lite": "^0.7.3",
     "idb": "^8.0.3",
     "jszip": "^3.10.1"
   }

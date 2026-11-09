@@ -35,7 +35,7 @@ export function renderMemoryBoard(container, state, onCardClick) {
     });
 
     if (card.isFlipped || card.isMatched) {
-      showCardImage(cell, card, { cover: true, fontSize: '1.5em' });
+      showCardImage(cell, card, { fontSize: '1.5em' });
     } else {
       cell.textContent = '❓';
       cell.style.backgroundImage = 'none';

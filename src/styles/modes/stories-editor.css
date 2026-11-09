@@ -1,0 +1,419 @@
+/* src/styles/modes/stories-editor.css */
+
+/* =========================================
+   ГЛАВНЫЙ КОНТЕЙНЕР РЕДАКТОРА
+   ========================================= */
+.story-editor-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* =========================================
+   ШАПКА (Название)
+   ========================================= */
+.story-editor-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  gap: var(--spacing-sm);
+}
+
+.story-title-wrap {
+  width: 100%;
+  max-width: 400px;
+}
+
+.story-title-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  background: var(--surface);
+  color: var(--text);
+  box-sizing: border-box;
+}
+
+.story-title-input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+/* =========================================
+   ЦЕНТРАЛЬНАЯ ЗОНА (Слайды)
+   ========================================= */
+.story-editor-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-md);
+  gap: var(--spacing-sm);
+  overflow-y: auto;
+}
+
+.story-slide-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-sm);
+  min-height: 32px;
+}
+
+.story-slide-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.story-slide-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.story-slide-dot.active {
+  background: var(--primary);
+  transform: scale(1.2);
+}
+
+.story-slide-del-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+.story-slide-del-btn:hover {
+  opacity: 1;
+}
+.story-slide-del-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.story-slide-center-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+  min-height: 0;
+}
+
+.story-nav-arrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.story-nav-arrow:hover:not(:disabled) {
+  background: var(--bg);
+}
+.story-nav-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.story-nav-arrow img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Кнопка "Добавить слайд" (без заливки, просто плюс в кружке) */
+.story-nav-arrow.is-add {
+  background: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+.story-nav-arrow.is-add:hover {
+  background: var(--primary-light);
+}
+.story-nav-arrow.is-add img {
+  width: 24px; /* Увеличили плюс */
+  height: 24px;
+}
+
+.story-slide-picker .image-picker-box {
+  max-width: 240px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 1;
+}
+
+/* Кнопка добавления первого слайда */
+.story-add-first-slide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+.story-add-first-slide:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* =========================================
+   НАСТРОЙКА ПАУЗЫ
+   ========================================= */
+.story-slide-pause-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: var(--spacing-sm) 0;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  margin: 0 auto;
+  width: 100%;
+  max-width: 300px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  margin-bottom: var(--spacing-xs);
+}
+
+.story-pause-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.story-pause-range {
+  flex: 1;
+  max-width: 120px;
+  accent-color: var(--primary);
+}
+.story-pause-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+  min-width: 40px;
+  text-align: right;
+}
+
+/* =========================================
+   ЛЕНТА КАРТОЧЕК
+   ========================================= */
+.story-editor-cards-tray {
+  display: flex;
+  gap: var(--spacing-sm);
+  overflow-x: auto;
+  padding-bottom: var(--spacing-sm);
+  flex-shrink: 0;
+  scrollbar-width: thin;
+}
+.story-editor-cards-tray::-webkit-scrollbar {
+  height: 6px;
+}
+.story-editor-cards-tray::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.story-card-tray-item {
+  width: 90px !important;
+  height: 110px !important;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+.story-card-tray-item .card__label {
+  font-size: 0.75rem;
+  padding: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.story-card-tray-item .card__bg {
+  font-size: 1.5rem;
+}
+
+/* НОВЫЙ СМЕЩЕННЫЙ КРЕСТИК */
+.story-tray-remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  padding: 4px;
+  transition: transform 0.2s;
+}
+.story-tray-remove-btn:hover {
+  transform: scale(1.1);
+  background: #ffebee;
+}
+.story-tray-remove-btn img {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.editor-add-card-btn {
+  width: 90px;
+  height: 110px;
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--primary);
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  text-align: center;
+  padding: 4px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.editor-add-card-btn:hover {
+  background: var(--primary);
+  color: var(--surface);
+}
+
+/* =========================================
+   ФУТЕР
+   ========================================= */
+.story-editor-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom, 0px));
+}
+.story-editor-footer .btn {
+  flex: 1;
+}
+
+/* =========================================
+   МОДАЛКА ДОБАВЛЕНИЯ/РЕДАКТИРОВАНИЯ КАРТОЧКИ
+   ========================================= */
+.story-card-modal-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+.story-card-modal-step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+.story-card-modal-wrap .image-picker-box {
+  max-width: 140px;
+  width: 140px;
+  height: 140px;
+}
+
+.slide-search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+.slide-search-input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.story-card-edit-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+.story-card-edit-actions .btn {
+  flex: 1;
+}
+
+/* --- Модалка управления историей --- */
+.story-manage-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px; /* Уменьшили отступ между превью и палитрой */
+  padding: 8px 0;
+}
+
+.story-manage-preview {
+  width: 160px;
+  height: 160px;
+  border-radius: var(--radius);
+  border: 2px dashed var(--border);
+  background-color: var(--surface);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.story-manage-preview--accented {
+  border: 3px solid var(--accent-color);
+}
+
+/* Контейнер для палитры */
+.story-manage-palette {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}

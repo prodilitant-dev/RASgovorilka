@@ -1,0 +1,251 @@
+/* src/styles/modes/stories.css */
+
+.story-reader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* Шапка */
+.story-reader-header {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-md); /* Уменьшили отступы */
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  gap: var(--spacing-sm);
+  min-height: 48px; /* Фиксируем высоту */
+}
+
+.story-reader-header-left,
+.story-reader-header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.story-reader-header-right {
+  justify-content: flex-end;
+}
+
+.story-reader-header-center {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px; /* Отступ между названием и точками */
+}
+
+.story-reader-title {
+  font-weight: 700;
+  font-size: 0.95rem; /* Чуть уменьшили шрифт */
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1;
+}
+
+.story-reader-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.story-reader-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.story-reader-dot.active {
+  background: var(--primary);
+  transform: scale(1.2);
+}
+
+.story-reader-progress {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* =========================================
+   Кнопки Play / Close в читалке (без подложки)
+   ========================================= */
+
+.story-reader-play {
+  background: transparent; /* Убираем фон */
+  border: none; /* Убираем рамку */
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 44px; /* Оставляем размер тач-мишени для удобства */
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.1s ease,
+    opacity 0.2s;
+  color: var(--primary);
+}
+
+.story-reader-play:hover,
+.story-reader-play.active {
+  background: transparent; /* Принудительно прозрачный фон */
+  border-color: transparent;
+}
+
+.story-reader-play:active {
+  transform: scale(0.92); /* Пружинка при нажатии */
+  opacity: 0.8;
+}
+
+.story-reader-close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.1s ease,
+    opacity 0.2s;
+}
+
+.story-reader-close:active {
+  transform: scale(0.92);
+  opacity: 0.8;
+}
+
+/* Размер самих иконок */
+.story-reader-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/* Контент */
+.story-reader-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: var(--spacing-md);
+  gap: var(--spacing-md);
+}
+
+.story-reader-image-wrap {
+  flex: 1;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: var(--spacing-sm);
+}
+
+.story-reader-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: calc(var(--radius) - 4px);
+}
+
+/* 
+ * ЛЕНТА КАРТОЧЕК (Исправлена обрезка при увеличении) 
+ */
+.story-reader-cards-tray {
+  display: flex;
+  gap: var(--spacing-sm);
+  overflow-x: auto;
+  overflow-y: visible; /* Разрешаем карточке вылезать за границы по вертикали при scale */
+  padding: 16px 0; /* Добавили отступы сверху и снизу, чтобы было куда расти */
+  flex-shrink: 0;
+  scrollbar-width: thin;
+  min-height: 140px;
+  align-items: center;
+}
+.story-reader-cards-tray::-webkit-scrollbar {
+  height: 6px;
+}
+.story-reader-cards-tray::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+/* Стили для мини-карточек */
+.card--mini {
+  flex-shrink: 0;
+  width: 100px !important;
+  height: 125px !important;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.card--mini .card__label {
+  font-size: 0.8rem;
+  padding: 4px;
+  line-height: 1.1;
+  height: auto;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card--mini .card__bg {
+  font-size: 2rem;
+}
+
+/* Активная карточка во время воспроизведения */
+.card--mini.card--active {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  z-index: 2;
+  position: relative;
+}
+
+/* Футер */
+.story-reader-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  padding-bottom: calc(var(--spacing-sm) + env(safe-area-inset-bottom, 0px));
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.story-nav-btn {
+  /* Убираем flex: 1, чтобы кнопки не растягивались на весь экран */
+  flex: 0 0 auto;
+  min-width: 110px; /* Минимальная ширина кнопки */
+  min-height: 44px; /* Стандартная высота кнопок */
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.story-nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

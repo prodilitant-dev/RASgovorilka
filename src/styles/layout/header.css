@@ -8,7 +8,7 @@
   padding: 4px 12px;
   gap: var(--spacing-sm);
   z-index: 10;
-  position: relative; /* Добавлено для absolute-кнопки */
+  position: relative;
 }
 
 .back-btn {
@@ -34,69 +34,15 @@
   align-items: center;
   justify-content: center;
 
-  /* ДОБАВЛЕНО: обрезаем всё, что вылезает за круглые края */
   overflow: hidden;
-  padding: 0; /* Убираем стандартные отступы кнопки, если они есть */
+  padding: 0;
 }
 
 .profile-fab__icon {
-  /* ДОБАВЛЕНО: растягиваем картинку на весь размер кнопки */
   width: 100%;
   height: 100%;
-  /* ДОБАВЛЕНО: заставляем картинку заполнить круг без искажений */
-  object-fit: cover;
+  object-fit: contain;
   display: block;
   pointer-events: none;
   -webkit-user-drag: none;
-}
-
-.mode-bar {
-  display: flex;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm);
-  /* Убираем padding-right, он не работает при скролле во flex */
-  overflow-x: auto;
-  scrollbar-width: none;
-  flex: 1;
-  background: var(--surface);
-}
-
-/* Невидимый распорщик в конце списка */
-.mode-bar::after {
-  content: '';
-  flex-shrink: 0;
-  width: 24px; /* Ширина FAB + отступ, чтобы кнопка полностью выехала из-под него */
-}
-
-.mode-bar::-webkit-scrollbar {
-  display: none;
-}
-
-.mode-bar::-webkit-scrollbar {
-  display: none;
-}
-
-.mode-btn {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: 20px;
-  background: #e9ecef;
-  border: none;
-  font-weight: 600;
-  font-size: 14px;
-  white-space: nowrap;
-  cursor: pointer;
-  transition:
-    background var(--transition),
-    color var(--transition);
-  color: var(--text-secondary);
-  flex-shrink: 0;
-}
-
-.mode-btn.active {
-  background: var(--primary);
-  color: #000;
-}
-
-.mode-btn:active {
-  transform: scale(0.96);
 }

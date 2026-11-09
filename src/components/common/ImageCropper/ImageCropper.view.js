@@ -1,5 +1,5 @@
 // src/components/common/ImageCropper/ImageCropper.view.js
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 
 /** DOM-хелпер. */
 function h(tag, attrs = {}, ...children) {
@@ -17,19 +17,6 @@ function h(tag, attrs = {}, ...children) {
   return el;
 }
 
-/** Безопасно получает URL иконки; null — если имя неизвестно. */
-function safeIconUrl(name) {
-  try {
-    return iconUrl(name) || null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Создаёт кнопку с иконкой.
- * Если webp недоступен — показывает эмодзи-фолбэк.
- */
 function createIconButton({ iconName, emojiFallback, ariaLabel }) {
   const btn = h('button', {
     type: 'button',
@@ -37,62 +24,25 @@ function createIconButton({ iconName, emojiFallback, ariaLabel }) {
     'aria-label': ariaLabel,
     title: ariaLabel,
   });
-
-  const url = safeIconUrl(iconName);
-  if (!url) {
-    btn.textContent = emojiFallback;
-    btn.classList.add('image-cropper__icon-btn--fallback');
-    return btn;
-  }
-
-  const img = h('img', {
-    src: url,
-    alt: '',
-    className: 'image-cropper__icon',
-    draggable: 'false',
-  });
-
-  const showFallback = () => {
-    img.remove();
-    btn.textContent = emojiFallback;
-    btn.classList.add('image-cropper__icon-btn--fallback');
-  };
-
-  img.addEventListener('error', showFallback);
-  if (img.complete && img.naturalWidth === 0) showFallback();
-
-  btn.appendChild(img);
+  btn.appendChild(
+    createIcon(iconName, {
+      fallback: emojiFallback,
+      fallbackFontSize: 26,
+      className: 'image-cropper__icon',
+    })
+  );
   return btn;
 }
 
-/** Иконка-«обёртка» без кнопки (для зума). */
 function createIconSpan({ iconName, emojiFallback }) {
   const span = h('span', { className: 'image-cropper__icon-wrap' });
-
-  const url = safeIconUrl(iconName);
-  if (!url) {
-    span.textContent = emojiFallback;
-    span.classList.add('image-cropper__icon-wrap--fallback');
-    return span;
-  }
-
-  const img = h('img', {
-    src: url,
-    alt: '',
-    className: 'image-cropper__icon',
-    draggable: 'false',
-  });
-
-  const showFallback = () => {
-    img.remove();
-    span.textContent = emojiFallback;
-    span.classList.add('image-cropper__icon-wrap--fallback');
-  };
-
-  img.addEventListener('error', showFallback);
-  if (img.complete && img.naturalWidth === 0) showFallback();
-
-  span.appendChild(img);
+  span.appendChild(
+    createIcon(iconName, {
+      fallback: emojiFallback,
+      fallbackFontSize: 20,
+      className: 'image-cropper__icon',
+    })
+  );
   return span;
 }
 

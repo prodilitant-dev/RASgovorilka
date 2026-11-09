@@ -39,16 +39,59 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
+/* Обновлённая шапка модалки: три колонки (left / center / right) */
 .modal-header {
   padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-md);
   border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: var(--spacing-md);
 }
 
+.modal-header-left {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.modal-header-center {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.modal-header-center h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.modal-header-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Кнопка-действие в левой части шапки */
+.modal-header-action {
+  background: var(--primary);
+  color: var(--surface);
+  border: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-header-action:hover {
+  background: var(--primary-dark);
+}
+
+/* Заголовок-обёртка (если используется) */
 .modal-title-wrap {
   display: flex;
   align-items: center;
@@ -67,12 +110,6 @@
   border-radius: var(--radius-sm);
   border: 2px solid var(--primary);
   box-shadow: var(--shadow);
-}
-
-.modal-header h3 {
-  margin: 0;
-  font-size: 20px;
-  flex: 1;
 }
 
 .modal-close-btn {

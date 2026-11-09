@@ -18,7 +18,7 @@ import { toast } from '@utils/toast';
  * @returns {Promise<string>} - id сохранённого изображения
  */
 export async function uploadImage(file, options = {}) {
-  const { size = 512, convertToWebP: doConvert = true, quality = 0.8, showToast = true } = options;
+  const { size = 512, convertToWebP: doConvert = true, quality = 0.5, showToast = true } = options;
 
   // 1. Проверка типа
   if (!isValidImageType(file)) {

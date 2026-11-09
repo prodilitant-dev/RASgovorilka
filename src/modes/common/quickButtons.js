@@ -4,9 +4,9 @@ import { makeSortable } from '@utils/dragdrop';
 import { getState } from '@state/store';
 import { uid, toast } from '@utils';
 import { saveProfile } from '@storage/appStorage';
-import { openSimpleEditor } from '@modes/common/editorHelpers';
+import { openCardEditor } from '@modes/say/Say.editor';
 import { getImageUrl } from '@services/imageService';
-import { iconUrl } from '@utils/icon';
+import { createIcon } from '@utils/icon';
 
 export function renderQuickButtons(container, profile, { onQuickClick, onReorder }) {
   if (typeof container._quickCleanup === 'function') {
@@ -29,13 +29,28 @@ export function renderQuickButtons(container, profile, { onQuickClick, onReorder
       draggable: editing ? 'true' : undefined,
     });
 
+    // Применяем акцентный цвет к самой кнопке (фон и внешняя рамка)
+    if (btn.styleColor) {
+      el.style.borderColor = btn.styleColor;
+      el.style.backgroundColor = `${btn.styleColor}33`;
+    }
+
+    // === АВАТАРКА (с акцентной обводкой) ===
+    const avatarWrap = createElement('div', { className: 'quick-btn__avatar' });
+
+    if (btn.styleColor) {
+      avatarWrap.style.borderColor = btn.styleColor;
+      avatarWrap.style.borderWidth = '2px';
+      avatarWrap.style.borderStyle = 'solid';
+    }
+
     if (btn.imageId) {
       getImageUrl(btn.imageId).then((url) => {
         if (url) {
           const img = createElement('img', { src: url, alt: '' });
-          el.insertBefore(img, el.firstChild);
+          avatarWrap.appendChild(img);
         } else {
-          prependEmoji(el, btn);
+          prependEmoji(avatarWrap, btn);
         }
       });
     } else if (btn.imagePath) {
@@ -43,36 +58,37 @@ export function renderQuickButtons(container, profile, { onQuickClick, onReorder
       const img = createElement('img', { src: url, alt: '' });
       img.onerror = () => {
         img.remove();
-        prependEmoji(el, btn);
+        prependEmoji(avatarWrap, btn);
       };
-      el.appendChild(img);
+      avatarWrap.appendChild(img);
     } else {
-      prependEmoji(el, btn);
+      prependEmoji(avatarWrap, btn);
     }
 
+    el.appendChild(avatarWrap);
     el.appendChild(document.createTextNode(btn.text || ''));
 
     el.addEventListener('click', (e) => {
       e.stopPropagation();
       if (editing) {
-        openSimpleEditor({
-          entity: btn,
-          title: 'Редактировать кнопку',
-          onSave: (updated, done) => {
+        openCardEditor(
+          btn,
+          (updated, done) => {
             Object.assign(btn, updated);
             saveProfile(profile);
             renderQuickButtons(container, profile, { onQuickClick, onReorder });
             toast('Кнопка обновлена');
             done();
           },
-          onDelete: (id, close) => {
+          (id, close) => {
             profile.quickButtons = profile.quickButtons.filter((b) => b.id !== id);
             saveProfile(profile);
             renderQuickButtons(container, profile, { onQuickClick, onReorder });
             toast('Кнопка удалена');
             close();
           },
-        });
+          { skipDuplicateCheck: true }
+        );
         return;
       }
       if (onQuickClick) onQuickClick(btn);
@@ -84,28 +100,18 @@ export function renderQuickButtons(container, profile, { onQuickClick, onReorder
   let sortableCleanup = null;
 
   if (editing) {
-    // Кнопка «+» — WebP add
     const addBtn = createElement('div', { className: 'quick-btn quick-btn--add' });
-    const addImg = createElement('img', {
-      src: iconUrl('add'),
-      alt: '',
-      className: 'quick-btn__icon',
-      draggable: 'false',
-    });
-    addImg.addEventListener('error', () => {
-      addImg.replaceWith(document.createTextNode('➕'));
-    });
-    addBtn.appendChild(addImg);
+    addBtn.appendChild(createIcon('add', { fallback: '➕', className: 'quick-btn__icon' }));
     addBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      const newBtn = { id: uid(), text: '', emoji: '', imagePath: null };
-      openSimpleEditor({
-        entity: newBtn,
-        title: 'Новая быстрая кнопка',
-        onSave: (updated, done) => {
+      const newBtn = { id: uid(), text: '', emoji: '', imagePath: null, imageId: null };
+
+      openCardEditor(
+        newBtn,
+        (updated, done) => {
           if (!updated.text.trim()) {
             toast('Введите текст', 'error');
-            done();
+
             return;
           }
           profile.quickButtons.push(updated);
@@ -114,8 +120,9 @@ export function renderQuickButtons(container, profile, { onQuickClick, onReorder
           toast('Кнопка добавлена');
           done();
         },
-        onDelete: null,
-      });
+        null,
+        { skipDuplicateCheck: true }
+      );
     });
     wrap.appendChild(addBtn);
 
@@ -138,8 +145,8 @@ export function renderQuickButtons(container, profile, { onQuickClick, onReorder
   };
 }
 
-function prependEmoji(el, btn) {
+function prependEmoji(containerEl, btn) {
   if (btn.emoji) {
-    el.insertBefore(document.createTextNode(`${btn.emoji} `), el.firstChild);
+    containerEl.textContent = btn.emoji;
   }
 }

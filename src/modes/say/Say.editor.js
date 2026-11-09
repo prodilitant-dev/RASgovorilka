@@ -5,29 +5,28 @@ import { autoDetectCard } from '@utils/inflect';
 import { openDeclensionModal } from '@components/common/DeclensionModal/DeclensionModal';
 import { getState } from '@state/store';
 import { getActiveProfile } from '@state/actions';
-import { findBankItem } from '@utils/cardBank'; // <-- Импорт для поиска в банке
+import { findBankItem } from '@utils/cardBank';
+import { createColorPalette } from '@components/common/VerticalEditor/preview/colorPalette';
 
-export function openCardEditor(cardData, onSave, onDelete) {
-  const isNew = !cardData.id;
+export function openCardEditor(cardData, onSave, onDelete, options = {}) {
+  const { skipDuplicateCheck = false, targetCategoryId = null } = options; // <-- ДОБАВЛЕНО
+
+  const isNew = options.isNew ?? !cardData.id;
   if (isNew) {
     autoDetectCard(cardData);
   }
 
-  // Делаем копию, чтобы не менять оригинальный объект до сохранения
   const entity = { ...cardData };
 
-  // ОБОГАЩЕНИЕ ДАННЫМИ ИЗ БАНКА (чтобы сразу показать варианты картинок)
   if (entity.text) {
     const bankItem = findBankItem(entity.text);
     if (bankItem) {
-      // Подтягиваем варианты, категорию и имя файла, если их еще нет в карточке
       if (!entity.variants || entity.variants.length === 0) {
         entity.variants = bankItem.variants || [];
       }
       if (!entity.filename) entity.filename = bankItem.filename;
       if (!entity.category) entity.category = bankItem.category;
 
-      // Если у карточки вообще нет картинки, но она есть в банке — подставим
       if (!entity.imagePath && !entity.imageId) {
         entity.imagePath = `cards/${entity.category}/${entity.filename}`;
       }
@@ -36,32 +35,33 @@ export function openCardEditor(cardData, onSave, onDelete) {
 
   const state = getState();
   const profile = getActiveProfile();
-  const categoryId = state.currentCategoryId;
+  // Используем переданную категорию для проверки дубликатов
+  const categoryId = targetCategoryId || state.currentCategoryId;
   const existingCards = profile?.cards?.[categoryId] || [];
 
   openVerticalEditor({
-    title: isNew ? 'Новая карточка' : 'Редактировать карточку',
+    title: isNew ? 'Добавить' : 'Редактировать',
     entity,
+    previewSides: createColorPalette,
     onSave: (updated, done) => {
       if (!updated.text || !updated.text.trim()) {
         toast('Введите текст', 'error');
-        done();
         return;
       }
 
-      const trimmedText = updated.text.trim();
-      const isDuplicate = existingCards.some(
-        (card) =>
-          card.id !== updated.id && card.text.trim().toLowerCase() === trimmedText.toLowerCase()
-      );
+      if (!skipDuplicateCheck) {
+        const trimmedText = updated.text.trim();
+        const isDuplicate = existingCards.some(
+          (card) =>
+            card.id !== updated.id && card.text.trim().toLowerCase() === trimmedText.toLowerCase()
+        );
 
-      if (isDuplicate) {
-        toast('Карточка с таким названием уже есть в этой категории', 'error');
-        done();
-        return;
+        if (isDuplicate) {
+          toast('Карточка с таким названием уже есть в этой категории', 'error');
+          return;
+        }
       }
 
-      // Если текст изменился — пересчитываем формы молча
       if (updated.text !== cardData.text) {
         autoDetectCard(updated);
       }

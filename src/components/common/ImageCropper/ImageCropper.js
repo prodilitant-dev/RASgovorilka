@@ -11,11 +11,6 @@ import {
   getRenderInfo,
 } from './ImageCropper.state';
 
-/**
- * Загружает файл в ImageBitmap с учётом EXIF-ориентации.
- * @param {File|Blob} file
- * @returns {Promise<ImageBitmap|HTMLImageElement>}
- */
 async function loadImage(file) {
   if (typeof createImageBitmap === 'function') {
     try {
@@ -27,7 +22,10 @@ async function loadImage(file) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
-    img.onload = () => resolve(img);
+    img.onload = () => {
+      URL.revokeObjectURL(url); // <-- ОСВОБОЖДАЕМ ПАМЯТЬ
+      resolve(img);
+    };
     img.onerror = () => {
       URL.revokeObjectURL(url);
       reject(new Error('Не удалось загрузить изображение'));
@@ -36,15 +34,12 @@ async function loadImage(file) {
   });
 }
 
-/** Рисует текущее состояние в canvas размером canvas.width × canvas.height. */
 function drawPreview(canvas, bitmap, imgW, imgH, state) {
   const ctx = canvas.getContext('2d');
   const size = canvas.width;
   const info = getRenderInfo(state, imgW, imgH, size);
 
   ctx.clearRect(0, 0, size, size);
-
-  // Фон под прозрачными PNG
   ctx.fillStyle = '#1a1a1a';
   ctx.fillRect(0, 0, size, size);
 
@@ -56,7 +51,6 @@ function drawPreview(canvas, bitmap, imgW, imgH, state) {
   ctx.restore();
 }
 
-/** Рендерит итоговый кроп в off-screen canvas и возвращает Blob WebP. */
 function exportCroppedBlob(bitmap, imgW, imgH, state, previewSize, outputSize, quality) {
   const canvas = document.createElement('canvas');
   canvas.width = outputSize;
@@ -88,20 +82,10 @@ function exportCroppedBlob(bitmap, imgW, imgH, state, previewSize, outputSize, q
   });
 }
 
-/**
- * Открывает модалку кроппера.
- * @param {File|Blob} file
- * @param {Object} [options]
- * @param {number} [options.size=512] - размер стороны итогового квадрата
- * @param {number} [options.quality=0.85] - качество WebP
- * @param {string} [options.title='Настройка изображения']
- * @param {number} [options.frameSize=320] - размер квадратной области в UI (px)
- * @returns {Promise<Blob|null>} - Blob (WebP) или null при отмене
- */
 export async function openImageCropper(file, options = {}) {
   const {
     size: outputSize = 512,
-    quality = 0.85,
+    quality = 0.5,
     title = 'Настройка изображения',
     frameSize = 320,
   } = options;
@@ -123,7 +107,6 @@ export async function openImageCropper(file, options = {}) {
 
   const redraw = () => drawPreview(view.canvas, bitmap, imgW, imgH, state);
 
-  // === Поворот ===
   view.rotateLeftBtn.addEventListener('click', () => {
     state = rotateState(state, -90, imgW, imgH, frameSize);
     redraw();
@@ -133,20 +116,17 @@ export async function openImageCropper(file, options = {}) {
     redraw();
   });
 
-  // === Сброс ===
   view.resetBtn.addEventListener('click', () => {
     state = createInitialState();
     view.zoomSlider.value = '1';
     redraw();
   });
 
-  // === Слайдер зума ===
   view.zoomSlider.addEventListener('input', () => {
     state = setZoomState(state, parseFloat(view.zoomSlider.value), imgW, imgH, frameSize);
     redraw();
   });
 
-  // === Колесо мыши ===
   view.canvas.addEventListener(
     'wheel',
     (e) => {
@@ -159,7 +139,6 @@ export async function openImageCropper(file, options = {}) {
     { passive: false }
   );
 
-  // === Pointer: pan и pinch ===
   const pointers = new Map();
   let startDistance = 0;
   let startZoom = 1;
@@ -211,15 +190,19 @@ export async function openImageCropper(file, options = {}) {
   view.canvas.addEventListener('pointerup', releasePointer);
   view.canvas.addEventListener('pointercancel', releasePointer);
 
-  // Первый рендер
   redraw();
 
-  // === Модалка ===
   return new Promise((resolve) => {
     let resolved = false;
     const finish = (value) => {
       if (resolved) return;
       resolved = true;
+
+      // ФИКС: ОСВОБОЖДАЕМ ПАМЯТЬ ПРИ ЗАКРЫТИИ
+      if (bitmap && typeof bitmap.close === 'function') {
+        bitmap.close();
+      }
+
       resolve(value);
     };
 

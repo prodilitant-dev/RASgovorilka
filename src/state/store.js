@@ -28,9 +28,17 @@ export function getState() {
 export function setState(updates) {
   const changed = {};
   for (const key in updates) {
-    if (state[key] !== updates[key]) {
-      state[key] = updates[key];
-      changed[key] = updates[key];
+    const next = updates[key];
+    const prev = state[key];
+    if (import.meta.env.DEV && prev === next && next !== null && typeof next === 'object') {
+      console.warn(
+        `[store] setState("${key}"): передана та же ссылка — мутация на месте не вызовет подписчиков`,
+        next
+      );
+    }
+    if (prev !== next) {
+      state[key] = next;
+      changed[key] = next;
     }
   }
   if (Object.keys(changed).length) {

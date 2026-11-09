@@ -42,7 +42,6 @@ export function createDefaultProfile(name = 'дом', icon = 'profile-default') 
 
   const quickButtons = QUICK_BUTTONS.map((btn) => {
     const bankItem = CARD_BANK.find((item) => item.word.toLowerCase() === btn.text.toLowerCase());
-
     return {
       ...btn,
       id: uid(),
@@ -101,8 +100,9 @@ export function createDefaultProfile(name = 'дом', icon = 'profile-default') 
     scheduleTemplates,
     scheduleDayMapping,
     scheduleDailyState: {},
-    modeOrder: ['say', 'write', 'learning', 'games', 'yesno', 'schedule'],
+    modeOrder: ['say', 'write', 'stories', 'learning', 'games', 'yesno', 'schedule'], // <-- Добавили stories
     hiddenModes: [],
+    stories: [],
     learningSettings,
     gamesSettings,
   };

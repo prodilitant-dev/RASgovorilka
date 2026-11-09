@@ -26,6 +26,7 @@ export function renderGrid(container, items, options = {}) {
       isActive: item.active || false,
       isAdd: item.isAdd || false,
       className: item.className || '',
+      styleColor: item.styleColor || null, // <-- Добавлена передача цвета
     });
     grid.appendChild(card);
   });

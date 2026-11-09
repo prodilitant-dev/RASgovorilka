@@ -1,35 +1,16 @@
 // src/modes/say/Say.controller.js
-import { renderMainLayout } from '@components/common/Layout/MainLayout';
 import { createElement } from '@utils/dom';
 import { getState, setState } from '@state/store';
-import { renderCategories } from './Say.categories';
-import { renderCards } from './Say.cards';
-import { renderQuickButtons } from '@modes/common/quickButtons';
-import {
-  renderSentence,
-  addWord,
-  removeWord,
-  clearSentence,
-  speakSentence,
-} from '@modes/common/sentence';
+import { renderMainLayout } from '@components/common/Layout/MainLayout';
+import { renderSentence } from '@modes/common/sentence';
 import { setupSwipeNavigation } from './Say.swipe';
 import { createCleanupCollector } from '@utils/lifecycle';
 import { logger } from '@utils/logger';
-import { saveProfile } from '@storage/appStorage';
-import { toast } from '@utils';
-import { openCategoryEditor } from './Say.categoryEditor';
-
-let currentProfile = null;
-let categoriesContainer = null;
-let cardsContainer = null;
-let quickContainer = null;
-let sentenceContainer = null;
+import { createSayHandlers } from './Say.handlers';
 
 export function renderSay(container, profile) {
   logger.debug('🔄 Rendering Say mode', { profileId: profile?.id });
-  currentProfile = profile;
 
-  // Снимаем предыдущий общий cleanup, если режим рендерится повторно
   if (typeof container._modeCleanup === 'function') {
     container._modeCleanup();
     container._modeCleanup = null;
@@ -38,18 +19,16 @@ export function renderSay(container, profile) {
   const content = createElement('div', { className: 'say-content' });
 
   const catWrap = createElement('div', { className: 'categories-wrap' });
-  categoriesContainer = createElement('div', { className: 'categories' });
+  const categoriesContainer = createElement('div', { className: 'categories' });
   catWrap.appendChild(categoriesContainer);
   content.appendChild(catWrap);
 
-  cardsContainer = createElement('div', { className: 'grid-container' });
+  const cardsContainer = createElement('div', { className: 'grid-container' });
   content.appendChild(cardsContainer);
 
-  // Панель быстрых кнопок + панель предложения.
-  // Позиция задаётся настройкой sentenceBarPosition (top/bottom).
   const panel = createElement('div', {});
-  quickContainer = createElement('div', { className: 'quick-buttons' });
-  sentenceContainer = createElement('div', {});
+  const quickContainer = createElement('div', { className: 'quick-buttons' });
+  const sentenceContainer = createElement('div', {});
   panel.appendChild(quickContainer);
   panel.appendChild(sentenceContainer);
 
@@ -62,50 +41,58 @@ export function renderSay(container, profile) {
     bottomPanel: position === 'bottom' ? panel : null,
   });
 
-  const activeCategoryId = state.currentCategoryId || currentProfile.categories[0]?.id || null;
-
-  renderCategories(
-    categoriesContainer,
-    currentProfile,
-    activeCategoryId,
-    onCategorySelect,
-    handleCategoryEdit,
-    handleCategoryReorder,
-    onCategoryCreated
-  );
-  renderCards(cardsContainer, currentProfile, activeCategoryId, onCardClick, handleCardReorder);
-
-  renderQuickButtons(quickContainer, currentProfile, {
-    onQuickClick: onQuickButtonClick,
-    onReorder: handleQuickReorder,
-  });
-
-  renderSentence(sentenceContainer, {
-    onRemove: (index) => {
-      removeWord(index);
-      renderSentence(sentenceContainer);
+  // Формируем контекст для хендлеров
+  const ctx = {
+    profile,
+    containers: {
+      categoriesContainer,
+      cardsContainer,
+      quickContainer,
+      sentenceContainer,
     },
-    onClear: () => {
-      clearSentence();
-      renderSentence(sentenceContainer);
+    render: {
+      categories: (activeId) => handlers.renderCategories(activeId),
+      cards: (activeId) => handlers.renderCards(activeId),
+      sentence: () => {
+        renderSentence(sentenceContainer, {
+          onRemove: (index) => {
+            handlers.removeWord(index);
+            ctx.render.sentence();
+          },
+          onClear: () => {
+            handlers.clearSentence();
+            ctx.render.sentence();
+          },
+          onSpeak: () => handlers.speakSentence(),
+        });
+      },
     },
-    onSpeak: speakSentence,
-  });
+  };
 
-  // Свайп — только вне режима редактирования
-  let swipeCleanup = null;
-  if (!state.editingMode) {
-    swipeCleanup = setupSwipeNavigation(cardsContainer, {
-      onNext: () => navigateCategory(+1),
-      onPrev: () => navigateCategory(-1),
-    });
-  }
+  // Создаем хендлеры
+  const handlers = createSayHandlers(ctx);
 
+  const activeCategoryId = state.currentCategoryId || profile.categories[0]?.id || null;
   if (!state.currentCategoryId && activeCategoryId) {
     setState({ currentCategoryId: activeCategoryId });
   }
 
-  // === Единый cleanup режима ===
+  // Первичный рендеринг
+  handlers.renderCategories(activeCategoryId);
+  handlers.renderCards(activeCategoryId);
+  handlers.renderQuick();
+  ctx.render.sentence();
+
+  // Свайпы
+  let swipeCleanup = null;
+  if (!state.editingMode) {
+    swipeCleanup = setupSwipeNavigation(cardsContainer, {
+      onNext: () => handlers.navigateCategory(+1),
+      onPrev: () => handlers.navigateCategory(-1),
+    });
+  }
+
+  // Очистка при выходе
   const collector = createCleanupCollector();
   collector.add(categoriesContainer?._categoriesCleanup);
   collector.add(cardsContainer?._cardsCleanup);
@@ -114,171 +101,6 @@ export function renderSay(container, profile) {
 
   container._modeCleanup = () => {
     collector.run();
-    currentProfile = null;
-    categoriesContainer = null;
-    cardsContainer = null;
-    quickContainer = null;
-    sentenceContainer = null;
     logger.debug('Say mode cleanup done');
   };
-}
-
-function navigateCategory(delta) {
-  if (!currentProfile) return;
-  const state = getState();
-  const cats = currentProfile.categories.filter((c) => !c.hidden);
-  if (cats.length === 0) return;
-
-  const currentId = state.currentCategoryId || cats[0].id;
-  const currentIdx = cats.findIndex((c) => c.id === currentId);
-  if (currentIdx === -1) return;
-
-  const nextIdx = currentIdx + delta;
-  if (nextIdx < 0 || nextIdx >= cats.length) return;
-
-  onCategorySelect(cats[nextIdx].id);
-}
-
-function onCategorySelect(categoryId) {
-  setState({ currentCategoryId: categoryId });
-  renderCategories(
-    categoriesContainer,
-    currentProfile,
-    categoryId,
-    onCategorySelect,
-    handleCategoryEdit,
-    handleCategoryReorder,
-    onCategoryCreated
-  );
-  renderCards(cardsContainer, currentProfile, categoryId, onCardClick, handleCardReorder);
-
-  const el = categoriesContainer.querySelector(`[data-category-id="${categoryId}"]`);
-  if (el && el.scrollIntoView) {
-    el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-  }
-}
-
-function onCategoryCreated(newCategoryId) {
-  onCategorySelect(newCategoryId);
-}
-
-function handleCategoryEdit(category) {
-  openCategoryEditor(
-    category,
-    // === ЛОГИКА СОХРАНЕНИЯ ===
-    (updatedCategory, done) => {
-      saveProfile(currentProfile);
-      const state = getState();
-      renderCategories(
-        categoriesContainer,
-        currentProfile,
-        state.currentCategoryId,
-        onCategorySelect,
-        handleCategoryEdit,
-        handleCategoryReorder,
-        onCategoryCreated
-      );
-      renderCards(
-        cardsContainer,
-        currentProfile,
-        state.currentCategoryId,
-        onCardClick,
-        handleCardReorder
-      );
-      toast('Категория обновлена');
-      done();
-    },
-    // === ЛОГИКА УДАЛЕНИЯ ===
-    (deletedCategory, done) => {
-      // 1. Удаляем категорию из списка
-      currentProfile.categories = currentProfile.categories.filter(
-        (c) => c.id !== deletedCategory.id
-      );
-
-      // 2. Удаляем все карточки, привязанные к этой категории
-      delete currentProfile.cards[deletedCategory.id];
-
-      // 3. Сохраняем профиль
-      saveProfile(currentProfile);
-
-      // 4. Проверяем, не удалили ли мы ту категорию, которая сейчас открыта
-      const state = getState();
-      let nextCategoryId = state.currentCategoryId;
-
-      if (state.currentCategoryId === deletedCategory.id) {
-        // Ищем первую доступную категорию (не скрытую)
-        const remainingCats = currentProfile.categories.filter((c) => !c.hidden);
-        nextCategoryId = remainingCats.length > 0 ? remainingCats[0].id : null;
-        setState({ currentCategoryId: nextCategoryId });
-      }
-
-      // 5. Перерисовываем интерфейс
-      renderCategories(
-        categoriesContainer,
-        currentProfile,
-        nextCategoryId,
-        onCategorySelect,
-        handleCategoryEdit,
-        handleCategoryReorder,
-        onCategoryCreated
-      );
-
-      if (nextCategoryId) {
-        renderCards(cardsContainer, currentProfile, nextCategoryId, onCardClick, handleCardReorder);
-      } else {
-        // Если удалили самую последнюю категорию (экран пуст)
-        cardsContainer.innerHTML = '';
-      }
-
-      toast('Категория удалена');
-      done();
-    }
-  );
-}
-
-function handleCategoryReorder(newOrder) {
-  const sorted = newOrder
-    .map((id) => currentProfile.categories.find((c) => c.id === id))
-    .filter(Boolean);
-  currentProfile.categories = sorted;
-  saveProfile(currentProfile);
-  const state = getState();
-  renderCategories(
-    categoriesContainer,
-    currentProfile,
-    state.currentCategoryId,
-    onCategorySelect,
-    handleCategoryEdit,
-    handleCategoryReorder,
-    onCategoryCreated
-  );
-}
-
-function onCardClick(cardId, categoryId) {
-  const state = getState();
-  if (state.editingMode) return;
-  const card = currentProfile.cards[categoryId]?.find((c) => c.id === cardId);
-  if (card) {
-    addWord(card.text, card);
-    renderSentence(sentenceContainer);
-  }
-}
-
-function handleCardReorder(newOrder, categoryId) {
-  const cards = currentProfile.cards[categoryId] || [];
-  const sorted = newOrder.map((id) => cards.find((c) => c.id === id)).filter(Boolean);
-  currentProfile.cards[categoryId] = sorted;
-  saveProfile(currentProfile);
-  renderCards(cardsContainer, currentProfile, categoryId, onCardClick, handleCardReorder);
-}
-
-function onQuickButtonClick(btn) {
-  const state = getState();
-  if (state.editingMode) return;
-  addWord(btn.text, btn);
-  renderSentence(sentenceContainer);
-}
-
-function handleQuickReorder() {
-  // Порядок сохраняется внутри renderQuickButtons
 }

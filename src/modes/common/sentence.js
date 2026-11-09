@@ -1,9 +1,9 @@
 // src/modes/common/sentence.js
 import { getState, setState } from '@state/store';
 import { renderSentenceBar } from '@components/common/SentenceBar';
-import { speakFromState } from '@utils/speech';
+import { speakSequence } from '@services/speech/speechSequence';
 import { toast } from '@utils/toast';
-import { getInflectedWords, getInflectedSentence } from '@utils/inflect';
+import { getInflectedWords } from '@utils/inflect';
 
 const lastCallbacks = {};
 
@@ -21,6 +21,7 @@ export function addWord(text, sourceItem = null) {
     wordType: sourceItem?.wordType || 'noun',
     forms: sourceItem?.forms || null,
     animate: sourceItem?.animate,
+    styleColor: sourceItem?.styleColor || null,
   };
   setState({ sentenceWords: [...words, newWord] });
 }
@@ -38,17 +39,60 @@ export function clearSentence() {
   setState({ sentenceWords: [] });
 }
 
-export async function speakSentence() {
+export async function speakSentence(container) {
   const state = getState();
   const words = state.sentenceWords || [];
   if (words.length === 0) {
     toast('Нет слов для озвучивания', 'info');
     return;
   }
+
+  // ЗАЩИТА: Если вместо контейнера пришел объект события (клик) или ничего,
+  // то просто не ищем DOM-элементы для подсветки.
+  const isContainer = container && typeof container.querySelectorAll === 'function';
+
   const autoInflect = state.globalSettings?.autoInflect === true;
-  const phrase = getInflectedSentence(words, autoInflect);
-  if (!phrase) return;
-  await speakFromState(phrase);
+  const displayWords = autoInflect ? getInflectedWords(words, true) : words.map((w) => w.text);
+
+  let fullText = '';
+  const mapping = [];
+  displayWords.forEach((wordText, index) => {
+    const start = fullText.length;
+    fullText += wordText;
+    const end = fullText.length;
+    mapping.push({ start, end, index });
+    if (index < displayWords.length - 1) fullText += ' ';
+  });
+
+  // Если контейнер есть, ищем слова. Если нет — массив пустой.
+  const wordEls = isContainer ? Array.from(container.querySelectorAll('.sentence-word')) : [];
+
+  const vs = state.globalSettings?.voiceSettings || {};
+
+  speakSequence(fullText, {
+    voiceSettings: vs,
+    onWord: (charIndex) => {
+      if (!isContainer) return; // Если контейнера нет, подсветку не делаем
+
+      const activeMapping = mapping.find((m) => charIndex >= m.start && charIndex <= m.end);
+      if (activeMapping) {
+        const el = wordEls[activeMapping.index];
+        if (el && !el.classList.contains('sentence-word--active')) {
+          wordEls.forEach((w) => w.classList.remove('sentence-word--active'));
+          el.classList.add('sentence-word--active');
+          el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+      }
+    },
+    onEnd: () => {
+      if (!isContainer) return;
+      wordEls.forEach((w) => w.classList.remove('sentence-word--active'));
+    },
+    onError: () => {
+      if (!isContainer) return;
+      wordEls.forEach((w) => w.classList.remove('sentence-word--active'));
+    },
+  });
 }
 
 export function renderSentence(container, options = {}) {
@@ -64,7 +108,8 @@ export function renderSentence(container, options = {}) {
   const callbacks = {
     onRemove: lastCallbacks.onRemove || removeWord,
     onClear: lastCallbacks.onClear || clearSentence,
-    onSpeak: lastCallbacks.onSpeak || speakSentence,
+    // Передаем контейнер в speakSentence, чтобы работала подсветка
+    onSpeak: lastCallbacks.onSpeak || (() => speakSentence(container)),
   };
 
   renderSentenceBar(

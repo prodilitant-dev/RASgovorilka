@@ -6,6 +6,7 @@ import { setState } from '@state/store';
 import { toast } from '@utils/toast';
 import { getCardsFromCategories } from '@utils/game/pickCards';
 import { stopSpeech, speakFromState } from '@utils/speech';
+import { createEmptyState } from '@components/common/EmptyState/EmptyState';
 
 export function startMemory(container, profile, settings, onBack, savedState) {
   const allCards = getCardsFromCategories(profile, settings.categoryIds || []);
@@ -38,8 +39,8 @@ export function startMemory(container, profile, settings, onBack, savedState) {
   } else {
     const cards = generateMemoryPairs(profile, settings.categoryIds, adjustedSize);
     if (cards.length === 0) {
-      container.innerHTML =
-        '<div style="padding:20px;text-align:center;">Нет карточек для игры</div>';
+      container.innerHTML = '';
+      container.appendChild(createEmptyState('Нет карточек для игры', '🎮'));
       return null;
     }
     state = {

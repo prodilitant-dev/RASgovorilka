@@ -1,3 +1,4 @@
+// src/components/Profile/ProfileList.js
 import { renderUniversalList } from '../common/Universal/UniversalList';
 
 export function renderProfileList(
@@ -7,14 +8,20 @@ export function renderProfileList(
   onProfileClick,
   onProfileLongPress
 ) {
-  const items = profiles.map((p) => ({
-    id: p.id,
-    text: p.name,
-    emoji: p.icon || '',
-    imageId: p.imageId || null,
-    imagePath: p.imagePath || null,
-    active: p.id === activeId,
-  }));
+  const items = profiles.map((p) => {
+    const isActive = p.id === activeId;
+    return {
+      id: p.id,
+      text: p.name,
+      emoji: p.icon || '',
+      imageId: p.imageId || null,
+      imagePath: p.imagePath || null,
+      active: isActive,
+      // Цвет передаем ТОЛЬКО для активного профиля
+      styleColor: isActive ? p.styleColor || null : null,
+      className: 'profile-card',
+    };
+  });
 
   return renderUniversalList(container, {
     items,

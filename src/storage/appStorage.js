@@ -28,31 +28,65 @@ export async function saveAppData(value) {
   }
 }
 
-export async function saveProfile(profile) {
-  logger.debug(`Saving profile: ${profile.id} (${profile.name})`);
-  const data = await loadAppData();
-  if (!data) {
-    logger.error('saveProfile: no app data');
+/**
+ * Атомарная read-modify-write операция над 'appData/main'.
+ * IDB сериализует readwrite-транзакции на одном store —
+ * параллельные вызовы не перетирают друг друга.
+ *
+ * @param {(data: Object) => void} mutator - мутирует data in-place
+ * @returns {Promise<boolean>} true при успехе
+ */
+export async function mutateAppData(mutator) {
+  try {
+    const db = await getDB();
+    const tx = db.transaction('appData', 'readwrite');
+    const store = tx.objectStore('appData');
+    const record = await store.get('main');
+    const data = record?.value;
+    if (!data) {
+      await tx.done;
+      return false;
+    }
+    mutator(data);
+    await store.put({ key: 'main', value: data });
+    await tx.done;
+    return true;
+  } catch (e) {
+    logger.error('mutateAppData error:', e);
     return false;
   }
-  const idx = data.profiles.findIndex((p) => p.id === profile.id);
-  if (idx >= 0) {
-    data.profiles[idx] = profile;
+}
+
+export async function saveProfile(profile) {
+  logger.debug(`Saving profile: ${profile.id} (${profile.name})`);
+  const ok = await mutateAppData((data) => {
+    if (!Array.isArray(data.profiles)) data.profiles = [];
+    const idx = data.profiles.findIndex((p) => p.id === profile.id);
+    if (idx >= 0) {
+      data.profiles[idx] = profile;
+    } else {
+      data.profiles.push(profile);
+    }
+  });
+  if (!ok) {
+    logger.error('saveProfile: no app data');
   } else {
-    data.profiles.push(profile);
+    logger.debug(`Profile ${profile.id} saved`);
   }
-  logger.debug(`Profile ${profile.id} saved (${idx >= 0 ? 'updated' : 'added'})`);
-  return saveAppData(data);
+  return ok;
 }
 
 export async function deleteProfile(id) {
   logger.debug(`Deleting profile: ${id}`);
-  const data = await loadAppData();
-  if (!data) {
+  const ok = await mutateAppData((data) => {
+    if (Array.isArray(data.profiles)) {
+      data.profiles = data.profiles.filter((p) => p.id !== id);
+    }
+  });
+  if (!ok) {
     logger.error('deleteProfile: no app data');
-    return false;
+  } else {
+    logger.debug(`Profile ${id} deleted`);
   }
-  data.profiles = data.profiles.filter((p) => p.id !== id);
-  logger.debug(`Profile ${id} deleted`);
-  return saveAppData(data);
+  return ok;
 }

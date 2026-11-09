@@ -20,28 +20,35 @@ export function iconUrl(name) {
  * @param {string} [opts.className=''] - доп. класс
  * @param {string} [opts.alt=''] - alt для a11y
  */
-export function createIcon(name, { fallback = '', size = 24, className = '', alt = '' } = {}) {
+export function createIcon(
+  name,
+  { fallback = '', size, fallbackFontSize, className = '', alt = '' } = {}
+) {
+  const sizeStyle = size ? `width:${size}px;height:${size}px;object-fit:contain;` : '';
   const img = createElement('img', {
     src: iconUrl(name),
     alt,
     className: ['ui-icon', className].filter(Boolean).join(' '),
-    style: `width:${size}px;height:${size}px;object-fit:contain;`,
+    style: sizeStyle,
     draggable: 'false',
   });
 
   if (fallback) {
-    img.addEventListener('error', () => {
-      // Если WebP не найден — показываем эмодзи текстом
+    const fontSize = fallbackFontSize ?? (size ? Math.round(size * 0.85) : undefined);
+    const showFallback = () => {
       const span = createElement(
         'span',
         {
           className: ['ui-icon', 'ui-icon--fallback', className].filter(Boolean).join(' '),
-          style: `font-size:${Math.round(size * 0.85)}px;line-height:1;`,
+          style: fontSize ? `font-size:${fontSize}px;line-height:1;` : '',
         },
         fallback
       );
       img.replaceWith(span);
-    });
+    };
+
+    img.addEventListener('error', showFallback);
+    if (img.complete && img.naturalWidth === 0) showFallback();
   }
 
   return img;

@@ -1,23 +1,15 @@
 // vite.config.js
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import { readFileSync } from 'fs';
+import { readFileSync, readdirSync } from 'fs'; // <-- ДОБАВЛЕН readdirSync
 import { VitePWA } from 'vite-plugin-pwa';
 
 const root = process.cwd();
 const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf-8'));
 
-// Базовый путь для GitHub Pages. Позволяет собирать одно и то же
-// приложение под разные репозитории (RASgovorilka / RASgovorilka-TEST).
-// Переопределяется переменной окружения BASE_PATH при сборке в CI.
 const rawBase = process.env.BASE_PATH || '/RASgovorilka/';
 const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
 
-/**
- * Плагин: генерирует robots.txt и sitemap.xml с правильным URL,
- * а также подставляет %%SITE_URL%% в index.html.
- * Работает и в TEST-репо, и в main — автоматически на основе base.
- */
 function seoPlugin(basePath) {
   const siteUrl = `https://prodilitant-dev.github.io${basePath.replace(/\/$/, '')}`;
 
@@ -54,6 +46,33 @@ function seoPlugin(basePath) {
   };
 }
 
+// <-- НОВЫЙ ПЛАГИН: Автоматически собирает все иконки из папки
+function iconsManifestPlugin() {
+  const virtualModuleId = 'virtual:icons-manifest';
+  const resolvedVirtualModuleId = '\0' + virtualModuleId;
+
+  return {
+    name: 'icons-manifest',
+    resolveId(id) {
+      if (id === virtualModuleId) return resolvedVirtualModuleId;
+    },
+    load(id) {
+      if (id === resolvedVirtualModuleId) {
+        const iconsDir = resolve(root, 'src/public/icons');
+        let icons = [];
+        try {
+          icons = readdirSync(iconsDir)
+            .filter((file) => file.endsWith('.webp'))
+            .map((file) => file.replace('.webp', ''));
+        } catch (e) {
+          console.error('Error reading icons directory', e);
+        }
+        return `export default ${JSON.stringify(icons)};`;
+      }
+    },
+  };
+}
+
 export default defineConfig({
   base,
   root: resolve(root, 'src'),
@@ -66,18 +85,48 @@ export default defineConfig({
   },
   plugins: [
     seoPlugin(base),
+    iconsManifestPlugin(), // <-- ДОБАВЛЕН ПЛАГИН
     VitePWA({
       manifest: false,
       registerType: 'prompt',
       injectRegister: false,
+      strategies: 'generateSW',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,webp,webmanifest,ico,woff,woff2}'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        globPatterns: [
+          '**/*.{js,css,html,svg,png,webp,jpeg,jpg,webmanifest,ico,woff,woff2,mp3,json}',
+        ],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
         navigateFallback: `${base}index.html`,
-        navigateFallbackDenylist: [/^\/api\//],
         cleanupOutdatedCaches: true,
         skipWaiting: false,
         clientsClaim: false,
+        runtimeCaching: [
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|webp|ico)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'ras-images',
+              expiration: {
+                maxEntries: 3000,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /\.(?:woff|woff2|ttf|eot)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'ras-fonts',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+            },
+          },
+        ],
       },
       devOptions: {
         enabled: false,

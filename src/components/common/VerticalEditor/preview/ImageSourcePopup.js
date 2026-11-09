@@ -1,8 +1,14 @@
 // src/components/common/VerticalEditor/preview/ImageSourcePopup.js
 import { createElement } from '@utils/dom';
 
+let activePopupCleanup = null; // <-- ГЛОБАЛЬНАЯ ССЫЛКА НА ОЧИСТКУ
+
 export function openImageSourcePopup(anchor, { fileInput, cameraInput, onSelectFromBank }) {
-  document.querySelector('.ve-image-source-popup')?.remove();
+  // Закрываем предыдущий попап, если он был
+  if (activePopupCleanup) {
+    activePopupCleanup();
+    activePopupCleanup = null;
+  }
 
   const popup = createElement('div', { className: 've-image-source-popup' });
   const cameraBtn = createElement(
@@ -21,14 +27,26 @@ export function openImageSourcePopup(anchor, { fileInput, cameraInput, onSelectF
     '📚 Выбрать из банка'
   );
 
+  let timeoutId = null;
+
   const close = () => {
     popup.remove();
+    if (timeoutId) clearTimeout(timeoutId);
     document.removeEventListener('click', onDocClick, true);
     document.removeEventListener('keydown', onKey, true);
+    activePopupCleanup = null;
   };
+
   const onDocClick = (e) => {
-    if (!popup.contains(e.target) && !anchor.contains(e.target)) close();
+    if (!document.body.contains(popup)) {
+      close();
+      return;
+    }
+    if (!popup.contains(e.target) && !anchor.contains(e.target)) {
+      close();
+    }
   };
+
   const onKey = (e) => {
     if (e.key === 'Escape') close();
   };
@@ -63,8 +81,12 @@ export function openImageSourcePopup(anchor, { fileInput, cameraInput, onSelectF
   popup.style.left = `${rect.left + rect.width / 2}px`;
   popup.style.transform = 'translateX(-50%)';
 
-  setTimeout(() => {
+  timeoutId = setTimeout(() => {
     document.addEventListener('click', onDocClick, true);
     document.addEventListener('keydown', onKey, true);
+    timeoutId = null;
   }, 0);
+
+  // Сохраняем функцию очистки
+  activePopupCleanup = close;
 }

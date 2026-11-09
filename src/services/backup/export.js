@@ -78,9 +78,12 @@ export async function exportToZip(selectedKeys, selectedCategoryIds = null) {
   }
 
   const blob = await zip.generateAsync({ type: 'blob' });
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  a.href = url;
   a.download = `RAS_backup_${new Date().toISOString().slice(0, 10)}.rasbackup`;
   a.click();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
   toast('Экспорт завершён', 'success');
 }

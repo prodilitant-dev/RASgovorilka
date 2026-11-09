@@ -8,6 +8,7 @@ import { getState, setState } from '@state/store';
 import { saveProfile, saveAppData } from '@storage/appStorage';
 import { openImportDialog } from '@modes/general/components/ImportDialog';
 import { renderApp } from '@app/render';
+import { clearAllImageUrls } from '@services/image/imageCache'; // <-- ДОБАВЛЕН ИМПОРТ
 
 /**
  * Импортирует .rasbackup (zip) в текущий профиль.
@@ -88,6 +89,8 @@ async function applyImport(importedData, selectedKeys, strategy, selectedCategor
       logger.error(`Ошибка импорта ${key}`, e);
     }
   }
+
+  clearAllImageUrls();
 
   await saveProfile(profile);
   await saveAppData({ ...state, globalSettings: globalData });

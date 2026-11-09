@@ -135,7 +135,7 @@ body.editing-mode .category:not(.category-add) {
   gap: var(--spacing-xs);
 }
 
-.sort-placeholder {
+.category-sort-placeholder {
   border: 2px dashed var(--primary);
   border-radius: 20px;
   background: var(--primary-light);
@@ -199,10 +199,9 @@ body.editing-mode .category:not(.category-add) {
 .cat-avatar__img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
   pointer-events: none;
-  -webkit-user-drag: none;
 }
 
 /* Фолбек на активной (зелёной) таблетке — чтобы буква не потерялась */

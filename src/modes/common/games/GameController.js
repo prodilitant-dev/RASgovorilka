@@ -3,6 +3,7 @@ import { setState } from '@state/store';
 import { logger } from '@utils/logger';
 import { stopSpeech } from '@utils/speech';
 import { showResultsModal } from '@modes/common/activities/ResultsModal';
+import { toast } from '@utils/toast';
 
 export function startGame({
   container,
@@ -22,9 +23,9 @@ export function startGame({
 
   let state = savedState || generateData(profile, settings);
   if (!state) {
-    container.innerHTML =
-      '<div style="padding:20px;text-align:center;">Не удалось инициализировать игру</div>';
     logger.error(`Failed to generate data for ${gameType}`);
+    toast('Недостаточно карточек для этой игры', 'info');
+    if (typeof onBack === 'function') onBack();
     return null;
   }
 

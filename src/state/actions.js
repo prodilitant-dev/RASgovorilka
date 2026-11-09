@@ -1,5 +1,5 @@
 // src/state/actions.js
-import { loadAppData, saveAppData } from '@storage/appStorage';
+import { loadAppData, saveAppData, mutateAppData } from '@storage/appStorage';
 import { getState, setState } from './store';
 import { createDefaultProfile } from '@config/defaultData';
 import { DEFAULT_GLOBAL_SETTINGS } from '@config/defaultData/defaultSettings';
@@ -9,7 +9,7 @@ export async function loadInitialState() {
   logger.debug('Loading initial state');
   const data = await loadAppData();
 
-  if (data) {
+  if (data && data.profiles?.length) {
     setState({
       currentProfileId: data.activeProfileId || null,
       globalSettings: { ...DEFAULT_GLOBAL_SETTINGS, ...(data.globalSettings || {}) },
@@ -51,12 +51,17 @@ export async function loadInitialState() {
 export async function savePersistentState() {
   logger.debug('Saving persistent state');
   const state = getState();
-  const data = (await loadAppData()) || { profiles: [] };
-  data.activeProfileId = state.currentProfileId;
-  data.globalSettings = state.globalSettings;
-  data.profiles = state.profiles;
-  await saveAppData(data);
+  const ok = await mutateAppData((data) => {
+    data.activeProfileId = state.currentProfileId;
+    data.globalSettings = state.globalSettings;
+    data.profiles = state.profiles;
+  });
+  if (!ok) {
+    logger.error('savePersistentState: no app data');
+    return false;
+  }
   logger.debug('Persistent state saved');
+  return true;
 }
 
 export function getActiveProfile() {
