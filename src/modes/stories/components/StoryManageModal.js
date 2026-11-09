@@ -44,7 +44,6 @@ export function openStoryManageModal(story, onEdit, onDelete, onSaveCb) {
     onSave: (updated, done) => {
       if (!updated.title || !updated.title.trim()) {
         toast('Введите название истории', 'error');
-        done();
         return;
       }
       applyInstantSave(updated);

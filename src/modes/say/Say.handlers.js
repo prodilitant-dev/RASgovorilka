@@ -131,7 +131,6 @@ export function createSayHandlers(ctx) {
       (savedCard, done) => {
         if (!savedCard.text.trim()) {
           toast('Введите текст', 'error');
-          done();
           return;
         }
         profile.cards[categoryId].push(savedCard);

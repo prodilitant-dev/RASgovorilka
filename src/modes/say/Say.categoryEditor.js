@@ -12,11 +12,10 @@ export function openCategoryEditor(category, onSave, onDelete) {
     entity,
     editorType: 'category',
     preview: true,
-    previewSides: createColorPalette, // <-- ДОБАВИТЬ ВОТ ЭТУ СТРОКУ
+    previewSides: createColorPalette,
     onSave: (updated, done) => {
       if (!updated.name || !updated.name.trim()) {
         toast('Введите название', 'error');
-        done();
         return;
       }
       Object.assign(category, updated);

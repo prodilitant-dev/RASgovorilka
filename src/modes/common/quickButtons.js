@@ -111,7 +111,7 @@ export function renderQuickButtons(container, profile, { onQuickClick, onReorder
         (updated, done) => {
           if (!updated.text.trim()) {
             toast('Введите текст', 'error');
-            done();
+
             return;
           }
           profile.quickButtons.push(updated);

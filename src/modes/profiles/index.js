@@ -99,7 +99,6 @@ export async function renderProfiles(container) {
         onDelete: async (idToDelete, done) => {
           if (profiles.length <= 1) {
             toast('Нельзя удалить единственный профиль', 'error');
-            done();
             return;
           }
           await deleteProfile(idToDelete);

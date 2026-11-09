@@ -107,7 +107,6 @@ function handleButtonClick(id) {
       (updated, done) => {
         if (!updated.text.trim()) {
           toast('Введите текст', 'error');
-          done();
           return;
         }
         const finalBtn = autoAssignImage(updated);
