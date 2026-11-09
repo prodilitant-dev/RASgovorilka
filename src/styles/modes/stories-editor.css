@@ -380,59 +380,6 @@
   flex: 1;
 }
 
-/* Превью в модалке управления историей */
-.story-manage-preview {
-  width: 150px;
-  height: 150px;
-  border-radius: var(--radius);
-  border: 2px dashed var(--border);
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-/* --- Модалка управления историей --- */
-.story-manage-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 10px 0;
-}
-
-.story-manage-preview {
-  width: 150px;
-  height: 150px;
-  border-radius: var(--radius);
-  border: 2px dashed var(--border);
-  background-color: var(--surface);
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-  box-sizing: border-box;
-}
-
-.story-manage-preview--accented {
-  border: 3px solid var(--accent-color);
-}
-
-/* Контейнер для палитры в модалке */
-.story-manage-palette {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 8px;
-}
-
 /* --- Модалка управления историей --- */
 .story-manage-wrap {
   display: flex;
