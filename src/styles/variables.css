@@ -1,37 +1,67 @@
 :root {
+  /* === Основные === */
   --primary: #4caf50;
   --primary-dark: #388e3c;
   --primary-light: #a5d6a7;
   --danger: #c62828;
+  --danger-dark: #b71c1c;
+  --danger-light: #ffebee;
+  --danger-lighter: #ffcdd2;
+
+  /* === Фоны === */
   --bg: #f0f2f5;
+  --bg-lightest: #f8f9fa;
+  --bg-lighter: #f1f3f5;
+  --bg-light: #f0f0f0;
+  --bg-subtle: #e9ecef;
+  --bg-muted: #e0e0e0;
+  --bg-hover: #dee2e6;
   --surface: #ffffff;
+
+  /* === Границы === */
   --border: #d0d7de;
+  --border-muted: #ced4da;
+
+  /* === Текст === */
   --text: #1a1a1a;
+  --text-strong: #000000;
+  --text-subtle: #333333;
   --text-secondary: #495057;
   --text-muted: #868e96;
+  --text-disabled: #666666;
+  --text-on-accent: #ffffff;
+
+  /* === Радиусы, тени, отступы === */
   --radius: 16px;
   --radius-sm: 10px;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --transition: 0.2s ease;
+
   --font:
     'Segoe UI', Roboto, system-ui, sans-serif, 'Segoe UI Emoji', 'Apple Color Emoji',
     'Noto Color Emoji';
+
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 12px;
   --spacing-lg: 16px;
   --spacing-xl: 24px;
-  --transition: 0.2s ease;
+}
 
-  .tile-bg,
-  .card__bg,
-  .sentence-word,
-  .quick-btn,
-  .category,
-  .game-cell,
-  .learning-card .card-image {
-    text-shadow: none !important;
-    -webkit-text-stroke: 0 !important;
-  }
+/* ============================================================
+   Сброс тени для интерактивных элементов
+   (вынесено из :root — CSS Nesting в :root не работает
+   в Safari < 16.5 и Android WebView < 120)
+   ============================================================ */
+.tile-bg,
+.card__bg,
+.sentence-word,
+.quick-btn,
+.category,
+.game-cell,
+.learning-card .card-image {
+  text-shadow: none !important;
+  -webkit-text-stroke: 0 !important;
 }
 
 /* ============================================================
@@ -40,14 +70,17 @@
    автоматически. Классы вешаются на <html> из JS.
    ============================================================ */
 html {
-  font-size: 16px; /* small (дефолт) */
+  font-size: 16px;
 }
+
 html.ui-small {
   font-size: 16px;
 }
+
 html.ui-medium {
   font-size: 18px;
 }
+
 html.ui-large {
   font-size: 20px;
 }
