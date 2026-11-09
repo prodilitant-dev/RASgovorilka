@@ -36,32 +36,40 @@ export function openDeclensionModal(card, onSave) {
       </div>
     `;
   } else if (isAdjective) {
-    const defaultForms = currentForms || {
-      masculine: {
-        nominative: '',
-        genitive: '',
-        dative: '',
-        accusative: '',
-        instrumental: '',
-        prepositional: '',
-      },
-      feminine: {
-        nominative: '',
-        genitive: '',
-        dative: '',
-        accusative: '',
-        instrumental: '',
-        prepositional: '',
-      },
-      neuter: {
-        nominative: '',
-        genitive: '',
-        dative: '',
-        accusative: '',
-        instrumental: '',
-        prepositional: '',
-      },
-    };
+    // Проверяем, что старые формы действительно от прилагательного (имеют родовые ветки).
+    // Если карточка была существительным, структура будет плоской — её нужно сбросить.
+    const isAdjectiveShape =
+      currentForms && currentForms.masculine && currentForms.feminine && currentForms.neuter;
+
+    const defaultForms = isAdjectiveShape
+      ? currentForms
+      : {
+          masculine: {
+            nominative: '',
+            genitive: '',
+            dative: '',
+            accusative: '',
+            instrumental: '',
+            prepositional: '',
+          },
+          feminine: {
+            nominative: '',
+            genitive: '',
+            dative: '',
+            accusative: '',
+            instrumental: '',
+            prepositional: '',
+          },
+          neuter: {
+            nominative: '',
+            genitive: '',
+            dative: '',
+            accusative: '',
+            instrumental: '',
+            prepositional: '',
+          },
+        };
+
     bodyHtml = `
       <div style="padding: 8px 0; width: 100%;">
         <p style="font-size:14px; color:var(--text-secondary);">Редактируйте формы прилагательного «${card.text}» для каждого рода.</p>
