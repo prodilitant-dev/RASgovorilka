@@ -213,23 +213,6 @@ select option:checked {
   padding-left: 16px;
 }
 
-.checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
-}
-
-.checkbox-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 0;
-  cursor: pointer;
-  width: 100%;
-}
-
 .checkbox-item__label {
   flex: 1;
   font-size: 15px;
