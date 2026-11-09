@@ -65,7 +65,7 @@ export function makeSortable(container, options = {}) {
     document.body.appendChild(ghostEl);
 
     placeholderEl = document.createElement('div');
-    placeholderEl.className = 'sort-placeholder';
+    placeholderEl.className = placeholderClass;
     Object.assign(placeholderEl.style, {
       width: `${rect.width}px`,
       height: `${rect.height}px`,
