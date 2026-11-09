@@ -17,6 +17,12 @@
   display: none;
 }
 
+.mode-bar::after {
+  content: '';
+  flex-shrink: 0;
+  width: 24px;
+}
+
 .mode-btn {
   position: relative;
   /* Уменьшили паддинги: сверху/снизу 4px, справа 12px, слева 2.5rem (под иконку) */
