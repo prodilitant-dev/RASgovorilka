@@ -170,6 +170,7 @@ export function renderCategories(
     dragCleanup = makeSortable(container, {
       itemSelector: '.category:not(.category-add)',
       longPressDelay: 200,
+      placeholderClass: 'category-sort-placeholder',
       onReorder: (ids) => onReorder(ids),
     });
   }

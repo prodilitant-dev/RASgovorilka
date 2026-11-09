@@ -135,7 +135,7 @@ body.editing-mode .category:not(.category-add) {
   gap: var(--spacing-xs);
 }
 
-.sort-placeholder {
+.category-sort-placeholder {
   border: 2px dashed var(--primary);
   border-radius: 20px;
   background: var(--primary-light);

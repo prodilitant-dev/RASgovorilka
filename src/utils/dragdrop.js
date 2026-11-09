@@ -6,6 +6,7 @@ export function makeSortable(container, options = {}) {
     longPressDelay = 200,
     moveTolerance = 8,
     ignoreSelector = 'input, button, label, .toggle-switch, .cat-action-btn',
+    placeholderClass = 'sort-placeholder',
   } = options;
 
   let draggedEl = null;
