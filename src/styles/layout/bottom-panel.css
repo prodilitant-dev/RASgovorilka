@@ -80,7 +80,7 @@
   height: 2.25rem;
 
   border-radius: 50%;
-  background: #ffffff; /* Белый фон по умолчанию */
+  background: var(--surface);
   object-fit: contain;
 
   display: flex;
