@@ -101,8 +101,8 @@ body.editing-mode .card:not(.card--add) {
 }
 
 .card__icon {
-  width: 95%;
-  height: 95%;
+  width: 99%;
+  height: 99%;
   object-fit: contain;
   pointer-events: none;
   -webkit-user-drag: none;

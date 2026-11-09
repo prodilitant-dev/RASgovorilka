@@ -65,7 +65,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   border: 2px solid transparent;
   cursor: pointer;

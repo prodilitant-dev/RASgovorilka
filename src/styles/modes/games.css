@@ -45,7 +45,7 @@
   aspect-ratio: 1 / 1;
   width: 100%;
   background: var(--surface);
-  background-size: cover;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   border: 2px solid var(--border);

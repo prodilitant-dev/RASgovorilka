@@ -81,7 +81,7 @@
 
   border-radius: 50%;
   background: #ffffff; /* Белый фон по умолчанию */
-  object-fit: cover;
+  object-fit: contain;
 
   display: flex;
   align-items: center;
@@ -109,7 +109,7 @@
 .quick-btn__avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
   pointer-events: none;
   -webkit-user-drag: none;

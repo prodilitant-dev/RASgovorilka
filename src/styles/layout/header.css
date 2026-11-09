@@ -44,7 +44,7 @@
   width: 100%;
   height: 100%;
   /* ДОБАВЛЕНО: заставляем картинку заполнить круг без искажений */
-  object-fit: cover;
+  object-fit: contain;
   display: block;
   pointer-events: none;
   -webkit-user-drag: none;
