@@ -11,7 +11,7 @@ import { createColorPalette } from '@components/common/VerticalEditor/preview/co
 export function openCardEditor(cardData, onSave, onDelete, options = {}) {
   const { skipDuplicateCheck = false, targetCategoryId = null } = options; // <-- ДОБАВЛЕНО
 
-  const isNew = !cardData.id;
+  const isNew = options.isNew ?? !cardData.id;
   if (isNew) {
     autoDetectCard(cardData);
   }
@@ -40,13 +40,12 @@ export function openCardEditor(cardData, onSave, onDelete, options = {}) {
   const existingCards = profile?.cards?.[categoryId] || [];
 
   openVerticalEditor({
-    title: isNew ? 'Новая карточка' : 'Редактировать карточку',
+    title: isNew ? 'Добавить' : 'Редактировать',
     entity,
     previewSides: createColorPalette,
     onSave: (updated, done) => {
       if (!updated.text || !updated.text.trim()) {
         toast('Введите текст', 'error');
-        done();
         return;
       }
 
@@ -59,7 +58,6 @@ export function openCardEditor(cardData, onSave, onDelete, options = {}) {
 
         if (isDuplicate) {
           toast('Карточка с таким названием уже есть в этой категории', 'error');
-          done();
           return;
         }
       }

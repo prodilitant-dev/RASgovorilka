@@ -11,7 +11,6 @@ export function openSimpleEditor({ entity, title, onSave, onDelete }) {
     onSave: (updated, done) => {
       if (!updated.text || !updated.text.trim()) {
         toast('Введите текст', 'error');
-        done();
         return;
       }
       onSave(updated, done);

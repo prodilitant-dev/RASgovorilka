@@ -141,7 +141,7 @@ export function createSayHandlers(ctx) {
         done();
       },
       null,
-      { targetCategoryId: categoryId }
+      { targetCategoryId: categoryId, isNew: true }
     );
   }
 

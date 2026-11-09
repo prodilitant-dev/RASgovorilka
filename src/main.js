@@ -5,8 +5,10 @@ import { initLogger } from '@utils/logger';
 import { subscribe } from '@state/store';
 import { initSW } from '@services/pwa/updateService';
 
+document.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+});
+
 initLogger({ subscribe });
-
 initSW();
-
 initApp();
